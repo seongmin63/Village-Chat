@@ -437,7 +437,11 @@ body {
           <div class="edit-avatar-preview" id="editAvatarPreview" onclick="document.getElementById('editAvatarInput').click()">
             <span id="editAvatarEmoji">📷</span>
           </div>
-          <span style="font-size:12px;color:var(--c-muted)">탭해서 사진 변경 (선택)</span>
+          <div style="display:flex;gap:8px;margin-top:2px">
+            <span style="font-size:12px;color:var(--blue);cursor:pointer;text-decoration:underline" onclick="document.getElementById('editAvatarInput').click()">사진 선택</span>
+            <span style="font-size:12px;color:var(--c-muted)">|</span>
+            <span style="font-size:12px;color:#E24B4A;cursor:pointer;text-decoration:underline" onclick="clearEditAvatar()">사진 없음</span>
+          </div>
           <input type="file" id="editAvatarInput" accept="image/*">
         </div>
         <div class="field">
@@ -584,13 +588,16 @@ function goLocation() {
   const nick = document.getElementById('nicknameInput').value.trim();
   const gender = selectedGender;
   const avatar = localStorage.getItem('dnTalk_avatar') || '';
+  // 기존 DM 파트너들에게 나갔음 알림
+  notifyDmPartnersLeft();
   profile = { nickname: nick, gender, avatar };
   localStorage.setItem('dnTalk_profile', JSON.stringify(profile));
-  // 새 프로필 = 기록 초기화
   const resetTime = Date.now();
   localStorage.setItem('dnTalk_resetTime', resetTime.toString());
   profileResetTime = new Date(resetTime);
   localStorage.removeItem('dnTalk_dms');
+  Object.values(dmRoomSubs).forEach(u => u());
+  dmRoomSubs = {};
   showScreen('locationScreen');
   resetLocUI();
   requestLocation();
@@ -692,20 +699,10 @@ function showProfileEditForm() {
   document.getElementById('myProfileView').style.display = 'none';
   document.getElementById('myProfileEditForm').style.display = 'block';
 
-  // 현재 프로필 값으로 초기화
   editAvatarData = profile?.avatar || '';
   editSelectedGender = profile?.gender || '';
-
   document.getElementById('editNicknameInput').value = profile?.nickname || '';
-
-  const preview = document.getElementById('editAvatarPreview');
-  const oldImg = preview.querySelector('img');
-  if (oldImg) oldImg.remove();
-  document.getElementById('editAvatarEmoji').style.display = '';
-  if (editAvatarData) {
-    document.getElementById('editAvatarEmoji').style.display = 'none';
-    const img = document.createElement('img'); img.src = editAvatarData; preview.appendChild(img);
-  }
+  refreshEditAvatarPreview();
 
   document.querySelectorAll('#myProfileEditForm .gender-btn').forEach(b => {
     b.classList.toggle('selected', b.dataset.g === editSelectedGender);
@@ -713,23 +710,56 @@ function showProfileEditForm() {
   checkEditReady();
 }
 
+function refreshEditAvatarPreview() {
+  const preview = document.getElementById('editAvatarPreview');
+  const oldImg = preview.querySelector('img');
+  if (oldImg) oldImg.remove();
+  const emoji = document.getElementById('editAvatarEmoji');
+  if (editAvatarData) {
+    emoji.style.display = 'none';
+    const img = document.createElement('img'); img.src = editAvatarData; preview.appendChild(img);
+  } else {
+    emoji.style.display = '';
+    emoji.textContent = '👤';
+  }
+}
+
+function clearEditAvatar() {
+  editAvatarData = '';
+  // file input 초기화 (같은 파일 재선택 가능하도록)
+  document.getElementById('editAvatarInput').value = '';
+  refreshEditAvatarPreview();
+}
+
 function cancelProfileEdit() {
   document.getElementById('myProfileView').style.display = 'flex';
   document.getElementById('myProfileEditForm').style.display = 'none';
+}
+
+function notifyDmPartnersLeft() {
+  if (!window._firebaseReady || !profile) return;
+  const list = getDmList();
+  list.forEach(dm => {
+    const inboxRef = window._doc(window._db, 'users', dm.partnerNick, 'inbox', dm.id + '_left');
+    window._setDoc(inboxRef, { dmId: dm.id, type: 'left', from: profile.nickname, ts: new Date() }).catch(() => {});
+  });
 }
 
 function saveProfile() {
   const nick = document.getElementById('editNicknameInput').value.trim();
   if (!nick || !editSelectedGender) return;
   const avatar = editAvatarData || '';
+  // 프로필 바꾸기 전에 기존 DM 파트너들에게 나갔음 알림
+  notifyDmPartnersLeft();
   profile = { nickname: nick, gender: editSelectedGender, avatar };
   localStorage.setItem('dnTalk_profile', JSON.stringify(profile));
-  // 기록 초기화
   const resetTime = Date.now();
   localStorage.setItem('dnTalk_resetTime', resetTime.toString());
   profileResetTime = new Date(resetTime);
   localStorage.removeItem('dnTalk_dms');
-  // 진행 중인 채팅 종료
+  // DM 방 구독 전부 해제
+  Object.values(dmRoomSubs).forEach(u => u());
+  dmRoomSubs = {};
   if (unsubscribe) { unsubscribe(); unsubscribe = null; }
   document.getElementById('myProfileModal').classList.remove('open');
   renderMyAvatarBtn();
