@@ -7,7 +7,7 @@
 <title>서울챗</title>
 
 <script type="module">
-  import { initializeFirestore, collection, addDoc, setDoc, deleteDoc, doc, query, orderBy, onSnapshot, limit, where, enableNetwork, disableNetwork }
+  import { initializeFirestore, collection, addDoc, setDoc, deleteDoc, getDocs, doc, query, orderBy, onSnapshot, limit, where, enableNetwork, disableNetwork }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 
@@ -27,6 +27,7 @@
   window._addDoc = addDoc;
   window._setDoc = setDoc;
   window._deleteDoc = deleteDoc;
+  window._getDocs = getDocs;
   window._doc = doc;
   window._query = query;
   window._orderBy = orderBy;
@@ -738,10 +739,25 @@ function cancelProfileEdit() {
 function notifyDmPartnersLeft() {
   if (!window._firebaseReady || !profile) return;
   const list = getDmList();
+  const leftDms = getLeftDms(); // 상대방이 이미 나간 DM 목록
   list.forEach(dm => {
+    // 상대방 inbox에 나갔음 알림 쓰기
     const inboxRef = window._doc(window._db, 'users', dm.partnerNick, 'inbox', dm.id + '_left');
     window._setDoc(inboxRef, { dmId: dm.id, type: 'left', from: profile.nickname, ts: new Date() }).catch(() => {});
+    // 내 inbox에 남아있는 상대방의 left 알림 doc 삭제 (재처리 방지)
+    const myLeftRef = window._doc(window._db, 'users', profile.nickname, 'inbox', dm.id + '_left');
+    window._deleteDoc(myLeftRef).catch(() => {});
+    // 상대방도 이미 나간 경우에만 Firestore 메시지 삭제 (둘 다 나가야 삭제)
+    if (leftDms.includes(dm.id)) deleteDmMessages(dm.id);
   });
+}
+
+async function deleteDmMessages(dmId) {
+  try {
+    const colRef = window._collection(window._db, 'rooms', dmId, 'messages');
+    const snap = await window._getDocs(colRef);
+    snap.forEach(d => window._deleteDoc(d.ref).catch(() => {}));
+  } catch (e) {}
 }
 
 function saveProfile() {
@@ -806,18 +822,19 @@ function subscribeInbox() {
     if (firstSnap) {
       firstSnap = false;
       let changed = false;
-      snap.docs.forEach(doc => {
-        const d = doc.data();
-        const ts = d.ts?.toDate?.() || new Date(0);
+      snap.docs.forEach(docSnap => {
+        const d = docSnap.data();
         if (d.type === 'left') {
-          // profileResetTime 이후 left 알림만 적용 (이전 잔류 doc 무시)
-          if (ts > profileResetTime) markPartnerLeft(d.dmId);
+          // 처리 후 Firestore에서 삭제 (재처리 방지)
+          markPartnerLeft(d.dmId);
+          window._deleteDoc(docSnap.ref).catch(() => {});
         } else if (d.dmId && d.partnerNick && d.partnerNick !== profile.nickname) {
-          // 첫 스냅에서도 DM 초대 처리 (폰이 오프라인이었을 때 받은 초대 포함)
           const existing = getDmList().find(dm => dm.id === d.dmId);
           if (!existing) {
             clearLeftMark(d.dmId);
-            const startFrom = d.senderResetTime ? Number(d.senderResetTime) : 0;
+            const partnerReset = d.senderResetTime ? Number(d.senderResetTime) : 0;
+            // startFrom은 내 리셋 시점과 상대방 리셋 시점 중 더 늦은 시점으로
+            const startFrom = Math.max(profileResetTime.getTime(), partnerReset);
             saveDmToList({ id: d.dmId, partnerNick: d.partnerNick, partnerAvatar: d.partnerAvatar, partnerGender: d.partnerGender, startFrom });
             changed = true;
           }
@@ -830,10 +847,10 @@ function subscribeInbox() {
     snap.docChanges().forEach(ch => {
       if (ch.type !== 'added') return;
       const d = ch.doc.data();
-      const ts = d.ts?.toDate?.() || new Date(0);
       if (d.type === 'left') {
-        if (ts <= profileResetTime) return; // 프로필 초기화 이전 left 알림 무시
         markPartnerLeft(d.dmId);
+        // 처리 후 Firestore에서 삭제 (재처리 방지)
+        window._deleteDoc(ch.doc.ref).catch(() => {});
         if (document.getElementById('dmListScreen').classList.contains('active')) showDmList();
         if (currentRoom?.id === d.dmId) {
           const existing = document.getElementById('chatLeftBanner');
@@ -850,7 +867,8 @@ function subscribeInbox() {
       }
       if (d.partnerNick === profile.nickname) return;
       clearLeftMark(d.dmId);
-      const startFrom = d.senderResetTime ? Number(d.senderResetTime) : 0;
+      const partnerReset = d.senderResetTime ? Number(d.senderResetTime) : 0;
+      const startFrom = Math.max(profileResetTime.getTime(), partnerReset);
       saveDmToList({ id: d.dmId, partnerNick: d.partnerNick, partnerAvatar: d.partnerAvatar, partnerGender: d.partnerGender, startFrom });
       subscribeDmRooms();
     });
