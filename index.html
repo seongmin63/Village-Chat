@@ -337,9 +337,9 @@ body {
     <div class="field">
       <label>성별 <span style="color:#E24B4A">*</span></label>
       <div class="gender-group">
-        <button class="gender-btn" data-g="남" onclick="selectGender(this,'setup')" style="--g-color:#4A90D9;--g-bg:#EAF4FF">🙋‍♂️ 남</button>
-        <button class="gender-btn" data-g="여" onclick="selectGender(this,'setup')" style="--g-color:#D94A7A;--g-bg:#FFE8F2">🙋‍♀️ 여</button>
-        <button class="gender-btn" data-g="🦄" onclick="selectGender(this,'setup')" style="--g-color:#9B59B6;--g-bg:#F3E8FF">🦄 유니콘</button>
+        <button class="gender-btn" data-g="남" onclick="selectGender(this)" style="--g-color:#4A90D9;--g-bg:#EAF4FF">🙋‍♂️ 남</button>
+        <button class="gender-btn" data-g="여" onclick="selectGender(this)" style="--g-color:#D94A7A;--g-bg:#FFE8F2">🙋‍♀️ 여</button>
+        <button class="gender-btn" data-g="🦄" onclick="selectGender(this)" style="--g-color:#9B59B6;--g-bg:#F3E8FF">🦄 유니콘</button>
       </div>
     </div>
     <button class="btn-primary" id="startBtn" onclick="goLocation()" disabled>내 위치로 동네 찾기 →</button>
@@ -497,15 +497,10 @@ document.addEventListener('visibilitychange', async () => {
 
 // ── 아바타 업로드 (프로필 설정) ──────────────────────────
 document.getElementById('avatarInput').addEventListener('change', e => {
-  compressAndSetAvatar(e.target.files[0], 'setup');
+  compressAndSetAvatar(e.target.files[0]);
 });
 
-// ── 아바타 업로드 (프로필 수정) ──────────────────────────
-document.getElementById('editAvatarInput').addEventListener('change', e => {
-  compressAndSetAvatar(e.target.files[0], 'edit');
-});
-
-function compressAndSetAvatar(file, mode) {
+function compressAndSetAvatar(file) {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = ev => {
@@ -517,19 +512,11 @@ function compressAndSetAvatar(file, mode) {
       const size = Math.min(tempImg.width, tempImg.height);
       ctx.drawImage(tempImg, (tempImg.width-size)/2, (tempImg.height-size)/2, size, size, 0, 0, 80, 80);
       const compressed = canvas.toDataURL('image/jpeg', 0.7);
-      if (mode === 'setup') {
-        document.getElementById('avatarEmoji').style.display = 'none';
-        let img = document.getElementById('avatarPreview').querySelector('img');
-        if (!img) { img = document.createElement('img'); document.getElementById('avatarPreview').appendChild(img); }
-        img.src = compressed;
-        localStorage.setItem('dnTalk_avatar', compressed);
-      } else {
-        editAvatarData = compressed;
-        document.getElementById('editAvatarEmoji').style.display = 'none';
-        let img = document.getElementById('editAvatarPreview').querySelector('img');
-        if (!img) { img = document.createElement('img'); document.getElementById('editAvatarPreview').appendChild(img); }
-        img.src = compressed;
-      }
+      document.getElementById('avatarEmoji').style.display = 'none';
+      let img = document.getElementById('avatarPreview').querySelector('img');
+      if (!img) { img = document.createElement('img'); document.getElementById('avatarPreview').appendChild(img); }
+      img.src = compressed;
+      localStorage.setItem('dnTalk_avatar', compressed);
     };
     tempImg.src = ev.target.result;
   };
@@ -537,22 +524,16 @@ function compressAndSetAvatar(file, mode) {
 }
 
 // ── 성별 선택 ────────────────────────────────────────────
-function selectGender(btn, mode) {
+function selectGender(btn) {
   const group = btn.closest('.gender-group');
   group.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
-  if (mode === 'setup') { selectedGender = btn.dataset.g; checkReady(); }
-  else { editSelectedGender = btn.dataset.g; checkEditReady(); }
+  selectedGender = btn.dataset.g; checkReady();
 }
 
 function checkReady() {
   const nick = document.getElementById('nicknameInput').value.trim();
   document.getElementById('startBtn').disabled = !(nick && selectedGender);
-}
-
-function checkEditReady() {
-  const nick = document.getElementById('editNicknameInput').value.trim();
-  document.getElementById('saveProfileBtn').disabled = !(nick && editSelectedGender);
 }
 
 // ── 화면 전환 ────────────────────────────────────────────
