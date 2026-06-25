@@ -548,32 +548,37 @@ function generateProfileId() {
 }
 
 function goLocation() {
-  const nick = document.getElementById('nicknameInput').value.trim();
-  const gender = selectedGender;
-  const avatar = localStorage.getItem('dnTalk_avatar') || '';
-  notifyDmPartnersLeft();
-  const profileId = generateProfileId();
-  profile = { nickname: nick, gender, avatar, profileId };
-  localStorage.setItem('dnTalk_profile', JSON.stringify(profile));
-  const resetTime = Date.now();
-  localStorage.setItem('dnTalk_resetTime', resetTime.toString());
-  profileResetTime = new Date(resetTime);
-  ['dnTalk_dms','dnTalk_left','dnTalk_unread','dnTalk_lastMsgs','dnTalk_mute'].forEach(k => localStorage.removeItem(k));
-  Object.values(dmRoomSubs).forEach(u => u());
-  dmRoomSubs = {};
-  // Firestore: profileId 공개 + 이전 inbox 정리
-  if (window._firebaseReady) {
-    window._setDoc(window._doc(window._db, 'users', nick, 'meta'), { profileId }).catch(() => {});
-    deleteMyInbox(nick);
-  } else {
-    document.addEventListener('firebaseReady', () => {
+  try {
+    const nick = document.getElementById('nicknameInput').value.trim();
+    const gender = selectedGender;
+    if (!nick || !gender) return;
+    const avatar = localStorage.getItem('dnTalk_avatar') || '';
+    notifyDmPartnersLeft();
+    const profileId = generateProfileId();
+    profile = { nickname: nick, gender, avatar, profileId };
+    localStorage.setItem('dnTalk_profile', JSON.stringify(profile));
+    const resetTime = Date.now();
+    localStorage.setItem('dnTalk_resetTime', resetTime.toString());
+    profileResetTime = new Date(resetTime);
+    ['dnTalk_dms','dnTalk_left','dnTalk_unread','dnTalk_lastMsgs','dnTalk_mute'].forEach(k => localStorage.removeItem(k));
+    try { Object.values(dmRoomSubs).forEach(u => u()); } catch(_) {}
+    dmRoomSubs = {};
+    showScreen('locationScreen');
+    resetLocUI();
+    // Firestore: profileId 공개 + 이전 inbox 정리
+    if (window._firebaseReady) {
       window._setDoc(window._doc(window._db, 'users', nick, 'meta'), { profileId }).catch(() => {});
       deleteMyInbox(nick);
-    }, { once: true });
+    } else {
+      document.addEventListener('firebaseReady', () => {
+        window._setDoc(window._doc(window._db, 'users', nick, 'meta'), { profileId }).catch(() => {});
+        deleteMyInbox(nick);
+      }, { once: true });
+    }
+    requestLocation();
+  } catch(err) {
+    alert('오류: ' + err.message);
   }
-  showScreen('locationScreen');
-  resetLocUI();
-  requestLocation();
 }
 
 function resetLocUI() {
@@ -694,14 +699,10 @@ async function deleteMyInbox(nickname) {
 }
 
 function resetProfileForm() {
-  document.getElementById('nicknameInput').value = '';
-  selectedGender = '';
-  document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('selected'));
-  const preview = document.getElementById('avatarPreview');
-  const img = preview.querySelector('img');
-  if (img) img.remove();
-  document.getElementById('avatarEmoji').style.display = '';
-  document.getElementById('startBtn').disabled = true;
+  // 폼 값은 유지하되 JS 상태를 시각적 상태와 재동기화
+  const selectedBtn = document.querySelector('.gender-btn.selected');
+  selectedGender = selectedBtn ? (selectedBtn.dataset.g || '') : '';
+  checkReady();
 }
 
 function deleteProfile() {
