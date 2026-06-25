@@ -805,16 +805,8 @@ function enterGroupChat(type) {
 // ── 1:1 채팅 입장 ────────────────────────────────────────
 async function enterDM(partnerNick, partnerAvatarData, partnerGender) {
   closePartnerModal();
-  // 상대방의 현재 profileId를 Firestore에서 가져와 방 ID 계산
-  // (닉네임이 같아도 프로필 변경 시마다 새 방 생성)
-  let partnerProfileId = null;
-  try {
-    const metaSnap = await window._getDoc(window._doc(window._db, 'users', partnerNick));
-    if (metaSnap.exists()) partnerProfileId = metaSnap.data().profileId;
-  } catch (e) {}
-  const myId = profile.profileId || profile.nickname;
-  const theirId = partnerProfileId || partnerNick;
-  const dmId = 'dm_' + [myId, theirId].sort().join('__');
+  // 닉네임 기반 고정 방 ID — 같은 두 사람은 항상 같은 방 사용
+  const dmId = 'dm_' + [profile.nickname, partnerNick].sort().join('__');
   const partnerLeft = getLeftDms().includes(dmId);
   saveDmToList({ id: dmId, partnerNick, partnerAvatar: partnerAvatarData, partnerGender });
   subscribeDmRooms();
@@ -851,8 +843,10 @@ function subscribeInbox() {
           window._deleteDoc(docSnap.ref).catch(() => {});
         } else if (d.dmId && d.partnerNick && d.partnerNick !== profile.nickname) {
           const existing = getDmList().find(dm => dm.id === d.dmId);
-          if (!existing) {
+          const wasLocked = getLeftDms().includes(d.dmId);
+          if (!existing || wasLocked) {
             saveDmToList({ id: d.dmId, partnerNick: d.partnerNick, partnerAvatar: d.partnerAvatar, partnerGender: d.partnerGender });
+            if (wasLocked) clearLeftMark(d.dmId);
             changed = true;
           }
         }
@@ -872,7 +866,9 @@ function subscribeInbox() {
         return;
       }
       if (d.partnerNick === profile.nickname) return;
+      const wasLocked = getLeftDms().includes(d.dmId);
       saveDmToList({ id: d.dmId, partnerNick: d.partnerNick, partnerAvatar: d.partnerAvatar, partnerGender: d.partnerGender });
+      if (wasLocked) clearLeftMark(d.dmId);
       subscribeDmRooms();
     });
   });
@@ -935,11 +931,9 @@ function subscribeDmRooms() {
         if (d.sender === profile.nickname) return;
         if (currentRoom?.id === dm.id) return;
         addDmUnread(dm.id);
-        if (document.getElementById('dmListScreen').classList.contains('active')) showDmList();
-        if (isMuted(dm.id)) return;
-        dmBadgeCount++;
         updateDmBadge();
-        showDmToast(d.sender, dm.id, d.text);
+        if (document.getElementById('dmListScreen').classList.contains('active')) showDmList();
+        if (!isMuted(dm.id)) showDmToast(d.sender, dm.id, d.text);
       });
     });
   });
@@ -948,10 +942,13 @@ function subscribeDmRooms() {
 function updateDmBadge() {
   const badge = document.getElementById('dmBadge');
   if (!badge) return;
-  if (dmBadgeCount > 0) {
-    badge.textContent = dmBadgeCount;
+  const unread = getDmUnread();
+  const count = Object.keys(unread).filter(id => (unread[id] || 0) > 0).length;
+  if (count > 0) {
+    badge.textContent = count;
     badge.classList.add('show');
   } else {
+    badge.textContent = '';
     badge.classList.remove('show');
   }
 }
@@ -972,7 +969,7 @@ function goToDmFromToast() {
   const list = getDmList();
   const dm = list.find(d => d.id === toastDmId);
   if (dm) {
-    dmBadgeCount = 0; updateDmBadge();
+    updateDmBadge();
     enterChat(dm.id, dm.partnerNick, '1:1 채팅', '', 'dmListScreen', true);
   }
   toastDmId = null;
@@ -1027,9 +1024,7 @@ function enterChat(roomId, title, sub, badge, backTarget, isDM = false) {
 
   const connect = () => {
     const colRef = window._collection(window._db, 'rooms', roomId, 'messages');
-    const q = isDM
-      ? window._query(colRef, window._orderBy('ts'), window._limit(100))
-      : window._query(colRef, window._where('ts', '>=', profileResetTime), window._orderBy('ts'), window._limit(100));
+    const q = window._query(colRef, window._where('ts', '>=', profileResetTime), window._orderBy('ts'), window._limit(100));
 
     const renderedIds = new Set();
     let initialSnapDone = false;
@@ -1135,8 +1130,6 @@ function leaveDm(dmId, partnerNick, e) {
 
 function showDmList() {
   subscribeDmRooms(); // DM 목록 열 때도 구독 갱신
-  const unreadMap = getDmUnread();
-  dmBadgeCount = Object.keys(unreadMap).filter(id => getDmList().find(d => d.id === id)).length;
   updateDmBadge();
   const list = getDmList();
   const leftDms = getLeftDms();
