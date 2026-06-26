@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<title>동네톡</title>
+<title>Village Talk</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%2300704A'/%3E%3Cpath d='M11 65 L50 18 L89 65' stroke='white' stroke-width='6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='50' cy='50' r='17' fill='none' stroke='white' stroke-width='4'/%3E%3Cpath d='M50 33 L44 50 L50 44 L56 50 Z' fill='white'/%3E%3Cpath d='M50 67 L56 50 L50 56 L44 50 Z' fill='white' opacity='.35'/%3E%3Ccircle cx='38' cy='79' r='4' fill='white'/%3E%3Ccircle cx='50' cy='79' r='4' fill='white'/%3E%3Ccircle cx='62' cy='79' r='4' fill='white'/%3E%3C/svg%3E">
 
 <script type="module">
@@ -45,17 +45,17 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --blue: #185FA5;
-  --blue-l: #E6F1FB;
+  --blue: #00704A;
+  --blue-l: #E8F5F0;
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 20px;
-  --c-bg: #f5f6f8;
+  --c-bg: #f2f7f5;
   --c-panel: #ffffff;
-  --c-border: rgba(0,0,0,.09);
+  --c-border: rgba(0,80,50,.09);
   --c-text: #1a1a1a;
   --c-muted: #6b7280;
-  --c-input: #f3f4f6;
+  --c-input: #f0f7f4;
 }
 body {
   font-family: 'Apple SD Gothic Neo','Noto Sans KR',sans-serif;
@@ -162,7 +162,7 @@ body {
   cursor: pointer; text-align: left; width: 100%; font-family: inherit;
   transition: border-color .15s, box-shadow .15s;
 }
-.menu-item:hover { border-color: var(--blue); box-shadow: 0 2px 8px rgba(24,95,165,.1); }
+.menu-item:hover { border-color: var(--blue); box-shadow: 0 2px 8px rgba(0,112,74,.1); }
 .menu-icon { font-size: 28px; flex-shrink: 0; }
 .menu-item-body { flex: 1; }
 .menu-item-title { font-size: 15px; font-weight: 700; color: var(--c-text); }
@@ -345,9 +345,15 @@ body {
   transition: transform .15s, box-shadow .15s;
 }
 .intro-btn:active { transform: scale(0.97); box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-.intro-lang-bar { position: absolute; top: 14px; right: 14px; z-index: 10; display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; max-width: 200px; }
-.intro-lang-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; padding: 4px 9px; font-size: 13px; cursor: pointer; color: #fff; transition: background .15s; }
-.intro-lang-btn:hover, .intro-lang-btn.active { background: rgba(255,255,255,0.35); }
+.intro-lang-bar { position: absolute; top: 14px; right: 14px; z-index: 10; display: flex; align-items: center; gap: 6px; }
+.intro-lang-label { color: rgba(255,255,255,0.75); font-size: 12px; white-space: nowrap; }
+.intro-lang-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.35); border-radius: 20px; padding: 5px 11px; font-size: 15px; cursor: pointer; color: #fff; transition: background .15s; }
+.intro-lang-btn:hover { background: rgba(255,255,255,0.25); }
+.lang-dropdown { display: none; position: absolute; top: calc(100% + 8px); right: 0; background: rgba(10,40,25,0.97); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 6px; min-width: 148px; flex-direction: column; gap: 2px; }
+.lang-dropdown.open { display: flex; }
+.lang-dropdown button { background: none; border: none; color: #fff; font-size: 14px; padding: 8px 12px; border-radius: 8px; cursor: pointer; text-align: left; font-family: inherit; }
+.lang-dropdown button:hover { background: rgba(255,255,255,0.12); }
+.lang-dropdown button.active { background: rgba(255,255,255,0.18); font-weight: 700; }
 .nationality-select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--c-border); border-radius: var(--radius-sm); font-size: 15px; background: var(--c-input); color: var(--c-text); appearance: none; cursor: pointer; }
 .nationality-select:focus { outline: none; border-color: var(--blue); }
 </style>
@@ -357,15 +363,19 @@ body {
 <!-- ⓪ 인트로 화면 -->
 <div id="introScreen" class="screen active">
   <canvas id="introCanvas"></canvas>
-  <div class="intro-lang-bar">
-    <button class="intro-lang-btn" onclick="setLang('en')">🇺🇸</button>
-    <button class="intro-lang-btn" onclick="setLang('ko')">🇰🇷</button>
-    <button class="intro-lang-btn" onclick="setLang('zh')">🇨🇳</button>
-    <button class="intro-lang-btn" onclick="setLang('ja')">🇯🇵</button>
-    <button class="intro-lang-btn" onclick="setLang('es')">🇪🇸</button>
-    <button class="intro-lang-btn" onclick="setLang('fr')">🇫🇷</button>
-    <button class="intro-lang-btn" onclick="setLang('hi')">🇮🇳</button>
-    <button class="intro-lang-btn" onclick="setLang('ar')">🇸🇦</button>
+  <div class="intro-lang-bar" id="langBar">
+    <span class="intro-lang-label">🌐 언어</span>
+    <button class="intro-lang-btn" id="langToggleBtn" onclick="toggleLangMenu()">🇰🇷</button>
+    <div class="lang-dropdown" id="langDropdown">
+      <button onclick="setLang('ko')">🇰🇷 한국어</button>
+      <button onclick="setLang('en')">🇺🇸 English</button>
+      <button onclick="setLang('zh')">🇨🇳 中文</button>
+      <button onclick="setLang('ja')">🇯🇵 日本語</button>
+      <button onclick="setLang('es')">🇪🇸 Español</button>
+      <button onclick="setLang('fr')">🇫🇷 Français</button>
+      <button onclick="setLang('hi')">🇮🇳 हिन्दी</button>
+      <button onclick="setLang('ar')">🇸🇦 العربية</button>
+    </div>
   </div>
   <div class="intro-content">
     <svg class="intro-logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -411,43 +421,8 @@ body {
       </div>
     </div>
     <div class="field">
-      <label data-i18n="profile_nationality_label">Nationality</label>
-      <select id="nationalityInput" class="nationality-select">
-        <option value="" data-i18n="profile_nationality_ph">Select (optional)</option>
-        <option value="🇰🇷">🇰🇷 Korea</option>
-        <option value="🇺🇸">🇺🇸 USA</option>
-        <option value="🇨🇳">🇨🇳 China</option>
-        <option value="🇯🇵">🇯🇵 Japan</option>
-        <option value="🇻🇳">🇻🇳 Vietnam</option>
-        <option value="🇵🇭">🇵🇭 Philippines</option>
-        <option value="🇹🇭">🇹🇭 Thailand</option>
-        <option value="🇲🇳">🇲🇳 Mongolia</option>
-        <option value="🇺🇿">🇺🇿 Uzbekistan</option>
-        <option value="🇰🇿">🇰🇿 Kazakhstan</option>
-        <option value="🇷🇺">🇷🇺 Russia</option>
-        <option value="🇧🇩">🇧🇩 Bangladesh</option>
-        <option value="🇳🇵">🇳🇵 Nepal</option>
-        <option value="🇲🇾">🇲🇾 Malaysia</option>
-        <option value="🇮🇩">🇮🇩 Indonesia</option>
-        <option value="🇸🇬">🇸🇬 Singapore</option>
-        <option value="🇹🇼">🇹🇼 Taiwan</option>
-        <option value="🇭🇰">🇭🇰 Hong Kong</option>
-        <option value="🇮🇳">🇮🇳 India</option>
-        <option value="🇵🇰">🇵🇰 Pakistan</option>
-        <option value="🇬🇧">🇬🇧 UK</option>
-        <option value="🇩🇪">🇩🇪 Germany</option>
-        <option value="🇫🇷">🇫🇷 France</option>
-        <option value="🇪🇸">🇪🇸 Spain</option>
-        <option value="🇮🇹">🇮🇹 Italy</option>
-        <option value="🇨🇦">🇨🇦 Canada</option>
-        <option value="🇦🇺">🇦🇺 Australia</option>
-        <option value="🇧🇷">🇧🇷 Brazil</option>
-        <option value="🇲🇽">🇲🇽 Mexico</option>
-        <option value="🇸🇦">🇸🇦 Saudi Arabia</option>
-        <option value="🇺🇦">🇺🇦 Ukraine</option>
-        <option value="🇵🇱">🇵🇱 Poland</option>
-        <option value="🇹🇷">🇹🇷 Turkey</option>
-      </select>
+      <label data-i18n="profile_nationality_label">국적 *</label>
+      <select id="nationalityInput" class="nationality-select" onchange="checkReady()"></select>
     </div>
     <button class="btn-primary" id="startBtn" data-i18n="profile_btn" onclick="goLocation()" disabled>Find My Neighborhood →</button>
   </div>
@@ -456,8 +431,8 @@ body {
 <!-- ② 위치 확인 화면 -->
 <div id="locationScreen" class="screen">
   <div class="loc-icon" id="locIcon">📍</div>
-  <div class="loc-title" id="locTitle">위치를 확인하는 중...</div>
-  <div class="loc-desc" id="locDesc">브라우저에서 위치 권한을 허용해 주세요.<br>동네 채팅방에 자동으로 입장돼요.</div>
+  <div class="loc-title" id="locTitle" data-i18n="loc_title">위치를 확인하는 중...</div>
+  <div class="loc-desc" id="locDesc" data-i18n="loc_desc">브라우저에서 위치 권한을 허용해 주세요.<br>동네 채팅방에 자동으로 입장돼요.</div>
   <div class="loc-spinner" id="locSpinner"></div>
   <div class="loc-error" id="locError" style="display:none"></div>
 </div>
@@ -476,7 +451,7 @@ body {
           <circle cx="38" cy="79" r="4" fill="white"/>
           <circle cx="50" cy="79" r="4" fill="white"/>
           <circle cx="62" cy="79" r="4" fill="white"/>
-        </svg>동네톡</div>
+        </svg><span data-i18n="app_name">Village Talk</span></div>
       <div class="menu-location" id="menuLocation"></div>
     </div>
     <div class="my-avatar-btn" id="myAvatarBtn" onclick="openMyProfile()"></div>
@@ -486,7 +461,7 @@ body {
       <span class="menu-icon">🏙️</span>
       <div class="menu-item-body">
         <div class="menu-item-title" id="guMenuTitle">우리 구 톡방</div>
-        <div class="menu-item-sub">구 전체 이웃과 대화해요</div>
+        <div class="menu-item-sub" id="guMenuSub" data-i18n="menu_gu_sub">구 전체 이웃과 대화해요</div>
       </div>
       <span class="menu-arrow">›</span>
     </button>
@@ -494,15 +469,15 @@ body {
       <span class="menu-icon">🏘️</span>
       <div class="menu-item-body">
         <div class="menu-item-title" id="dongMenuTitle">우리 동 톡방</div>
-        <div class="menu-item-sub">동네 이웃과 대화해요</div>
+        <div class="menu-item-sub" id="dongMenuSub" data-i18n="menu_dong_sub">동네 이웃과 대화해요</div>
       </div>
       <span class="menu-arrow">›</span>
     </button>
     <button class="menu-item" onclick="showDmList()">
       <span class="menu-icon">💬</span>
       <div class="menu-item-body">
-        <div class="menu-item-title">1:1 채팅 목록</div>
-        <div class="menu-item-sub">개인 메시지</div>
+        <div class="menu-item-title" data-i18n="menu_dm">1:1 채팅 목록</div>
+        <div class="menu-item-sub" data-i18n="menu_dm_sub">개인 메시지</div>
       </div>
       <span class="notif-badge" id="dmBadge"></span>
       <span class="menu-arrow">›</span>
@@ -514,7 +489,7 @@ body {
 <div id="dmListScreen" class="screen">
   <div class="top-bar">
     <button class="back-btn" onclick="showScreen('menuScreen')" aria-label="뒤로">←</button>
-    <div class="room-title">1:1 채팅 목록</div>
+    <div class="room-title" data-i18n="menu_dm">1:1 채팅 목록</div>
   </div>
   <div class="dm-list" id="dmList"></div>
 </div>
@@ -719,94 +694,192 @@ let dmRoomSubs = {};
 })();
 
 // ── i18n 번역 시스템 ─────────────────────────────────────
+// ── 국가 목록 (국기값, 언어별 이름) ─────────────────────────
+const COUNTRIES = [
+  {v:'🇰🇷', ko:'한국', en:'South Korea', zh:'韩国', ja:'韓国', es:'Corea del Sur', fr:'Corée du Sud', hi:'दक्षिण कोरिया', ar:'كوريا الجنوبية'},
+  {v:'🇺🇸', ko:'미국', en:'USA', zh:'美国', ja:'アメリカ', es:'EE.UU.', fr:'États-Unis', hi:'अमेरिका', ar:'الولايات المتحدة'},
+  {v:'🇨🇳', ko:'중국', en:'China', zh:'中国', ja:'中国', es:'China', fr:'Chine', hi:'चीन', ar:'الصين'},
+  {v:'🇯🇵', ko:'일본', en:'Japan', zh:'日本', ja:'日本', es:'Japón', fr:'Japon', hi:'जापान', ar:'اليابان'},
+  {v:'🇻🇳', ko:'베트남', en:'Vietnam', zh:'越南', ja:'ベトナム', es:'Vietnam', fr:'Viêt Nam', hi:'वियतनाम', ar:'فيتنام'},
+  {v:'🇵🇭', ko:'필리핀', en:'Philippines', zh:'菲律宾', ja:'フィリピン', es:'Filipinas', fr:'Philippines', hi:'फिलीपींस', ar:'الفلبين'},
+  {v:'🇹🇭', ko:'태국', en:'Thailand', zh:'泰国', ja:'タイ', es:'Tailandia', fr:'Thaïlande', hi:'थाईलैंड', ar:'تايلاند'},
+  {v:'🇲🇳', ko:'몽골', en:'Mongolia', zh:'蒙古', ja:'モンゴル', es:'Mongolia', fr:'Mongolie', hi:'मंगोलिया', ar:'منغوليا'},
+  {v:'🇺🇿', ko:'우즈베키스탄', en:'Uzbekistan', zh:'乌兹别克斯坦', ja:'ウズベキスタン', es:'Uzbekistán', fr:'Ouzbékistan', hi:'उज़्बेकिस्तान', ar:'أوزبكستان'},
+  {v:'🇰🇿', ko:'카자흐스탄', en:'Kazakhstan', zh:'哈萨克斯坦', ja:'カザフスタン', es:'Kazajistán', fr:'Kazakhstan', hi:'कज़ाकिस्तान', ar:'كازاخستان'},
+  {v:'🇷🇺', ko:'러시아', en:'Russia', zh:'俄罗斯', ja:'ロシア', es:'Rusia', fr:'Russie', hi:'रूस', ar:'روسيا'},
+  {v:'🇧🇩', ko:'방글라데시', en:'Bangladesh', zh:'孟加拉国', ja:'バングラデシュ', es:'Bangladesh', fr:'Bangladesh', hi:'बांग्लादेश', ar:'بنغلاديش'},
+  {v:'🇳🇵', ko:'네팔', en:'Nepal', zh:'尼泊尔', ja:'ネパール', es:'Nepal', fr:'Népal', hi:'नेपाल', ar:'نيبال'},
+  {v:'🇲🇾', ko:'말레이시아', en:'Malaysia', zh:'马来西亚', ja:'マレーシア', es:'Malasia', fr:'Malaisie', hi:'मलेशिया', ar:'ماليزيا'},
+  {v:'🇮🇩', ko:'인도네시아', en:'Indonesia', zh:'印度尼西亚', ja:'インドネシア', es:'Indonesia', fr:'Indonésie', hi:'इंडोनेशिया', ar:'إندونيسيا'},
+  {v:'🇸🇬', ko:'싱가포르', en:'Singapore', zh:'新加坡', ja:'シンガポール', es:'Singapur', fr:'Singapour', hi:'सिंगापुर', ar:'سنغافورة'},
+  {v:'🇹🇼', ko:'대만', en:'Taiwan', zh:'台湾', ja:'台湾', es:'Taiwán', fr:'Taïwan', hi:'ताइवान', ar:'تايوان'},
+  {v:'🇭🇰', ko:'홍콩', en:'Hong Kong', zh:'香港', ja:'香港', es:'Hong Kong', fr:'Hong Kong', hi:'हांगकांग', ar:'هونغ كونغ'},
+  {v:'🇮🇳', ko:'인도', en:'India', zh:'印度', ja:'インド', es:'India', fr:'Inde', hi:'भारत', ar:'الهند'},
+  {v:'🇵🇰', ko:'파키스탄', en:'Pakistan', zh:'巴基斯坦', ja:'パキスタン', es:'Pakistán', fr:'Pakistan', hi:'पाकिस्तान', ar:'باكستان'},
+  {v:'🇬🇧', ko:'영국', en:'UK', zh:'英国', ja:'イギリス', es:'Reino Unido', fr:'Royaume-Uni', hi:'यूके', ar:'المملكة المتحدة'},
+  {v:'🇩🇪', ko:'독일', en:'Germany', zh:'德国', ja:'ドイツ', es:'Alemania', fr:'Allemagne', hi:'जर्मनी', ar:'ألمانيا'},
+  {v:'🇫🇷', ko:'프랑스', en:'France', zh:'法国', ja:'フランス', es:'Francia', fr:'France', hi:'फ्रांस', ar:'فرنسا'},
+  {v:'🇪🇸', ko:'스페인', en:'Spain', zh:'西班牙', ja:'スペイン', es:'España', fr:'Espagne', hi:'स्पेन', ar:'إسبانيا'},
+  {v:'🇮🇹', ko:'이탈리아', en:'Italy', zh:'意大利', ja:'イタリア', es:'Italia', fr:'Italie', hi:'इटली', ar:'إيطاليا'},
+  {v:'🇨🇦', ko:'캐나다', en:'Canada', zh:'加拿大', ja:'カナダ', es:'Canadá', fr:'Canada', hi:'कनाडा', ar:'كندا'},
+  {v:'🇦🇺', ko:'호주', en:'Australia', zh:'澳大利亚', ja:'オーストラリア', es:'Australia', fr:'Australie', hi:'ऑस्ट्रेलिया', ar:'أستراليا'},
+  {v:'🇧🇷', ko:'브라질', en:'Brazil', zh:'巴西', ja:'ブラジル', es:'Brasil', fr:'Brésil', hi:'ब्राज़ील', ar:'البرازيل'},
+  {v:'🇲🇽', ko:'멕시코', en:'Mexico', zh:'墨西哥', ja:'メキシコ', es:'México', fr:'Mexique', hi:'मेक्सिको', ar:'المكسيك'},
+  {v:'🇸🇦', ko:'사우디아라비아', en:'Saudi Arabia', zh:'沙特阿拉伯', ja:'サウジアラビア', es:'Arabia Saudita', fr:'Arabie Saoudite', hi:'सऊदी अरब', ar:'السعودية'},
+  {v:'🇺🇦', ko:'우크라이나', en:'Ukraine', zh:'乌克兰', ja:'ウクライナ', es:'Ucrania', fr:'Ukraine', hi:'यूक्रेन', ar:'أوكرانيا'},
+  {v:'🇵🇱', ko:'폴란드', en:'Poland', zh:'波兰', ja:'ポーランド', es:'Polonia', fr:'Pologne', hi:'पोलैंड', ar:'بولندا'},
+  {v:'🇹🇷', ko:'터키', en:'Turkey', zh:'土耳其', ja:'トルコ', es:'Turquía', fr:'Turquie', hi:'तुर्की', ar:'تركيا'},
+];
+
+const LANG_FLAGS = {ko:'🇰🇷', en:'🇺🇸', zh:'🇨🇳', ja:'🇯🇵', es:'🇪🇸', fr:'🇫🇷', hi:'🇮🇳', ar:'🇸🇦'};
+const LANG_DEFAULT_NATIONALITY = {ko:'🇰🇷', en:'🇺🇸', zh:'🇨🇳', ja:'🇯🇵', es:'🇪🇸', fr:'🇫🇷', hi:'🇮🇳', ar:'🇸🇦'};
+
 const STRINGS = {
   en: {
+    app_name:'Village Talk',
     intro_title:'Village Talk', intro_desc:'Chat with neighbors in real time.<br>Meet people nearby based on your location<br>and connect with your community.', intro_btn:'Get Started →',
     profile_title:'Get Started', profile_desc:'Chat freely with your local neighbors.<br>Your location places you in the right room automatically.',
-    profile_avatar_hint:'Tap to upload a photo (optional)', profile_nickname_label:'Nickname', profile_nickname_ph:'e.g. Friendly Neighbor',
-    profile_gender_label:'Gender', gender_m:'🙋‍♂️ Male', gender_f:'🙋‍♀️ Female', gender_u:'🦄 Other',
-    profile_nationality_label:'Nationality', profile_nationality_ph:'Select (optional)', profile_btn:'Find My Neighborhood →',
+    profile_avatar_hint:'Tap to upload a photo (optional)', profile_nickname_label:'Nickname *', profile_nickname_ph:'e.g. Friendly Neighbor',
+    profile_gender_label:'Gender *', gender_m:'🙋‍♂️ Male', gender_f:'🙋‍♀️ Female', gender_u:'🦄 Other',
+    profile_nationality_label:'Nationality *', profile_btn:'Find My Neighborhood →',
     loc_title:'Finding your neighborhood...', loc_desc:'Please allow location access in your browser.<br>You\'ll be placed in the local chat room automatically.',
-    msg_placeholder:'Type a message...', dm_title:'1:1 Chats',
+    msg_placeholder:'Type a message...', menu_dm:'1:1 Chats', menu_dm_sub:'Personal messages',
+    menu_gu_sub:'Chat with neighbors in your district', menu_dong_sub:'Chat with neighbors nearby',
     system_joined:' has joined', system_left:' has left the chat',
   },
   ko: {
-    intro_title:'동네톡', intro_desc:'우리 동네 이웃들과 실시간으로 대화해요.<br>위치 기반으로 가까운 사람들을 만나고<br>함께 소통하는 공간이에요.', intro_btn:'시작하기 →',
-    profile_title:'동네톡 시작하기', profile_desc:'내 동네 이웃들과 자유롭게 대화해요.<br>프로필을 설정하면 위치 기반으로 자동 입장돼요.',
-    profile_avatar_hint:'탭해서 사진 업로드 (선택)', profile_nickname_label:'닉네임', profile_nickname_ph:'예: 마포 이웃',
-    profile_gender_label:'성별', gender_m:'🙋‍♂️ 남', gender_f:'🙋‍♀️ 여', gender_u:'🦄 유니콘',
-    profile_nationality_label:'국적', profile_nationality_ph:'선택 (선택사항)', profile_btn:'내 위치로 동네 찾기 →',
+    app_name:'Village Talk',
+    intro_title:'Village Talk', intro_desc:'우리 동네 이웃들과 실시간으로 대화해요.<br>위치 기반으로 가까운 사람들을 만나고<br>함께 소통하는 공간이에요.', intro_btn:'시작하기 →',
+    profile_title:'Village Talk 시작하기', profile_desc:'내 동네 이웃들과 자유롭게 대화해요.<br>프로필을 설정하면 위치 기반으로 자동 입장돼요.',
+    profile_avatar_hint:'탭해서 사진 업로드 (선택)', profile_nickname_label:'닉네임 *', profile_nickname_ph:'예: 마포 이웃',
+    profile_gender_label:'성별 *', gender_m:'🙋‍♂️ 남', gender_f:'🙋‍♀️ 여', gender_u:'🦄 유니콘',
+    profile_nationality_label:'국적 *', profile_btn:'내 위치로 동네 찾기 →',
     loc_title:'동네를 찾는 중...', loc_desc:'브라우저에서 위치 권한을 허용해 주세요.<br>동네 채팅방에 자동으로 입장돼요.',
-    msg_placeholder:'메시지를 입력하세요...', dm_title:'1:1 채팅',
+    msg_placeholder:'메시지를 입력하세요...', menu_dm:'1:1 채팅 목록', menu_dm_sub:'개인 메시지',
+    menu_gu_sub:'구 전체 이웃과 대화해요', menu_dong_sub:'동네 이웃과 대화해요',
     system_joined:'님이 입장했습니다', system_left:'님이 채팅방을 나갔습니다',
   },
   zh: {
-    intro_title:'村聊', intro_desc:'与附近邻居实时聊天。<br>基于位置认识身边的人，<br>一起交流互动。', intro_btn:'开始 →',
+    app_name:'Village Talk',
+    intro_title:'Village Talk', intro_desc:'与附近邻居实时聊天。<br>基于位置认识身边的人，<br>一起交流互动。', intro_btn:'开始 →',
     profile_title:'开始使用', profile_desc:'与本地邻居自由交流。<br>设置完成后将根据位置自动进入聊天室。',
-    profile_avatar_hint:'点击上传头像（可选）', profile_nickname_label:'昵称', profile_nickname_ph:'例：友好邻居',
-    profile_gender_label:'性别', gender_m:'🙋‍♂️ 男', gender_f:'🙋‍♀️ 女', gender_u:'🦄 其他',
-    profile_nationality_label:'国籍', profile_nationality_ph:'选择（可选）', profile_btn:'查找我的社区 →',
+    profile_avatar_hint:'点击上传头像（可选）', profile_nickname_label:'昵称 *', profile_nickname_ph:'例：友好邻居',
+    profile_gender_label:'性别 *', gender_m:'🙋‍♂️ 男', gender_f:'🙋‍♀️ 女', gender_u:'🦄 其他',
+    profile_nationality_label:'国籍 *', profile_btn:'查找我的社区 →',
     loc_title:'正在查找您的社区...', loc_desc:'请在浏览器中允许位置权限。<br>将自动进入本地聊天室。',
-    msg_placeholder:'输入消息...', dm_title:'私聊',
+    msg_placeholder:'输入消息...', menu_dm:'私聊列表', menu_dm_sub:'私人消息',
+    menu_gu_sub:'与全区邻居聊天', menu_dong_sub:'与附近邻居聊天',
     system_joined:'已加入', system_left:'已离开聊天室',
   },
   ja: {
-    intro_title:'村トーク', intro_desc:'近所の人とリアルタイムでチャット。<br>位置情報で近くの人と出会い、<br>コミュニティでつながろう。', intro_btn:'はじめる →',
+    app_name:'Village Talk',
+    intro_title:'Village Talk', intro_desc:'近所の人とリアルタイムでチャット。<br>位置情報で近くの人と出会い、<br>コミュニティでつながろう。', intro_btn:'はじめる →',
     profile_title:'はじめましょう', profile_desc:'地元のご近所さんと自由に話しましょう。<br>位置情報で自動的に部屋に入室されます。',
-    profile_avatar_hint:'タップして写真をアップロード（任意）', profile_nickname_label:'ニックネーム', profile_nickname_ph:'例：近所の友人',
-    profile_gender_label:'性別', gender_m:'🙋‍♂️ 男性', gender_f:'🙋‍♀️ 女性', gender_u:'🦄 その他',
-    profile_nationality_label:'国籍', profile_nationality_ph:'選択（任意）', profile_btn:'近所を探す →',
+    profile_avatar_hint:'タップして写真をアップロード（任意）', profile_nickname_label:'ニックネーム *', profile_nickname_ph:'例：近所の友人',
+    profile_gender_label:'性別 *', gender_m:'🙋‍♂️ 男性', gender_f:'🙋‍♀️ 女性', gender_u:'🦄 その他',
+    profile_nationality_label:'国籍 *', profile_btn:'近所を探す →',
     loc_title:'近所を探しています...', loc_desc:'ブラウザで位置情報を許可してください。<br>自動的にローカルチャットに入室します。',
-    msg_placeholder:'メッセージを入力...', dm_title:'1:1チャット',
+    msg_placeholder:'メッセージを入力...', menu_dm:'1:1チャット一覧', menu_dm_sub:'個人メッセージ',
+    menu_gu_sub:'区全体の近所の人と話す', menu_dong_sub:'近くの近所の人と話す',
     system_joined:'さんが入室しました', system_left:'さんが退室しました',
   },
   es: {
+    app_name:'Village Talk',
     intro_title:'Village Talk', intro_desc:'Chatea con vecinos en tiempo real.<br>Conoce personas cercanas según tu ubicación<br>y conéctate con tu comunidad.', intro_btn:'Empezar →',
     profile_title:'Comenzar', profile_desc:'Chatea libremente con tus vecinos.<br>Tu ubicación te coloca en la sala correcta automáticamente.',
-    profile_avatar_hint:'Toca para subir una foto (opcional)', profile_nickname_label:'Apodo', profile_nickname_ph:'Ej: Vecino amistoso',
-    profile_gender_label:'Género', gender_m:'🙋‍♂️ Hombre', gender_f:'🙋‍♀️ Mujer', gender_u:'🦄 Otro',
-    profile_nationality_label:'Nacionalidad', profile_nationality_ph:'Seleccionar (opcional)', profile_btn:'Encontrar mi barrio →',
+    profile_avatar_hint:'Toca para subir una foto (opcional)', profile_nickname_label:'Apodo *', profile_nickname_ph:'Ej: Vecino amistoso',
+    profile_gender_label:'Género *', gender_m:'🙋‍♂️ Hombre', gender_f:'🙋‍♀️ Mujer', gender_u:'🦄 Otro',
+    profile_nationality_label:'Nacionalidad *', profile_btn:'Encontrar mi barrio →',
     loc_title:'Buscando tu barrio...', loc_desc:'Permite el acceso a tu ubicación en el navegador.<br>Entrarás automáticamente a la sala local.',
-    msg_placeholder:'Escribe un mensaje...', dm_title:'Chats 1:1',
+    msg_placeholder:'Escribe un mensaje...', menu_dm:'Chats 1:1', menu_dm_sub:'Mensajes personales',
+    menu_gu_sub:'Chatea con vecinos del distrito', menu_dong_sub:'Chatea con vecinos cercanos',
     system_joined:' se unió', system_left:' salió del chat',
   },
   fr: {
+    app_name:'Village Talk',
     intro_title:'Village Talk', intro_desc:'Discutez avec vos voisins en temps réel.<br>Rencontrez des personnes proches selon votre position<br>et connectez-vous à votre communauté.', intro_btn:'Commencer →',
     profile_title:'Commencer', profile_desc:'Discutez librement avec vos voisins.<br>Votre position vous place automatiquement dans la bonne salle.',
-    profile_avatar_hint:'Appuyez pour télécharger une photo (optionnel)', profile_nickname_label:'Pseudo', profile_nickname_ph:'Ex: Voisin sympa',
-    profile_gender_label:'Genre', gender_m:'🙋‍♂️ Homme', gender_f:'🙋‍♀️ Femme', gender_u:'🦄 Autre',
-    profile_nationality_label:'Nationalité', profile_nationality_ph:'Sélectionner (optionnel)', profile_btn:'Trouver mon quartier →',
+    profile_avatar_hint:'Appuyez pour télécharger une photo (optionnel)', profile_nickname_label:'Pseudo *', profile_nickname_ph:'Ex: Voisin sympa',
+    profile_gender_label:'Genre *', gender_m:'🙋‍♂️ Homme', gender_f:'🙋‍♀️ Femme', gender_u:'🦄 Autre',
+    profile_nationality_label:'Nationalité *', profile_btn:'Trouver mon quartier →',
     loc_title:'Recherche de votre quartier...', loc_desc:'Autorisez l\'accès à la localisation dans votre navigateur.<br>Vous rejoindrez automatiquement la salle locale.',
-    msg_placeholder:'Tapez un message...', dm_title:'Chats 1:1',
+    msg_placeholder:'Tapez un message...', menu_dm:'Chats 1:1', menu_dm_sub:'Messages personnels',
+    menu_gu_sub:'Discutez avec les voisins du quartier', menu_dong_sub:'Discutez avec les voisins proches',
     system_joined:' a rejoint', system_left:' a quitté le chat',
   },
   hi: {
+    app_name:'Village Talk',
     intro_title:'Village Talk', intro_desc:'पड़ोसियों से रीयल टाइम में चैट करें।<br>अपनी लोकेशन के आधार पर पास के लोगों से मिलें<br>और अपने समुदाय से जुड़ें।', intro_btn:'शुरू करें →',
     profile_title:'शुरू करें', profile_desc:'अपने स्थानीय पड़ोसियों से स्वतंत्र रूप से चैट करें।<br>आपकी लोकेशन आपको सही कमरे में डालती है।',
-    profile_avatar_hint:'फोटो अपलोड करने के लिए टैप करें (वैकल्पिक)', profile_nickname_label:'उपनाम', profile_nickname_ph:'जैसे: मित्रवत पड़ोसी',
-    profile_gender_label:'लिंग', gender_m:'🙋‍♂️ पुरुष', gender_f:'🙋‍♀️ महिला', gender_u:'🦄 अन्य',
-    profile_nationality_label:'राष्ट्रीयता', profile_nationality_ph:'चुनें (वैकल्पिक)', profile_btn:'मेरा मोहल्ला खोजें →',
+    profile_avatar_hint:'फोटो अपलोड करने के लिए टैप करें (वैकल्पिक)', profile_nickname_label:'उपनाम *', profile_nickname_ph:'जैसे: मित्रवत पड़ोसी',
+    profile_gender_label:'लिंग *', gender_m:'🙋‍♂️ पुरुष', gender_f:'🙋‍♀️ महिला', gender_u:'🦄 अन्य',
+    profile_nationality_label:'राष्ट्रीयता *', profile_btn:'मेरा मोहल्ला खोजें →',
     loc_title:'आपका मोहल्ला खोज रहे हैं...', loc_desc:'ब्राउज़र में लोकेशन एक्सेस दें।<br>आप अपने आप स्थानीय चैट में जुड़ जाएंगे।',
-    msg_placeholder:'संदेश टाइप करें...', dm_title:'1:1 चैट',
+    msg_placeholder:'संदेश टाइप करें...', menu_dm:'1:1 चैट सूची', menu_dm_sub:'व्यक्तिगत संदेश',
+    menu_gu_sub:'जिले के पड़ोसियों से चैट करें', menu_dong_sub:'पास के पड़ोसियों से चैट करें',
     system_joined:' शामिल हुए', system_left:' चैट से चले गए',
   },
   ar: {
+    app_name:'Village Talk',
     intro_title:'Village Talk', intro_desc:'تحدث مع الجيران في الوقت الفعلي.<br>تعرف على أشخاص قريبين منك بناءً على موقعك<br>وتواصل مع مجتمعك.', intro_btn:'ابدأ →',
     profile_title:'ابدأ', profile_desc:'تحدث بحرية مع جيرانك المحليين.<br>موقعك يضعك تلقائياً في الغرفة الصحيحة.',
-    profile_avatar_hint:'اضغط لتحميل صورة (اختياري)', profile_nickname_label:'الاسم المستعار', profile_nickname_ph:'مثال: جار ودود',
-    profile_gender_label:'الجنس', gender_m:'🙋‍♂️ ذكر', gender_f:'🙋‍♀️ أنثى', gender_u:'🦄 آخر',
-    profile_nationality_label:'الجنسية', profile_nationality_ph:'اختر (اختياري)', profile_btn:'ابحث عن حيي →',
+    profile_avatar_hint:'اضغط لتحميل صورة (اختياري)', profile_nickname_label:'الاسم المستعار *', profile_nickname_ph:'مثال: جار ودود',
+    profile_gender_label:'الجنس *', gender_m:'🙋‍♂️ ذكر', gender_f:'🙋‍♀️ أنثى', gender_u:'🦄 آخر',
+    profile_nationality_label:'الجنسية *', profile_btn:'ابحث عن حيي →',
     loc_title:'جارٍ البحث عن حيك...', loc_desc:'يرجى السماح بالوصول إلى الموقع في المتصفح.<br>ستنضم تلقائياً إلى غرفة الدردشة المحلية.',
-    msg_placeholder:'اكتب رسالة...', dm_title:'محادثة 1:1',
+    msg_placeholder:'اكتب رسالة...', menu_dm:'قائمة المحادثات', menu_dm_sub:'رسائل شخصية',
+    menu_gu_sub:'تحدث مع جيران المنطقة', menu_dong_sub:'تحدث مع الجيران القريبين',
     system_joined:' انضم', system_left:' غادر الدردشة',
   },
 };
 
-let currentLang = localStorage.getItem('dnTalk_lang') || 'en';
+let currentLang = localStorage.getItem('dnTalk_lang') || 'ko';
+
+function buildNationalitySelect(lang) {
+  const sel = document.getElementById('nationalityInput');
+  if (!sel) return;
+  const currentVal = sel.value;
+  sel.innerHTML = '';
+  COUNTRIES.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.v;
+    opt.textContent = c.v + ' ' + (c[lang] || c.en);
+    sel.appendChild(opt);
+  });
+  // 기존 선택 유지 또는 언어 기본값으로 설정
+  sel.value = currentVal || LANG_DEFAULT_NATIONALITY[lang] || '🇰🇷';
+  if (!sel.value) sel.selectedIndex = 0;
+}
+
+function toggleLangMenu() {
+  const d = document.getElementById('langDropdown');
+  if (!d) return;
+  d.classList.toggle('open');
+  if (d.classList.contains('open')) {
+    // 현재 언어 버튼 강조
+    d.querySelectorAll('button').forEach(b => {
+      const code = b.getAttribute('onclick').match(/setLang\('(\w+)'\)/)?.[1];
+      b.classList.toggle('active', code === currentLang);
+    });
+    // 외부 클릭 시 닫기
+    setTimeout(() => document.addEventListener('click', closeLangMenuOutside, {once:true}), 0);
+  }
+}
+
+function closeLangMenuOutside(e) {
+  const bar = document.getElementById('langBar');
+  if (bar && !bar.contains(e.target)) {
+    document.getElementById('langDropdown')?.classList.remove('open');
+  }
+}
 
 function setLang(code) {
   currentLang = code;
   localStorage.setItem('dnTalk_lang', code);
+  document.getElementById('langDropdown')?.classList.remove('open');
+  // 토글 버튼 국기 업데이트
+  const toggleBtn = document.getElementById('langToggleBtn');
+  if (toggleBtn) toggleBtn.textContent = LANG_FLAGS[code] || '🌐';
   const s = STRINGS[code] || STRINGS.en;
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.dataset.i18n;
@@ -816,11 +889,10 @@ function setLang(code) {
     const key = el.dataset.i18nPh;
     if (s[key] !== undefined) el.placeholder = s[key];
   });
-  document.querySelectorAll('.intro-lang-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.getAttribute('onclick') === `setLang('${code}')`);
-  });
   const msgInput = document.getElementById('msgInput');
-  if (msgInput && !msgInput.disabled) msgInput.placeholder = s.msg_placeholder || '';
+  if (msgInput) msgInput.placeholder = s.msg_placeholder || '';
+  // 국적 드롭다운 재빌드
+  buildNationalitySelect(code);
 }
 
 function t(key) { return (STRINGS[currentLang] || STRINGS.en)[key] || (STRINGS.en[key] || key); }
@@ -890,7 +962,8 @@ function selectGender(btn) {
 
 function checkReady() {
   const nick = document.getElementById('nicknameInput').value.trim();
-  document.getElementById('startBtn').disabled = !(nick && selectedGender);
+  const nationality = document.getElementById('nationalityInput')?.value || '';
+  document.getElementById('startBtn').disabled = !(nick && selectedGender && nationality);
 }
 
 // ── 화면 전환 ────────────────────────────────────────────
