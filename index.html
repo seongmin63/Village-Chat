@@ -336,6 +336,18 @@ body {
   background: var(--c-input); display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
 .modal-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.boom-col { display:flex; flex-direction:column; gap:8px; }
+.boom-btn { display:flex; align-items:center; gap:6px; padding:7px 14px; border-radius:20px; border:1.5px solid; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:background .15s,opacity .15s; }
+.boom-up { background:#eff6ff; border-color:#2563eb; color:#2563eb; }
+.boom-up.voted { background:#2563eb; color:#fff; }
+.boom-down { background:#fff5f5; border-color:#e74c3c; color:#e74c3c; }
+.boom-down.voted { background:#e74c3c; color:#fff; }
+.boom-btn:disabled { opacity:.45; cursor:default; }
+.partner-bio { font-size:13px; color:var(--c-muted); text-align:center; line-height:1.5; min-height:0; word-break:break-all; width:100%; }
+.my-bio-wrap { width:100%; position:relative; }
+.my-bio-input { width:100%; resize:none; border:1.5px solid var(--c-border); border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit; color:var(--c-text); background:var(--c-input); box-sizing:border-box; line-height:1.5; min-height:60px; }
+.my-bio-input:focus { outline:none; border-color:var(--blue); }
+.my-bio-counter { font-size:11px; color:var(--c-muted); text-align:right; margin-top:3px; }
 .my-avatar-edit-wrap { position: relative; cursor: pointer; border-radius: 50%; display: inline-block; }
 .avatar-edit-overlay { position: absolute; inset: 0; border-radius: 50%; background: rgba(0,0,0,0.38); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity .15s; pointer-events: none; }
 .my-avatar-edit-wrap:hover .avatar-edit-overlay,
@@ -614,6 +626,10 @@ body {
       </div>
       <input type="file" id="avatarChangeInput" accept="image/*" style="display:none">
       <div class="modal-name" id="myViewName"></div>
+      <div class="my-bio-wrap">
+        <textarea class="my-bio-input" id="myBioInput" maxlength="80" placeholder="자기소개를 입력하세요 (최대 80자)" oninput="onBioInput(this)" onblur="saveBio()"></textarea>
+        <div class="my-bio-counter"><span id="myBioCounter">0</span>/80</div>
+      </div>
       <button class="btn-modal" onclick="confirmDeleteProfile()" style="background:#e74c3c" data-i18n="delete_profile">프로필 삭제</button>
       <button class="btn-modal secondary" onclick="closeMyProfile()" data-i18n="close_btn">닫기</button>
     </div>
@@ -629,8 +645,21 @@ body {
 <!-- 상대방 프로필 모달 -->
 <div class="modal-overlay" id="partnerModal" onclick="closePartnerModal(event)">
   <div class="modal-sheet" onclick="event.stopPropagation()">
-    <div class="modal-avatar" id="partnerAvatar"></div>
+    <div style="display:flex;align-items:center;gap:14px;width:100%">
+      <div class="modal-avatar" id="partnerAvatar" style="flex-shrink:0"></div>
+      <div class="boom-col" id="boomCol">
+        <button class="boom-btn boom-up" id="boomUpBtn" onclick="voteBoom('up')" disabled>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+          <span id="boomUpCount">0</span>
+        </button>
+        <button class="boom-btn boom-down" id="boomDownBtn" onclick="voteBoom('down')" disabled>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10z"/><path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+          <span id="boomDownCount">0</span>
+        </button>
+      </div>
+    </div>
     <div class="modal-name" id="partnerName"></div>
+    <div class="partner-bio" id="partnerBio"></div>
     <button class="btn-modal" id="partnerDmBtn" onclick="startDM()">1:1 채팅</button>
   </div>
 </div>
@@ -1413,6 +1442,20 @@ function renderMyAvatarBtn() {
 }
 
 // ── 내 프로필 모달 ────────────────────────────────────────
+function onBioInput(el) {
+  document.getElementById('myBioCounter').textContent = el.value.length;
+}
+
+function saveBio() {
+  if (!profile) return;
+  const bio = document.getElementById('myBioInput').value.trim();
+  profile.bio = bio;
+  localStorage.setItem('dnTalk_profile', JSON.stringify(profile));
+  if (window._firebaseReady) {
+    window._setDoc(window._doc(window._db, 'users', profile.nickname), { bio }, { merge: true }).catch(() => {});
+  }
+}
+
 function openMyProfile() {
   const avatarEl = document.getElementById('myViewAvatar');
   if (profile?.avatar) {
@@ -1425,6 +1468,10 @@ function openMyProfile() {
   const genderIcon = GENDER_SVG_LG[profile?.gender] || '';
   const myFlag = natFlagImg(profile?.nationality, 20, 15);
   document.getElementById('myViewName').innerHTML = (myFlag ? myFlag + ' ' : '') + esc(profile?.nickname || '') + (genderIcon ? ' ' + genderIcon : '');
+  const bioInput = document.getElementById('myBioInput');
+  const bio = profile?.bio || '';
+  bioInput.value = bio;
+  document.getElementById('myBioCounter').textContent = bio.length;
   document.getElementById('myProfileModal').classList.add('open');
 }
 
@@ -2044,15 +2091,103 @@ function appendMsg(data) {
 }
 
 // ── 상대방 프로필 모달 ────────────────────────────────────
-function openPartnerModal(sender, gender, avatar, avatarHtml, nationality = '') {
+async function openPartnerModal(sender, gender, avatar, avatarHtml, nationality = '') {
   const genderIcon = GENDER_SVG_LG[gender] || '';
   document.getElementById('partnerName').innerHTML = natFlagImg(nationality, 20, 15) + esc(sender) + (genderIcon ? ' ' + genderIcon : '');
   document.getElementById('partnerAvatar').innerHTML = avatarHtml;
   modalTarget = { nick: sender, avatar, gender, nationality };
-  // DM방 안에서는 1:1채팅 버튼 숨기기
   const dmBtn = document.getElementById('partnerDmBtn');
   if (dmBtn) dmBtn.style.display = currentRoom?.isDM ? 'none' : '';
+
+  // bio 초기화
+  const bioEl = document.getElementById('partnerBio');
+  bioEl.textContent = '';
+
+  // boom 초기화
+  const upBtn = document.getElementById('boomUpBtn');
+  const downBtn = document.getElementById('boomDownBtn');
+  document.getElementById('boomUpCount').textContent = '0';
+  document.getElementById('boomDownCount').textContent = '0';
+  upBtn.classList.remove('voted'); downBtn.classList.remove('voted');
+  upBtn.disabled = true; downBtn.disabled = true;
+
   document.getElementById('partnerModal').classList.add('open');
+
+  if (!window._firebaseReady) return;
+  try {
+    const [userSnap, voteSnap] = await Promise.all([
+      window._getDoc(window._doc(window._db, 'users', sender)),
+      window._getDoc(window._doc(window._db, 'votes', profile.nickname + '__' + sender)),
+    ]);
+
+    // bio
+    if (userSnap.exists() && userSnap.data().bio) {
+      bioEl.textContent = userSnap.data().bio;
+    }
+
+    // boom 카운트
+    const ud = userSnap.exists() ? userSnap.data() : {};
+    document.getElementById('boomUpCount').textContent = ud.boomUp || 0;
+    document.getElementById('boomDownCount').textContent = ud.boomDown || 0;
+
+    // 투표 가능 여부 확인
+    const today = new Date().toISOString().slice(0, 10);
+    if (voteSnap.exists()) {
+      const v = voteSnap.data();
+      if (v.date === today) {
+        // 오늘 이미 투표함 → 둘 다 비활성, 투표한 쪽 강조
+        if (v.type === 'up') upBtn.classList.add('voted');
+        else downBtn.classList.add('voted');
+      } else {
+        // 다른 날 투표했으면 오늘은 다시 가능
+        upBtn.disabled = false; downBtn.disabled = false;
+      }
+    } else {
+      // 한 번도 투표 안 함
+      upBtn.disabled = false; downBtn.disabled = false;
+    }
+  } catch(e) {}
+}
+
+async function voteBoom(type) {
+  if (!modalTarget || !window._firebaseReady) return;
+  const target = modalTarget.nick;
+  const today = new Date().toISOString().slice(0, 10);
+  const voteRef = window._doc(window._db, 'votes', profile.nickname + '__' + target);
+  const userRef = window._doc(window._db, 'users', target);
+
+  const upBtn = document.getElementById('boomUpBtn');
+  const downBtn = document.getElementById('boomDownBtn');
+  upBtn.disabled = true; downBtn.disabled = true;
+
+  try {
+    const voteSnap = await window._getDoc(voteRef);
+    if (voteSnap.exists() && voteSnap.data().date === today) return; // 오늘 이미 투표
+
+    const prev = voteSnap.exists() ? voteSnap.data() : null;
+    const userSnap = await window._getDoc(userRef);
+    const ud = userSnap.exists() ? userSnap.data() : {};
+    let up = ud.boomUp || 0;
+    let down = ud.boomDown || 0;
+
+    // 이전 투표 취소
+    if (prev) {
+      if (prev.type === 'up') up = Math.max(0, up - 1);
+      else down = Math.max(0, down - 1);
+    }
+
+    if (type === 'up') up++; else down++;
+
+    await Promise.all([
+      window._setDoc(voteRef, { date: today, type }),
+      window._setDoc(userRef, { boomUp: up, boomDown: down }, { merge: true }),
+    ]);
+
+    document.getElementById('boomUpCount').textContent = up;
+    document.getElementById('boomDownCount').textContent = down;
+    upBtn.classList.toggle('voted', type === 'up');
+    downBtn.classList.toggle('voted', type === 'down');
+  } catch(e) {}
 }
 function closePartnerModal(e) {
   if (e && e.target !== document.getElementById('partnerModal')) return;
