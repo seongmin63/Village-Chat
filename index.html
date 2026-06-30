@@ -597,6 +597,21 @@ body {
     <div class="my-avatar-btn" id="myAvatarBtn" onclick="openMyProfile()"></div>
   </div>
   <div class="menu-list">
+    <button class="menu-item" id="siMenuItem" onclick="enterGroupChat('si')" style="display:none">
+      <span class="menu-icon" style="background:#dcf3e8">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#00704A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="22" x2="21" y2="22"/>
+          <rect x="2" y="10" width="5" height="12" rx="1"/>
+          <rect x="9" y="6" width="6" height="16" rx="1"/>
+          <rect x="17" y="2" width="5" height="20" rx="1"/>
+        </svg>
+      </span>
+      <div class="menu-item-body">
+        <div class="menu-item-title" id="siMenuTitle">우리 시 톡방</div>
+        <div class="menu-item-sub" id="siMenuSub" data-i18n="menu_si_sub">시 전체 이웃과 대화해요</div>
+      </div>
+      <span class="menu-arrow">›</span>
+    </button>
     <button class="menu-item" onclick="enterGroupChat('gu')">
       <span class="menu-icon" style="background:#dcf3e8">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#00704A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -1086,14 +1101,14 @@ const STRINGS = {
 // Patch: extra keys added across all languages
 ['en','ko','zh','ja','es','fr','hi','ar'].forEach(l => {
   const x = {
-    en:{ loc_finding:'Checking location...', delete_profile:'Delete Profile', close_btn:'Close', nick_taken:'This nickname is already taken. Please choose a different one.', menu_lang_gu_sub:'Same language · district chat', menu_lang_dong_sub:'Same language · neighborhood chat' },
-    ko:{ loc_finding:'위치를 확인하는 중...', delete_profile:'프로필 삭제', close_btn:'닫기', nick_taken:'이미 사용 중인 닉네임입니다. 다른 닉네임을 선택해주세요.', menu_lang_gu_sub:'같은 언어 · 구 단위 채팅', menu_lang_dong_sub:'같은 언어 · 동 단위 채팅' },
-    zh:{ loc_finding:'正在检查位置...', delete_profile:'删除资料', close_btn:'关闭', nick_taken:'该昵称已被使用，请选择其他昵称。', menu_lang_gu_sub:'同语言 · 区聊天室', menu_lang_dong_sub:'同语言 · 社区聊天室' },
-    ja:{ loc_finding:'位置を確認中...', delete_profile:'プロフィール削除', close_btn:'閉じる', nick_taken:'このニックネームはすでに使用されています。別のニックネームを選んでください。', menu_lang_gu_sub:'同言語 · 区チャット', menu_lang_dong_sub:'同言語 · 近所チャット' },
-    es:{ loc_finding:'Verificando ubicación...', delete_profile:'Eliminar perfil', close_btn:'Cerrar', nick_taken:'Este apodo ya está en uso. Por favor elige otro.', menu_lang_gu_sub:'Mismo idioma · chat de distrito', menu_lang_dong_sub:'Mismo idioma · chat de barrio' },
-    fr:{ loc_finding:'Vérification de la localisation...', delete_profile:'Supprimer le profil', close_btn:'Fermer', nick_taken:'Ce pseudo est déjà utilisé. Veuillez en choisir un autre.', menu_lang_gu_sub:'Même langue · chat de quartier', menu_lang_dong_sub:'Même langue · chat de voisinage' },
-    hi:{ loc_finding:'स्थान जांच रहे हैं...', delete_profile:'प्रोफ़ाइल हटाएं', close_btn:'बंद करें', nick_taken:'यह उपनाम पहले से उपयोग में है। कृपया कोई अन्य उपनाम चुनें।', menu_lang_gu_sub:'समान भाषा · जिला चैट', menu_lang_dong_sub:'समान भाषा · पड़ोस चैट' },
-    ar:{ loc_finding:'جارٍ التحقق من الموقع...', delete_profile:'حذف الملف الشخصي', close_btn:'إغلاق', nick_taken:'هذا الاسم المستعار مستخدم بالفعل. يرجى اختيار اسم آخر.', menu_lang_gu_sub:'نفس اللغة · دردشة المنطقة', menu_lang_dong_sub:'نفس اللغة · دردشة الحي' },
+    en:{ loc_finding:'Checking location...', delete_profile:'Delete Profile', close_btn:'Close', nick_taken:'This nickname is already taken. Please choose a different one.', menu_si_sub:'Chat with neighbors across the city', menu_lang_gu_sub:'Same language · district chat', menu_lang_dong_sub:'Same language · neighborhood chat' },
+    ko:{ loc_finding:'위치를 확인하는 중...', delete_profile:'프로필 삭제', close_btn:'닫기', nick_taken:'이미 사용 중인 닉네임입니다. 다른 닉네임을 선택해주세요.', menu_si_sub:'시 전체 이웃과 대화해요', menu_lang_gu_sub:'같은 언어 · 구 단위 채팅', menu_lang_dong_sub:'같은 언어 · 동 단위 채팅' },
+    zh:{ loc_finding:'正在检查位置...', delete_profile:'删除资料', close_btn:'关闭', nick_taken:'该昵称已被使用，请选择其他昵称。', menu_si_sub:'与全市邻居聊天', menu_lang_gu_sub:'同语言 · 区聊天室', menu_lang_dong_sub:'同语言 · 社区聊天室' },
+    ja:{ loc_finding:'位置を確認中...', delete_profile:'プロフィール削除', close_btn:'閉じる', nick_taken:'このニックネームはすでに使用されています。別のニックネームを選んでください。', menu_si_sub:'市全体の近所の人と話す', menu_lang_gu_sub:'同言語 · 区チャット', menu_lang_dong_sub:'同言語 · 近所チャット' },
+    es:{ loc_finding:'Verificando ubicación...', delete_profile:'Eliminar perfil', close_btn:'Cerrar', nick_taken:'Este apodo ya está en uso. Por favor elige otro.', menu_si_sub:'Chatea con vecinos de toda la ciudad', menu_lang_gu_sub:'Mismo idioma · chat de distrito', menu_lang_dong_sub:'Mismo idioma · chat de barrio' },
+    fr:{ loc_finding:'Vérification de la localisation...', delete_profile:'Supprimer le profil', close_btn:'Fermer', nick_taken:'Ce pseudo est déjà utilisé. Veuillez en choisir un autre.', menu_si_sub:'Discutez avec les voisins de toute la ville', menu_lang_gu_sub:'Même langue · chat de quartier', menu_lang_dong_sub:'Même langue · chat de voisinage' },
+    hi:{ loc_finding:'स्थान जांच रहे हैं...', delete_profile:'प्रोफ़ाइल हटाएं', close_btn:'बंद करें', nick_taken:'यह उपनाम पहले से उपयोग में है। कृपया कोई अन्य उपनाम चुनें।', menu_si_sub:'पूरे शहर के पड़ोसियों से चैट करें', menu_lang_gu_sub:'समान भाषा · जिला चैट', menu_lang_dong_sub:'समान भाषा · पड़ोस चैट' },
+    ar:{ loc_finding:'جارٍ التحقق من الموقع...', delete_profile:'حذف الملف الشخصي', close_btn:'إغلاق', nick_taken:'هذا الاسم المستعار مستخدم بالفعل. يرجى اختيار اسم آخر.', menu_si_sub:'تحدث مع جيران المدينة بأكملها', menu_lang_gu_sub:'نفس اللغة · دردشة المنطقة', menu_lang_dong_sub:'نفس اللغة · دردشة الحي' },
   }[l];
   if (STRINGS[l] && x) Object.assign(STRINGS[l], x);
 });
@@ -1603,7 +1618,15 @@ function setLang(code) {
   });
   // 메뉴 방 제목 갱신
   if (currentLocation) {
-    const { guDisplay: gd, dongDisplay: dd } = currentLocation;
+    const { si, siDisplay: sd, guDisplay: gd, dongDisplay: dd } = currentLocation;
+    const siItem = document.getElementById('siMenuItem');
+    const siEl = document.getElementById('siMenuTitle');
+    const siSubEl = document.getElementById('siMenuSub');
+    if (siItem) {
+      siItem.style.display = si ? '' : 'none';
+      if (si && siEl) siEl.textContent = sd + t('room_suffix');
+      if (si && siSubEl) siSubEl.textContent = t('menu_si_sub');
+    }
     const guEl = document.getElementById('guMenuTitle');
     const dongEl = document.getElementById('dongMenuTitle');
     if (guEl) guEl.textContent = gd + t('room_suffix');
@@ -1849,9 +1872,19 @@ async function nominatimFetch(lat, lng, langChain, zoom) {
   if (!res.ok) return null;
   const data = await res.json();
   const addr = data.address || {};
+
+  // 군 지역 판별: county가 있고 city_district가 없으면 군-읍/면 체계
+  const isGun = !!addr.county && !addr.city_district;
+  // 시 단위: 구가 있는 도시는 city 또는 state가 시
+  const si   = !isGun && addr.city_district
+    ? (addr.city || addr.state_district || addr.municipality || '')
+    : '';
   const gu   = addr.city_district || addr.borough || addr.county || addr.city || addr.municipality || addr.state_district || '';
-  const dong = addr.neighbourhood  || addr.quarter || addr.suburb || addr.village || addr.town || addr.hamlet || '';
-  return (gu && dong) ? { gu, dong } : null;
+  // 군 지역은 읍(town)/면(suburb·village)만 사용 — 리(neighbourhood·hamlet) 제외
+  const dong = isGun
+    ? (addr.town || addr.suburb || addr.village || '')
+    : (addr.neighbourhood || addr.quarter || addr.suburb || addr.village || addr.town || addr.hamlet || '');
+  return (gu && dong) ? { si, gu, dong } : null;
 }
 
 async function onLocSuccess(pos) {
@@ -1875,8 +1908,10 @@ async function onLocSuccess(pos) {
       }
 
       currentLocation = {
+        si:          ko.si,
         gu:          ko.gu,
         dong:        ko.dong,
+        siDisplay:   display.si || ko.si,
         guDisplay:   display.gu,
         dongDisplay: display.dong,
       };
@@ -1907,8 +1942,16 @@ function showLocError(msg) {
 
 // ── 메인 메뉴 ────────────────────────────────────────────
 function showMenu() {
-  const { guDisplay: gd, dongDisplay: dd } = currentLocation;
+  const { si, siDisplay: sd, guDisplay: gd, dongDisplay: dd } = currentLocation;
   document.getElementById('menuLocation').textContent = gd + ' · ' + dd;
+  const siItem = document.getElementById('siMenuItem');
+  if (si) {
+    siItem.style.display = '';
+    document.getElementById('siMenuTitle').textContent = sd + t('room_suffix');
+    document.getElementById('siMenuSub').textContent = t('menu_si_sub');
+  } else {
+    siItem.style.display = 'none';
+  }
   document.getElementById('guMenuTitle').textContent = gd + t('room_suffix');
   document.getElementById('dongMenuTitle').textContent = dd + t('room_suffix');
   renderLangMenuItems();
@@ -2161,12 +2204,14 @@ function renderLangMenuItems() {
 }
 
 function enterGroupChat(type) {
-  const { gu, dong, guDisplay: gd, dongDisplay: dd } = currentLocation;
+  const { si, gu, dong, siDisplay: sd, guDisplay: gd, dongDisplay: dd } = currentLocation;
   const cdnCode = LANG_CDN[currentLang] || 'un';
   const langName = LANG_NATIVE[currentLang] || currentLang.toUpperCase();
   const flagHtml = `<img src="https://flagcdn.com/${cdnCode}.svg" alt="" style="width:20px;height:15px;object-fit:cover;border-radius:2px;vertical-align:middle;margin-right:4px">`;
-  if (type === 'gu')
-    enterChat('gu_' + gu, gd + t('room_suffix'), '', gd, 'menuScreen');
+  if (type === 'si')
+    enterChat('si_' + si, sd + t('room_suffix'), '', sd, 'menuScreen');
+  else if (type === 'gu')
+    enterChat('gu_' + gu, gd + t('room_suffix'), si ? sd : '', gd, 'menuScreen');
   else if (type === 'dong')
     enterChat('dong_' + gu + '_' + dong, dd + t('room_suffix'), gd, gd + ' · ' + dd, 'menuScreen');
   else if (type === 'gu_lang')
