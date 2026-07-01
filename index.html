@@ -184,7 +184,8 @@ body {
 .loc-error { background: #FCEBEB; border: 1px solid #F09595; color: #791F1F; border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; line-height: 1.5; max-width: 320px; }
 
 /* ── 메인 메뉴 화면 ── */
-#menuScreen { overflow-y: auto; }
+#menuScreen { display: flex; flex-direction: column; overflow: hidden; }
+#menuScreen .menu-list { flex: 1; overflow-y: auto; }
 .menu-header {
   background: var(--c-topbar); border-bottom: none;
   padding: 1rem 1rem 0.8rem; flex-shrink: 0;
@@ -371,7 +372,7 @@ body {
 .boom-down { background:rgba(100,100,100,0.07); border-color:rgba(100,100,100,0.2); color:#5a6b60; }
 .boom-down.voted { background:rgba(140,70,70,0.1); border-color:rgba(140,70,70,0.3); color:#7a3d3d; font-weight:800; }
 .boom-btn:disabled { opacity:.4; cursor:default; }
-.partner-bio { font-size:13px; color:var(--c-muted); text-align:center; line-height:1.5; min-height:0; word-break:break-all; width:100%; }
+.partner-bio { font-size:13px; color:var(--c-text); text-align:center; line-height:1.5; min-height:0; word-break:break-all; width:100%; margin:4px 0 8px; padding:0 4px; }
 .my-bio-wrap { width:100%; position:relative; }
 .my-bio-input { width:100%; resize:none; border:1.5px solid var(--c-border); border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit; color:var(--c-text); background:var(--c-input); box-sizing:border-box; line-height:1.5; min-height:60px; }
 .my-bio-input:focus { outline:none; border-color:var(--blue); }
@@ -701,7 +702,7 @@ body {
         </svg>
       </span>
       <div class="menu-item-body">
-        <div class="menu-item-title" data-i18n="menu_dm">1:1 채팅 목록</div>
+        <div class="menu-item-title" data-i18n="menu_dm">1:1 채팅</div>
         <div class="menu-item-sub" data-i18n="menu_dm_sub">개인 메시지</div>
       </div>
       <span class="notif-badge" id="dmBadge"></span>
@@ -716,7 +717,7 @@ body {
         </svg>
       </span>
       <div class="menu-item-body">
-        <div class="menu-item-title" data-i18n="menu_custom">그룹 채팅</div>
+        <div class="menu-item-title" data-i18n="menu_custom">그룹 채팅</div><!-- static text, i18n applies -->
         <div class="menu-item-sub" data-i18n="menu_custom_sub">직접 만든 채팅방</div>
       </div>
       <span class="notif-badge" id="customBadge"></span>
@@ -761,7 +762,7 @@ body {
 <div id="dmListScreen" class="screen">
   <div class="top-bar">
     <button class="back-btn" onclick="showScreen('menuScreen')" aria-label="뒤로">←</button>
-    <div class="room-title" data-i18n="menu_dm">1:1 채팅 목록</div>
+    <div class="room-title" data-i18n="menu_dm">1:1 채팅</div>
   </div>
   <div class="dm-list" id="dmList"></div>
 </div>
@@ -770,7 +771,7 @@ body {
 <div id="customRoomListScreen" class="screen">
   <div class="top-bar">
     <button class="back-btn" onclick="showScreen('menuScreen')" aria-label="뒤로">←</button>
-    <div class="room-title" data-i18n="menu_custom">그룹 채팅 목록</div>
+    <div class="room-title" data-i18n="menu_custom">그룹 채팅</div>
   </div>
   <div style="padding:12px 16px 0;display:flex;gap:8px">
     <button id="btnCreateRoom" onclick="toggleCustomForm('create')" style="flex:1;padding:10px 0;border:none;border-radius:var(--radius-sm);background:var(--blue);color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit" data-i18n="create_room">방 만들기</button>
@@ -786,7 +787,7 @@ body {
       <input type="file" id="createRoomPhotoInput" accept="image/*" style="display:none" onchange="previewCreateRoomPhoto(this)">
       <input id="createRoomNameInput" maxlength="30" style="flex:1;padding:10px 12px;border:1px solid var(--c-border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--c-input);color:var(--c-text)" data-i18n-ph="room_name_ph" placeholder="채팅방 이름">
     </div>
-    <button onclick="submitCreateRoom()" style="width:100%;padding:10px;border:none;border-radius:var(--radius-sm);background:var(--blue);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit" data-i18n="create_room">만들기</button>
+    <button onclick="submitCreateRoom()" style="width:100%;padding:10px;border:none;border-radius:var(--radius-sm);background:#005f40;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit" data-i18n="create_room_submit">방 생성하기</button>
     <!-- 생성 완료 후 ID 표시 -->
     <div id="createdRoomInfo" style="display:none;margin-top:12px;background:#f0faf4;border:1px solid #b8ddc8;border-radius:var(--radius-md);padding:12px 14px">
       <div style="font-size:12px;color:var(--c-muted);margin-bottom:4px" data-i18n="room_id_label">채팅방 ID</div>
@@ -803,7 +804,21 @@ body {
   <div id="joinRoomForm" style="display:none;padding:12px 16px;border-bottom:1px solid var(--c-border)">
     <div style="display:flex;gap:8px">
       <input id="joinRoomIdInput" maxlength="6" style="flex:1;padding:10px 12px;border:1px solid var(--c-border);border-radius:var(--radius-sm);font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;font-family:inherit;background:var(--c-input);color:var(--c-text)" data-i18n-ph="enter_room_id_ph" placeholder="ABC123" oninput="this.value=this.value.toUpperCase()">
-      <button onclick="submitJoinRoom()" style="padding:10px 18px;border:none;border-radius:var(--radius-sm);background:var(--blue);color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit" data-i18n="enter_room">입장</button>
+      <button onclick="previewJoinRoom()" style="padding:10px 18px;border:none;border-radius:var(--radius-sm);background:var(--blue);color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit" data-i18n="enter_room">확인</button>
+    </div>
+    <!-- 미리보기 -->
+    <div id="joinRoomPreview" style="display:none;margin-top:12px;background:var(--c-input);border:1px solid var(--c-border);border-radius:var(--radius-md);padding:14px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div id="previewRoomPhoto" style="width:52px;height:52px;border-radius:50%;flex-shrink:0;overflow:hidden;background:var(--c-border);display:flex;align-items:center;justify-content:center;font-size:20px"></div>
+        <div style="flex:1;min-width:0">
+          <div id="previewRoomName" style="font-size:15px;font-weight:700;color:var(--c-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
+          <div id="previewRoomMembers" style="font-size:12px;color:var(--c-muted);margin-top:3px"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button onclick="closeJoinPreview()" style="flex:1;padding:9px 0;border:1px solid var(--c-border);border-radius:var(--radius-sm);background:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--c-text)" data-i18n="close_btn">닫기</button>
+        <button onclick="confirmJoinRoom()" style="flex:2;padding:9px 0;border:none;border-radius:var(--radius-sm);background:var(--blue);color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit" data-i18n="enter_room">입장하기</button>
+      </div>
     </div>
   </div>
 
@@ -1143,7 +1158,7 @@ const STRINGS = {
     profile_gender_label:'Gender *', gender_m:'Male', gender_f:'Female', gender_u:'Other',
     profile_nationality_label:'Nationality *', profile_btn:'Find My Neighborhood →',
     loc_title:'Finding your neighborhood...', loc_desc:'Please allow location access in your browser.<br>You\'ll be placed in the local chat room automatically.',
-    msg_placeholder:'Type a message...', menu_dm:'1:1 Chats', menu_dm_sub:'Personal messages',
+    msg_placeholder:'Type a message...', menu_dm:'1:1 Chat', menu_dm_sub:'Personal messages',
     menu_gu_sub:'Chat with neighbors in your district', menu_dong_sub:'Chat with neighbors nearby',
     system_joined:' has joined', system_left:' has left the chat',
     room_suffix:' Chat Room', dm_chat:'1:1 Chat', members:' online',
@@ -1161,7 +1176,7 @@ const STRINGS = {
     profile_gender_label:'성별 *', gender_m:'남', gender_f:'여', gender_u:'기타',
     profile_nationality_label:'국적 *', profile_btn:'내 위치로 동네 찾기 →',
     loc_title:'동네를 찾는 중...', loc_desc:'브라우저에서 위치 권한을 허용해 주세요.<br>동네 채팅방에 자동으로 입장돼요.',
-    msg_placeholder:'메시지를 입력하세요...', menu_dm:'1:1 채팅 목록', menu_dm_sub:'개인 메시지',
+    msg_placeholder:'메시지를 입력하세요...', menu_dm:'1:1 채팅', menu_dm_sub:'개인 메시지',
     menu_gu_sub:'구 전체 이웃과 대화해요', menu_dong_sub:'동네 이웃과 대화해요',
     system_joined:'님이 입장했습니다', system_left:'님이 채팅방을 나갔습니다',
     room_suffix:' 톡방', dm_chat:'1:1 채팅', members:'명',
@@ -1179,7 +1194,7 @@ const STRINGS = {
     profile_gender_label:'性别 *', gender_m:'男', gender_f:'女', gender_u:'其他',
     profile_nationality_label:'国籍 *', profile_btn:'查找我的社区 →',
     loc_title:'正在查找您的社区...', loc_desc:'请在浏览器中允许位置权限。<br>将自动进入本地聊天室。',
-    msg_placeholder:'输入消息...', menu_dm:'私聊列表', menu_dm_sub:'私人消息',
+    msg_placeholder:'输入消息...', menu_dm:'私聊', menu_dm_sub:'私人消息',
     menu_gu_sub:'与全区邻居聊天', menu_dong_sub:'与附近邻居聊天',
     system_joined:'已加入', system_left:'已离开聊天室',
     room_suffix:'聊天室', dm_chat:'私聊', members:'人在线',
@@ -1197,7 +1212,7 @@ const STRINGS = {
     profile_gender_label:'性別 *', gender_m:'男性', gender_f:'女性', gender_u:'その他',
     profile_nationality_label:'国籍 *', profile_btn:'近所を探す →',
     loc_title:'近所を探しています...', loc_desc:'ブラウザで位置情報を許可してください。<br>自動的にローカルチャットに入室します。',
-    msg_placeholder:'メッセージを入力...', menu_dm:'1:1チャット一覧', menu_dm_sub:'個人メッセージ',
+    msg_placeholder:'メッセージを入力...', menu_dm:'1:1チャット', menu_dm_sub:'個人メッセージ',
     menu_gu_sub:'区全体の近所の人と話す', menu_dong_sub:'近くの近所の人と話す',
     system_joined:'さんが入室しました', system_left:'さんが退室しました',
     room_suffix:'チャット', dm_chat:'1:1チャット', members:'人オンライン',
@@ -1215,7 +1230,7 @@ const STRINGS = {
     profile_gender_label:'Género *', gender_m:'Hombre', gender_f:'Mujer', gender_u:'Otro',
     profile_nationality_label:'Nacionalidad *', profile_btn:'Encontrar mi barrio →',
     loc_title:'Buscando tu barrio...', loc_desc:'Permite el acceso a tu ubicación en el navegador.<br>Entrarás automáticamente a la sala local.',
-    msg_placeholder:'Escribe un mensaje...', menu_dm:'Chats 1:1', menu_dm_sub:'Mensajes personales',
+    msg_placeholder:'Escribe un mensaje...', menu_dm:'Chat 1:1', menu_dm_sub:'Mensajes personales',
     menu_gu_sub:'Chatea con vecinos del distrito', menu_dong_sub:'Chatea con vecinos cercanos',
     system_joined:' se unió', system_left:' salió del chat',
     room_suffix:' Chat', dm_chat:'Chat 1:1', members:' en línea',
@@ -1233,7 +1248,7 @@ const STRINGS = {
     profile_gender_label:'Genre *', gender_m:'Homme', gender_f:'Femme', gender_u:'Autre',
     profile_nationality_label:'Nationalité *', profile_btn:'Trouver mon quartier →',
     loc_title:'Recherche de votre quartier...', loc_desc:'Autorisez l\'accès à la localisation dans votre navigateur.<br>Vous rejoindrez automatiquement la salle locale.',
-    msg_placeholder:'Tapez un message...', menu_dm:'Chats 1:1', menu_dm_sub:'Messages personnels',
+    msg_placeholder:'Tapez un message...', menu_dm:'Chat 1:1', menu_dm_sub:'Messages personnels',
     menu_gu_sub:'Discutez avec les voisins du quartier', menu_dong_sub:'Discutez avec les voisins proches',
     system_joined:' a rejoint', system_left:' a quitté le chat',
     room_suffix:' Chat', dm_chat:'Chat 1:1', members:' en ligne',
@@ -1251,7 +1266,7 @@ const STRINGS = {
     profile_gender_label:'लिंग *', gender_m:'पुरुष', gender_f:'महिला', gender_u:'अन्य',
     profile_nationality_label:'राष्ट्रीयता *', profile_btn:'मेरा मोहल्ला खोजें →',
     loc_title:'आपका मोहल्ला खोज रहे हैं...', loc_desc:'ब्राउज़र में लोकेशन एक्सेस दें।<br>आप अपने आप स्थानीय चैट में जुड़ जाएंगे।',
-    msg_placeholder:'संदेश टाइप करें...', menu_dm:'1:1 चैट सूची', menu_dm_sub:'व्यक्तिगत संदेश',
+    msg_placeholder:'संदेश टाइप करें...', menu_dm:'1:1 चैट', menu_dm_sub:'व्यक्तिगत संदेश',
     menu_gu_sub:'जिले के पड़ोसियों से चैट करें', menu_dong_sub:'पास के पड़ोसियों से चैट करें',
     system_joined:' शामिल हुए', system_left:' चैट से चले गए',
     room_suffix:' चैट', dm_chat:'1:1 चैट', members:' ऑनलाइन',
@@ -1269,7 +1284,7 @@ const STRINGS = {
     profile_gender_label:'الجنس *', gender_m:'ذكر', gender_f:'أنثى', gender_u:'آخر',
     profile_nationality_label:'الجنسية *', profile_btn:'ابحث عن حيي →',
     loc_title:'جارٍ البحث عن حيك...', loc_desc:'يرجى السماح بالوصول إلى الموقع في المتصفح.<br>ستنضم تلقائياً إلى غرفة الدردشة المحلية.',
-    msg_placeholder:'اكتب رسالة...', menu_dm:'قائمة المحادثات', menu_dm_sub:'رسائل شخصية',
+    msg_placeholder:'اكتب رسالة...', menu_dm:'المحادثات الشخصية', menu_dm_sub:'رسائل شخصية',
     menu_gu_sub:'تحدث مع جيران المنطقة', menu_dong_sub:'تحدث مع الجيران القريبين',
     system_joined:' انضم', system_left:' غادر الدردشة',
     room_suffix:' دردشة', dm_chat:'محادثة 1:1', members:' متصل',
@@ -1299,14 +1314,14 @@ const STRINGS = {
 // custom group room i18n
 ['en','ko','zh','ja','es','fr','hi','ar'].forEach(l => {
   const x = {
-    en:{ menu_custom:'Group Chat List', menu_custom_sub:'Rooms you created or joined', create_room:'Create Room', join_room:'Join Room', room_name_ph:'Room name', enter_room_id_ph:'Room ID (e.g. ABC123)', room_id_label:'Room ID', room_id_hint:'Share this ID so friends can join', enter_room:'Enter Room', copy_id:'Copy', copied:'Copied!', custom_empty:'No group chats yet.\nCreate or join a room!', room_not_found:'Room not found. Check the ID and try again.', room_name_err:'Please enter a room name.' },
-    ko:{ menu_custom:'그룹 채팅 목록', menu_custom_sub:'직접 만든 채팅방', create_room:'방 만들기', join_room:'방 참여하기', room_name_ph:'채팅방 이름', enter_room_id_ph:'채팅방 ID (예: ABC123)', room_id_label:'채팅방 ID', room_id_hint:'이 ID를 공유하면 친구들이 입장할 수 있어요', enter_room:'방 입장하기', copy_id:'복사', copied:'복사됨!', custom_empty:'참여한 그룹 채팅이 없어요.\n방을 만들거나 참여해보세요!', room_not_found:'채팅방을 찾을 수 없어요. ID를 확인해주세요.', room_name_err:'채팅방 이름을 입력해주세요.' },
-    zh:{ menu_custom:'群聊列表', menu_custom_sub:'您创建或加入的群聊', create_room:'创建房间', join_room:'加入房间', room_name_ph:'房间名称', enter_room_id_ph:'房间ID（如 ABC123）', room_id_label:'房间ID', room_id_hint:'分享此ID，朋友们即可加入', enter_room:'进入房间', copy_id:'复制', copied:'已复制！', custom_empty:'还没有群聊。\n创建或加入一个房间吧！', room_not_found:'找不到该房间，请确认ID后再试。', room_name_err:'请输入房间名称。' },
-    ja:{ menu_custom:'グループチャット一覧', menu_custom_sub:'作成・参加した部屋', create_room:'部屋を作る', join_room:'部屋に参加', room_name_ph:'部屋の名前', enter_room_id_ph:'部屋ID（例：ABC123）', room_id_label:'部屋ID', room_id_hint:'このIDをシェアすると友達が入れます', enter_room:'入室する', copy_id:'コピー', copied:'コピー済み！', custom_empty:'グループチャットがまだありません。\n部屋を作るか参加してみましょう！', room_not_found:'部屋が見つかりません。IDを確認してください。', room_name_err:'部屋の名前を入力してください。' },
-    es:{ menu_custom:'Lista de chats grupales', menu_custom_sub:'Salas creadas o unidas', create_room:'Crear sala', join_room:'Unirse a sala', room_name_ph:'Nombre de la sala', enter_room_id_ph:'ID de sala (ej. ABC123)', room_id_label:'ID de sala', room_id_hint:'Comparte este ID para que tus amigos puedan unirse', enter_room:'Entrar', copy_id:'Copiar', copied:'¡Copiado!', custom_empty:'No hay chats grupales aún.\n¡Crea o únete a una sala!', room_not_found:'Sala no encontrada. Verifica el ID.', room_name_err:'Por favor introduce el nombre de la sala.' },
-    fr:{ menu_custom:'Liste des chats de groupe', menu_custom_sub:'Salons créés ou rejoints', create_room:'Créer un salon', join_room:'Rejoindre un salon', room_name_ph:'Nom du salon', enter_room_id_ph:'ID du salon (ex. ABC123)', room_id_label:'ID du salon', room_id_hint:'Partagez cet ID pour que vos amis puissent rejoindre', enter_room:'Entrer', copy_id:'Copier', copied:'Copié !', custom_empty:'Aucun chat de groupe pour l\'instant.\nCréez ou rejoignez un salon !', room_not_found:'Salon introuvable. Vérifiez l\'ID.', room_name_err:'Veuillez entrer le nom du salon.' },
-    hi:{ menu_custom:'ग्रुप चैट सूची', menu_custom_sub:'बनाए या जुड़े कमरे', create_room:'कमरा बनाएं', join_room:'कमरे में जुड़ें', room_name_ph:'कमरे का नाम', enter_room_id_ph:'कमरा ID (जैसे ABC123)', room_id_label:'कमरा ID', room_id_hint:'यह ID शेयर करें ताकि दोस्त जुड़ सकें', enter_room:'प्रवेश करें', copy_id:'कॉपी', copied:'कॉपी हो गया!', custom_empty:'कोई ग्रुप चैट नहीं।\nकमरा बनाएं या जुड़ें!', room_not_found:'कमरा नहीं मिला। ID जांचें।', room_name_err:'कृपया कमरे का नाम दर्ज करें।' },
-    ar:{ menu_custom:'قائمة الدردشات الجماعية', menu_custom_sub:'الغرف التي أنشأتها أو انضممت إليها', create_room:'إنشاء غرفة', join_room:'الانضمام لغرفة', room_name_ph:'اسم الغرفة', enter_room_id_ph:'معرّف الغرفة (مثل ABC123)', room_id_label:'معرّف الغرفة', room_id_hint:'شارك هذا المعرّف ليتمكن أصدقاؤك من الانضمام', enter_room:'دخول', copy_id:'نسخ', copied:'تم النسخ!', custom_empty:'لا توجد دردشات جماعية بعد.\nأنشئ أو انضم لغرفة!', room_not_found:'الغرفة غير موجودة. تحقق من المعرّف.', room_name_err:'الرجاء إدخال اسم الغرفة.' },
+    en:{ menu_custom:'Group Chat', menu_custom_sub:'Rooms you created or joined', create_room:'Create Room', create_room_submit:'Create Room ✓', join_room:'Join Room', room_name_ph:'Room name', enter_room_id_ph:'Room ID (e.g. ABC123)', room_id_label:'Room ID', room_id_hint:'Share this ID so friends can join', enter_room:'Enter Room', copy_id:'Copy', copied:'Copied!', custom_empty:'No group chats yet.\nCreate or join a room!', room_not_found:'Room not found. Check the ID and try again.', room_name_err:'Please enter a room name.' },
+    ko:{ menu_custom:'그룹 채팅', menu_custom_sub:'직접 만든 채팅방', create_room:'방 만들기', create_room_submit:'방 생성하기', join_room:'방 참여하기', room_name_ph:'채팅방 이름', enter_room_id_ph:'채팅방 ID (예: ABC123)', room_id_label:'채팅방 ID', room_id_hint:'이 ID를 공유하면 친구들이 입장할 수 있어요', enter_room:'방 입장하기', copy_id:'복사', copied:'복사됨!', custom_empty:'참여한 그룹 채팅이 없어요.\n방을 만들거나 참여해보세요!', room_not_found:'채팅방을 찾을 수 없어요. ID를 확인해주세요.', room_name_err:'채팅방 이름을 입력해주세요.' },
+    zh:{ menu_custom:'群聊', menu_custom_sub:'您创建或加入的群聊', create_room:'创建房间', create_room_submit:'立即创建', join_room:'加入房间', room_name_ph:'房间名称', enter_room_id_ph:'房间ID（如 ABC123）', room_id_label:'房间ID', room_id_hint:'分享此ID，朋友们即可加入', enter_room:'进入房间', copy_id:'复制', copied:'已复制！', custom_empty:'还没有群聊。\n创建或加入一个房间吧！', room_not_found:'找不到该房间，请确认ID后再试。', room_name_err:'请输入房间名称。' },
+    ja:{ menu_custom:'グループチャット', menu_custom_sub:'作成・参加した部屋', create_room:'部屋を作る', create_room_submit:'部屋を作成する', join_room:'部屋に参加', room_name_ph:'部屋の名前', enter_room_id_ph:'部屋ID（例：ABC123）', room_id_label:'部屋ID', room_id_hint:'このIDをシェアすると友達が入れます', enter_room:'入室する', copy_id:'コピー', copied:'コピー済み！', custom_empty:'グループチャットがまだありません。\n部屋を作るか参加してみましょう！', room_not_found:'部屋が見つかりません。IDを確認してください。', room_name_err:'部屋の名前を入力してください。' },
+    es:{ menu_custom:'Chat grupal', menu_custom_sub:'Salas creadas o unidas', create_room:'Crear sala', create_room_submit:'Crear ahora', join_room:'Unirse a sala', room_name_ph:'Nombre de la sala', enter_room_id_ph:'ID de sala (ej. ABC123)', room_id_label:'ID de sala', room_id_hint:'Comparte este ID para que tus amigos puedan unirse', enter_room:'Entrar', copy_id:'Copiar', copied:'¡Copiado!', custom_empty:'No hay chats grupales aún.\n¡Crea o únete a una sala!', room_not_found:'Sala no encontrada. Verifica el ID.', room_name_err:'Por favor introduce el nombre de la sala.' },
+    fr:{ menu_custom:'Chat de groupe', menu_custom_sub:'Salons créés ou rejoints', create_room:'Créer un salon', create_room_submit:'Créer maintenant', join_room:'Rejoindre un salon', room_name_ph:'Nom du salon', enter_room_id_ph:'ID du salon (ex. ABC123)', room_id_label:'ID du salon', room_id_hint:'Partagez cet ID pour que vos amis puissent rejoindre', enter_room:'Entrer', copy_id:'Copier', copied:'Copié !', custom_empty:'Aucun chat de groupe pour l\'instant.\nCréez ou rejoignez un salon !', room_not_found:'Salon introuvable. Vérifiez l\'ID.', room_name_err:'Veuillez entrer le nom du salon.' },
+    hi:{ menu_custom:'ग्रुप चैट', menu_custom_sub:'बनाए या जुड़े कमरे', create_room:'कमरा बनाएं', create_room_submit:'अभी बनाएं', join_room:'कमरे में जुड़ें', room_name_ph:'कमरे का नाम', enter_room_id_ph:'कमरा ID (जैसे ABC123)', room_id_label:'कमरा ID', room_id_hint:'यह ID शेयर करें ताकि दोस्त जुड़ सकें', enter_room:'प्रवेश करें', copy_id:'कॉपी', copied:'कॉपी हो गया!', custom_empty:'कोई ग्रुप चैट नहीं।\nकमरा बनाएं या जुड़ें!', room_not_found:'कमरा नहीं मिला। ID जांचें।', room_name_err:'कृपया कमरे का नाम दर्ज करें।' },
+    ar:{ menu_custom:'الدردشة الجماعية', menu_custom_sub:'الغرف التي أنشأتها أو انضممت إليها', create_room:'إنشاء غرفة', create_room_submit:'إنشاء الآن', join_room:'الانضمام لغرفة', room_name_ph:'اسم الغرفة', enter_room_id_ph:'معرّف الغرفة (مثل ABC123)', room_id_label:'معرّف الغرفة', room_id_hint:'شارك هذا المعرّف ليتمكن أصدقاؤك من الانضمام', enter_room:'دخول', copy_id:'نسخ', copied:'تم النسخ!', custom_empty:'لا توجد دردشات جماعية بعد.\nأنشئ أو انضم لغرفة!', room_not_found:'الغرفة غير موجودة. تحقق من المعرّف.', room_name_err:'الرجاء إدخال اسم الغرفة.' },
   }[l];
   if (STRINGS[l] && x) Object.assign(STRINGS[l], x);
 });
@@ -1351,6 +1366,8 @@ const ABOUT_CONTENT = {
       { emoji:'💬', title:'그룹에서 단둘이, 1:1 프라이빗 채팅', desc:'그룹 채팅에서 마음이 통하는 이웃을 발견했다면? 1:1 채팅으로 더 깊은 대화를 나눠봐요. 채팅방을 나가면 상대방이 메시지를 더 이상 볼 수 없어 스토킹 걱정도 없어요.' },
       { emoji:'⭐', title:'매너가 쌓이는 평판 시스템', desc:'이웃의 👍 추천·👎 비추천으로 에티켓을 평가받아요. 프로필을 초기화하면 모든 기록이 리셋되기 때문에, 좋은 매너를 유지할수록 더 오래 신뢰받을 수 있어요.' },
       { emoji:'🌍', title:'언어로 연결되는 또 다른 공간', desc:'해외 여행 중이거나 외국어를 배우고 싶다면? 같은 언어를 쓰는 사람들이 모이는 언어별 채팅방을 이용해보세요. 관광객부터 언어 학습자까지 전 세계 이웃과 연결돼요!' },
+      { emoji:'👥', title:'함께 만드는 그룹 채팅방', desc:'마음 맞는 친구들과 함께 채팅방을 직접 만들어보세요. 채팅방 ID를 공유해서 원하는 사람만 초대할 수 있어서, 불필요한 참가 요청을 받을 일이 없어요!' },
+      { emoji:'🔐', title:'채팅 내용, 저절로 사라져요', desc:'1:1 또는 그룹 채팅방의 대화 내용은 참가자들이 모두 나가거나 채팅방이 30일간 비활성화되면 서버에서 자동으로 삭제돼요. 남겨지는 기록 없이 안심하고 대화하세요.' },
     ],
     contact:'문의',
     copyright:'© 2025–2026 Village Chat. All rights reserved.',
@@ -1365,6 +1382,8 @@ const ABOUT_CONTENT = {
       { emoji:'💬', title:'From Group to Private — Just the Two of You', desc:'Found someone you click with in the group chat? Take it to a private 1:1 conversation. Once you leave the chat, the other person can no longer see your messages — no stalking worries.' },
       { emoji:'⭐', title:'A Reputation System That Rewards Good Manners', desc:'Receive 👍 or 👎 ratings from neighbors based on how you behave. Since resetting your profile wipes all history, being a good neighbor is the best long-term strategy. Earn trust, keep it!' },
       { emoji:'🌍', title:'Language Rooms — Find Your People Anywhere', desc:'Traveling abroad or learning a new language? Join a language-specific chat room where everyone speaks your language. From tourists to language learners — connect with your global neighborhood!' },
+      { emoji:'👥', title:'Your Own Private Group Chat', desc:'Create a group chat room with the friends you choose. Share the room ID and only people with the ID can join — no unwanted invitations or random strangers, just the people you actually want.' },
+      { emoji:'🔐', title:'Conversations That Disappear on Their Own', desc:'Messages in 1:1 and group chats are automatically deleted from our servers when all participants leave or the room has been inactive for 30 days. Chat freely — no permanent records left behind.' },
     ],
     contact:'Contact',
     copyright:'© 2025–2026 Village Chat. All rights reserved.',
@@ -1379,6 +1398,8 @@ const ABOUT_CONTENT = {
       { emoji:'💬', title:'从群聊到私聊，只属于你们两人', desc:'在群聊中遇到聊得来的邻居了吗？切换到1:1私信继续深入交流。离开聊天室后，对方将无法再查看你的消息，彻底告别骚扰。' },
       { emoji:'⭐', title:'奖励良好礼仪的信誉系统', desc:'根据你的行为获得邻居的👍好评或👎差评。由于重置资料会清除所有记录，保持良好的言行举止才能长期赢得信任！' },
       { emoji:'🌍', title:'语言频道 — 在任何地方找到同类', desc:'在海外旅行或正在学习外语？加入同语言聊天室，与说同种语言的人交流。无论是游客还是语言学习者，都能连接全球邻居！' },
+      { emoji:'👥', title:'你们的专属群聊', desc:'和志同道合的朋友创建自己的群聊吧。通过分享房间ID来邀请成员，只有拥有ID的人才能加入，完全没有不必要的邀请烦恼！' },
+      { emoji:'🔐', title:'对话自动消失，安心聊天', desc:'1对1和群聊的对话内容在所有参与者退出或聊天室30天无活动后，会自动从服务器删除。不留任何痕迹，放心交流。' },
     ],
     contact:'联系我们',
     copyright:'© 2025–2026 Village Chat. 保留所有权利。',
@@ -1393,6 +1414,8 @@ const ABOUT_CONTENT = {
       { emoji:'💬', title:'グループからプライベートへ、二人だけのトーク', desc:'グループチャットで気が合う近所の人を見つけたら？1:1チャットでもっと深い会話を楽しみましょう。チャットを退出すると相手はメッセージを見られなくなり、ストーキングの心配もありません。' },
       { emoji:'⭐', title:'マナーが積み上がる評判システム', desc:'近所の人から👍高評価・👎低評価を受けられます。プロフィールをリセットすると全記録が消えるため、マナーを守るほど長く信頼を得られます。良い近所づきあいを目指しましょう！' },
       { emoji:'🌍', title:'言語でつながる、もう一つの空間', desc:'海外旅行中だったり、外国語を学びたいなら？同じ言語を話す人たちが集まる言語別チャットルームを利用してみましょう。旅行者から語学学習者まで、世界中の近所の人とつながれます！' },
+      { emoji:'👥', title:'仲間だけのグループチャット', desc:'気の合う仲間と自分たちだけのチャットルームを作りましょう。ルームIDをシェアするだけで招待でき、IDを知っている人しか入れないので、不要な参加申請の心配もありません！' },
+      { emoji:'🔐', title:'会話は自然に消える安心設計', desc:'1:1およびグループチャットのメッセージは、全員が退室するか30日間活動がない場合、サーバーから自動的に削除されます。記録を残さず、安心して会話を楽しめます。' },
     ],
     contact:'お問い合わせ',
     copyright:'© 2025–2026 Village Chat. All rights reserved.',
@@ -1407,6 +1430,8 @@ const ABOUT_CONTENT = {
       { emoji:'💬', title:'Del grupo a lo privado — solo vosotros dos', desc:'¿Encontraste a alguien con quien conectas en el chat grupal? Pásalo a una conversación privada 1:1. Una vez que salgas del chat, la otra persona ya no podrá ver tus mensajes — sin miedo a acosos.' },
       { emoji:'⭐', title:'Un sistema de reputación que premia los buenos modales', desc:'Recibe valoraciones 👍 o 👎 de tus vecinos según tu comportamiento. Como reiniciar tu perfil borra todo el historial, ser un buen vecino es la mejor estrategia a largo plazo. ¡Gánate la confianza y mantenla!' },
       { emoji:'🌍', title:'Salas por idioma — encuentra a los tuyos en cualquier lugar', desc:'¿Viajando al extranjero o aprendiendo un nuevo idioma? Únete a una sala de chat por idioma donde todos hablan tu lengua. ¡Desde turistas hasta estudiantes de idiomas, conecta con tu vecindario global!' },
+      { emoji:'👥', title:'Tu propia sala de chat grupal', desc:'Crea una sala de chat privada con tus amigos. Comparte el ID de la sala y solo quienes lo tengan podrán entrar. Sin invitaciones no deseadas ni desconocidos — solo las personas que tú eliges.' },
+      { emoji:'🔐', title:'Las conversaciones desaparecen solas', desc:'Los mensajes en chats 1:1 y grupales se eliminan automáticamente de nuestros servidores cuando todos los participantes salen o la sala lleva 30 días sin actividad. Conversa con tranquilidad — sin registros permanentes.' },
     ],
     contact:'Contacto',
     copyright:'© 2025–2026 Village Chat. Todos los derechos reservados.',
@@ -1421,6 +1446,8 @@ const ABOUT_CONTENT = {
       { emoji:'💬', title:'Du groupe au privé — juste vous deux', desc:'Tu as trouvé quelqu\'un avec qui tu t\'entends bien dans le groupe ? Passe en discussion privée 1:1 pour aller plus loin. Une fois que tu quittes le chat, l\'autre personne ne peut plus voir tes messages — pas de harcèlement.' },
       { emoji:'⭐', title:'Un système de réputation qui récompense les bonnes manières', desc:'Reçois des évaluations 👍 ou 👎 de tes voisins selon ton comportement. Comme réinitialiser ton profil efface tout l\'historique, être un bon voisin est la meilleure stratégie sur le long terme. Mérite la confiance, garde-la !' },
       { emoji:'🌍', title:'Salons par langue — trouve ta tribu partout', desc:'En voyage à l\'étranger ou en train d\'apprendre une nouvelle langue ? Rejoins un salon de chat par langue où tout le monde parle ta langue. Des touristes aux apprenants — connecte-toi avec ton voisinage mondial !' },
+      { emoji:'👥', title:'Ton propre salon de groupe privé', desc:'Crée un salon de groupe avec les amis de ton choix. Partage l\'ID du salon — seuls ceux qui l\'ont peuvent rejoindre. Pas d\'invitations non désirées, juste les gens que tu veux vraiment !' },
+      { emoji:'🔐', title:'Les conversations disparaissent d\'elles-mêmes', desc:'Les messages des chats 1:1 et de groupe sont automatiquement supprimés de nos serveurs quand tous les participants quittent ou après 30 jours d\'inactivité. Discutez librement — sans traces permanentes.' },
     ],
     contact:'Contact',
     copyright:'© 2025–2026 Village Chat. Tous droits réservés.',
@@ -1435,6 +1462,8 @@ const ABOUT_CONTENT = {
       { emoji:'💬', title:'ग्रुप से प्राइवेट — सिर्फ तुम दोनों', desc:'ग्रुप चैट में कोई पसंद आया? 1:1 प्राइवेट चैट में और गहरी बातचीत करें। चैट छोड़ने के बाद दूसरा व्यक्ति आपके संदेश नहीं देख सकता — स्टॉकिंग की चिंता नहीं।' },
       { emoji:'⭐', title:'अच्छे व्यवहार को पुरस्कृत करती प्रतिष्ठा प्रणाली', desc:'अपने व्यवहार के आधार पर पड़ोसियों से 👍 या 👎 रेटिंग पाएं। प्रोफ़ाइल रीसेट करने पर सारा इतिहास मिट जाता है, इसलिए अच्छा पड़ोसी बने रहना ही सबसे अच्छी रणनीति है!' },
       { emoji:'🌍', title:'भाषा के कमरे — कहीं भी अपने लोग खोजें', desc:'विदेश यात्रा पर हैं या नई भाषा सीख रहे हैं? अपनी भाषा वाले चैट रूम में शामिल हों। पर्यटकों से लेकर भाषा सीखने वालों तक — अपने वैश्विक पड़ोस से जुड़ें!' },
+      { emoji:'👥', title:'अपना खुद का ग्रुप चैट', desc:'अपने दोस्तों के साथ एक प्राइवेट ग्रुप चैट रूम बनाएं। रूम ID शेयर करें — सिर्फ ID वाले ही जुड़ सकते हैं। अनचाहे लोगों की चिंता नहीं, बस वही जिन्हें आप चाहें!' },
+      { emoji:'🔐', title:'बातें खुद ब खुद मिट जाती हैं', desc:'1:1 और ग्रुप चैट के संदेश तब स्वचालित रूप से हटा दिए जाते हैं जब सभी प्रतिभागी निकल जाएं या चैट रूम 30 दिन से निष्क्रिय हो। बेफिक्र होकर बात करें — कोई स्थायी रिकॉर्ड नहीं।' },
     ],
     contact:'संपर्क',
     copyright:'© 2025–2026 Village Chat. सर्वाधिकार सुरक्षित।',
@@ -1449,6 +1478,8 @@ const ABOUT_CONTENT = {
       { emoji:'💬', title:'من المجموعة إلى الخاص — أنتما فقط', desc:'وجدت شخصاً تتفق معه في الدردشة الجماعية؟ انتقلا إلى محادثة خاصة 1:1 لمزيد من العمق. بمجرد مغادرتك للدردشة، لن يتمكن الطرف الآخر من رؤية رسائلك — لا خوف من المضايقة.' },
       { emoji:'⭐', title:'نظام سمعة يكافئ حسن الأخلاق', desc:'احصل على تقييمات 👍 أو 👎 من الجيران بناءً على سلوكك. بما أن إعادة تعيين ملفك الشخصي يمحو جميع السجلات، فإن أن تكون جاراً طيباً هو أفضل استراتيجية على المدى البعيد!' },
       { emoji:'🌍', title:'غرف اللغة — اعثر على أهلك في أي مكان', desc:'تسافر في الخارج أو تتعلم لغة جديدة؟ انضم إلى غرفة دردشة بلغتك حيث يتحدث الجميع نفس اللغة. من السياح إلى متعلمي اللغات — تواصل مع جيرانك حول العالم!' },
+      { emoji:'👥', title:'غرفة دردشة جماعية خاصة بكم', desc:'أنشئ غرفة دردشة جماعية مع الأصدقاء الذين تختارهم. شارك معرّف الغرفة — لن يتمكن من الدخول إلا من لديه المعرّف. لا دعوات غير مرغوب فيها، فقط الأشخاص الذين تريدهم!' },
+      { emoji:'🔐', title:'المحادثات تختفي من تلقاء نفسها', desc:'يتم حذف رسائل الدردشات الخاصة والجماعية تلقائياً من خوادمنا عند مغادرة جميع المشاركين أو بعد 30 يوماً من عدم النشاط. تحدث بحرية — لا سجلات دائمة.' },
     ],
     contact:'تواصل معنا',
     copyright:'© 2025–2026 Village Chat. جميع الحقوق محفوظة.',
@@ -1734,6 +1765,23 @@ document.addEventListener('click', function(e) {
       panel.style.display = 'none';
     }
   }
+  const customScreen = document.getElementById('customRoomListScreen');
+  if (customScreen && customScreen.classList.contains('active')) {
+    const createForm = document.getElementById('createRoomForm');
+    const joinForm = document.getElementById('joinRoomForm');
+    const btnCreate = document.getElementById('btnCreateRoom');
+    const btnJoin = document.getElementById('btnJoinRoom');
+    if (createForm && createForm.style.display !== 'none') {
+      if (!createForm.contains(e.target) && !btnCreate?.contains(e.target) && e.target !== btnCreate) {
+        createForm.style.display = 'none';
+      }
+    }
+    if (joinForm && joinForm.style.display !== 'none') {
+      if (!joinForm.contains(e.target) && !btnJoin?.contains(e.target) && e.target !== btnJoin) {
+        joinForm.style.display = 'none';
+      }
+    }
+  }
 });
 async function submitDevInquiry() {
   const text = document.getElementById('devInquiryText').value.trim();
@@ -1847,6 +1895,7 @@ function renderPrivacy() {
         <li>${isEn ? '1:1 private messages are stored only during the active conversation. Once both parties leave the room, messages are no longer accessible.' : '1:1 메시지는 대화가 활성화된 동안만 저장되며, 양측 퇴장 후 접근이 불가합니다.'}</li>
         <li>${isEn ? 'Inactive profiles (no activity for 30 days) may be automatically deleted to protect storage and user privacy.' : '비활성 프로필(마지막 접속 후 30일 경과)은 저장 공간 보호 및 개인정보 보호를 위해 자동으로 삭제될 수 있습니다.'}</li>
         <li>${isEn ? 'Chat room data (messages and room records) is permanently deleted from our servers once all participants have left the room.' : '채팅방 데이터(메시지 및 방 정보)는 모든 참여자가 방을 나간 후 서버에서 영구 삭제됩니다.'}</li>
+        <li>${isEn ? '1:1 and group chat rooms with no activity for 30 days are automatically deleted from the server, including all messages.' : '30일 이상 대화가 없는 1:1 채팅방 및 그룹 채팅방은 모든 메시지와 함께 서버에서 자동으로 삭제됩니다.'}</li>
         <li>${isEn ? 'Spam ban records are retained for up to 7 days (maximum ban duration).' : '도배 제재 기록은 최대 7일(최장 제재 기간) 보관 후 자동 만료됩니다.'}</li>
         <li>${isEn ? 'Device IDs are stored only in your browser\'s local storage and are not transmitted to our servers.' : '디바이스 ID는 사용자 브라우저의 로컬 스토리지에만 저장되며 서버로 전송되지 않습니다.'}</li>
       </ul>
@@ -1918,6 +1967,7 @@ function renderTerms() {
         <li>${isEn ? 'You may delete your profile at any time via the app. Deletion permanently removes your profile, reputation, and associated data.' : '언제든지 앱 내에서 프로필을 삭제할 수 있습니다. 삭제 시 프로필, 평판 및 관련 데이터가 영구적으로 제거됩니다.'}</li>
         <li>${isEn ? 'Inactive profiles (no activity for 30 days) may be automatically deleted. This helps keep the service clean and protects dormant accounts.' : '비활성 프로필(마지막 접속 후 30일 경과)은 자동으로 삭제될 수 있습니다. 이는 서비스 환경을 청결하게 유지하고 휴면 계정을 보호하기 위함입니다.'}</li>
         <li>${isEn ? 'Chat room data is permanently deleted once all participants have left. Neither you nor Village Chat can recover deleted room data.' : '채팅방 데이터는 모든 참여자가 퇴장하면 영구 삭제됩니다. 삭제된 채팅방 데이터는 복구되지 않습니다.'}</li>
+        <li>${isEn ? 'Chat rooms (1:1 and group) with no activity for 30 days are automatically deleted from the server. This cannot be undone.' : '30일간 활동이 없는 채팅방(1:1 및 그룹)은 서버에서 자동으로 삭제됩니다. 이는 복구되지 않습니다.'}</li>
       </ul>
     </div>
     <div class="legal-section">
@@ -3065,7 +3115,6 @@ function leavePresence() {
   if (el) el.textContent = '';
   const panel = document.getElementById('participantPanel');
   if (panel) panel.style.display = 'none';
-  currentRoomMembers = [];
 }
 
 // ── 채팅 입장 (공통) ─────────────────────────────────────
@@ -3118,15 +3167,20 @@ function enterChat(roomId, title, sub, badge, backTarget, isDM = false, isCustom
       });
     });
 
+    currentRoomMembers = [];
     if (isDM) {
-      const parts = roomId.replace('dm_', '').split('__');
-      currentRoomMembers = parts;
+      currentRoomMembers = roomId.replace('dm_', '').split('__');
       joinPresence(roomId);
     } else if (isCustom) {
       joinPresence(roomId);
       window._getDoc(window._doc(window._db, 'customRooms', roomId)).then(snap => {
         if (snap.exists() && Array.isArray(snap.data().members)) {
           currentRoomMembers = snap.data().members;
+          const el = document.getElementById('onlineCount');
+          if (el && el.textContent) {
+            const onlineStr = el.textContent.replace('👥 ', '').split('/')[0];
+            el.textContent = '👥 ' + onlineStr + '/' + currentRoomMembers.length;
+          }
         }
       }).catch(() => {});
     } else {
@@ -3484,20 +3538,47 @@ function enterCreatedRoom() {
   _pendingCreatedRoom = null;
 }
 
-async function submitJoinRoom() {
+let _pendingJoinRoom = null;
+
+async function previewJoinRoom() {
   const rawId = document.getElementById('joinRoomIdInput').value.trim().toUpperCase();
   if (!rawId) return;
   if (!window._firebaseReady) return;
   const snap = await window._getDoc(window._doc(window._db, 'customRooms', rawId)).catch(() => null);
   if (!snap || !snap.exists()) { alert(t('room_not_found') || '채팅방을 찾을 수 없어요.'); return; }
   const data = snap.data();
-  saveCustomRoomToList({ id: rawId, name: data.name, photo: data.photo || null });
-  window._updateDoc(window._doc(window._db, 'customRooms', rawId), { members: window._arrayUnion(profile.nickname) }).catch(() => {});
+  _pendingJoinRoom = { id: rawId, name: data.name, photo: data.photo || null };
+  // 미리보기 렌더링
+  const photoEl = document.getElementById('previewRoomPhoto');
+  if (data.photo) {
+    photoEl.innerHTML = `<img src="${data.photo}" style="width:100%;height:100%;object-fit:cover">`;
+  } else {
+    photoEl.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--c-muted)" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
+  }
+  document.getElementById('previewRoomName').textContent = data.name;
+  const members = Array.isArray(data.members) ? data.members.length : '?';
+  document.getElementById('previewRoomMembers').textContent = members + (currentLang === 'ko' ? '명 참여 중' : currentLang === 'ja' ? '人参加中' : currentLang === 'zh' ? '人参与中' : ' member' + (members === 1 ? '' : 's'));
+  document.getElementById('joinRoomPreview').style.display = 'block';
+}
+
+function closeJoinPreview() {
+  document.getElementById('joinRoomPreview').style.display = 'none';
+  document.getElementById('joinRoomIdInput').value = '';
+  _pendingJoinRoom = null;
+}
+
+function confirmJoinRoom() {
+  if (!_pendingJoinRoom) return;
+  const { id, name, photo } = _pendingJoinRoom;
+  saveCustomRoomToList({ id, name, photo });
+  window._updateDoc(window._doc(window._db, 'customRooms', id), { members: window._arrayUnion(profile.nickname) }).catch(() => {});
   subscribeCustomRooms();
   document.getElementById('joinRoomForm').style.display = 'none';
+  document.getElementById('joinRoomPreview').style.display = 'none';
   document.getElementById('joinRoomIdInput').value = '';
+  _pendingJoinRoom = null;
   showCustomRoomList();
-  enterChat(rawId, esc(data.name), '', '', 'customRoomListScreen', false, true);
+  enterChat(id, esc(name), '', '', 'customRoomListScreen', false, true);
 }
 
 function showCustomRoomList() {
@@ -3906,7 +3987,13 @@ async function sendMsg() {
     sender: profile.nickname, gender: profile.gender,
     avatar: profile.avatar || '', nationality: profile.nationality || '', text, ts: new Date(),
   }).catch(() => {});
-  if (currentRoom?.isDM) dmMsgSent = true;
+  if (currentRoom?.isDM) {
+    dmMsgSent = true;
+    window._updateDoc(window._doc(window._db, 'dmRooms', currentRoom.id), { lastActivity: new Date() }).catch(() => {});
+  }
+  if (currentRoom?.isCustom) {
+    window._updateDoc(window._doc(window._db, 'customRooms', currentRoom.id), { lastActivity: new Date() }).catch(() => {});
+  }
   input.value = ''; input.style.height = 'auto';
 }
 
