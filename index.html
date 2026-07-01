@@ -220,7 +220,7 @@ body {
 #dmListScreen { overflow-y: auto; }
 .dm-list { padding: 1rem; display: flex; flex-direction: column; gap: 8px; }
 .dm-item {
-  background: var(--c-panel); border: 1px solid var(--c-border);
+  background: #f0faf4; border: 1px solid #b8ddc8;
   border-radius: var(--radius-md); padding: 12px 14px;
   display: flex; align-items: center; gap: 12px; cursor: pointer; transition: border-color .15s;
 }
@@ -504,7 +504,117 @@ body {
     </div>
     <button class="intro-btn" data-i18n="intro_btn" onclick="startIntro()">시작하기 →</button>
     <button class="intro-learn-btn" data-i18n="intro_learn" onclick="showScreen('aboutScreen')">서비스 소개 →</button>
+    <button class="intro-learn-btn" style="margin-top:6px;opacity:0.7;font-size:13px" onclick="showScreen('devlogScreen')">개발 로그 →</button>
   </div>
+</div>
+
+<!-- 개발 로그 화면 -->
+<div id="devlogScreen" class="screen" style="overflow-y:auto;align-items:flex-start;padding:0">
+  <div class="about-header" style="padding:28px 20px 24px">
+    <button class="about-back" onclick="showScreen('introScreen')">←</button>
+    <svg class="about-header-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="50" fill="rgba(255,255,255,0.15)"/>
+      <path d="M11 65 L50 18 L89 65" stroke="white" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="50" cy="50" r="17" fill="none" stroke="white" stroke-width="4"/>
+      <path d="M50 33 L44 50 L50 44 L56 50 Z" fill="white"/>
+      <path d="M50 67 L56 50 L50 56 L44 50 Z" fill="white" opacity=".35"/>
+      <circle cx="38" cy="79" r="4" fill="white"/><circle cx="50" cy="79" r="4" fill="white"/><circle cx="62" cy="79" r="4" fill="white"/>
+    </svg>
+    <div class="about-header-title">개발 로그</div>
+    <div class="about-header-sub" style="opacity:.7">Village Chat Development Log</div>
+  </div>
+  <div style="width:100%;max-width:480px;margin:0 auto;padding:8px 20px 0">
+
+    <!-- 2026.06 -->
+    <div style="margin-bottom:28px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <div style="font-size:12px;font-weight:700;color:#fff;background:var(--blue);border-radius:20px;padding:3px 12px;white-space:nowrap">2026.06</div>
+        <div style="flex:1;height:1px;background:var(--c-border)"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="background:#f0faf4;border:1px solid #b8ddc8;border-radius:var(--radius-md);padding:12px 14px">
+          <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:4px">보안 강화</div>
+          <div style="font-size:13px;color:var(--c-text);line-height:1.6">Firebase 익명 로그인 도입 · App Check(reCAPTCHA v3) 적용 · Firestore 보안 규칙 강화 · DM 참여자 UID 기반 접근 제어</div>
+        </div>
+        <div style="background:#f0faf4;border:1px solid #b8ddc8;border-radius:var(--radius-md);padding:12px 14px">
+          <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:4px">신고 / 제재 시스템</div>
+          <div style="font-size:13px;color:var(--c-text);line-height:1.6">상대방 프로필에서 신고 기능 추가 · 도배 감지 및 자동 임시 제재 · Firestore 신고 기록 저장</div>
+        </div>
+        <div style="background:#f0faf4;border:1px solid #b8ddc8;border-radius:var(--radius-md);padding:12px 14px">
+          <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:4px">광고 / 수익화</div>
+          <div style="font-size:13px;color:var(--c-text);line-height:1.6">Google AdSense 연동 · ads.txt 등록 · HTML 기반 광고 배너 제작(oeeo · 광고 문의) · Cloudflare 이메일 라우팅 설정</div>
+        </div>
+        <div style="background:#f0faf4;border:1px solid #b8ddc8;border-radius:var(--radius-md);padding:12px 14px">
+          <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:4px">UX 개선</div>
+          <div style="font-size:13px;color:var(--c-text);line-height:1.6">프로필 자기소개 편집 UI · 붐업/다운 하루 1회 중복 방지 · 상대방 프로필 이미지 품질 개선 · DM 목록 디자인 통일 · 프로필 설정 화면 뒤로가기 버튼</div>
+        </div>
+        <div style="background:#f0faf4;border:1px solid #b8ddc8;border-radius:var(--radius-md);padding:12px 14px">
+          <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:4px">법적 문서</div>
+          <div style="font-size:13px;color:var(--c-text);line-height:1.6">개인정보처리방침 · 이용약관 8개 언어 지원 · 시행일 / 최종 수정일 언어별 표시</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2026.05 -->
+    <div style="margin-bottom:28px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <div style="font-size:12px;font-weight:700;color:#fff;background:var(--blue);border-radius:20px;padding:3px 12px;white-space:nowrap">2026.05</div>
+        <div style="flex:1;height:1px;background:var(--c-border)"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="background:#f0faf4;border:1px solid #b8ddc8;border-radius:var(--radius-md);padding:12px 14px">
+          <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:4px">시(市) 단위 채팅방</div>
+          <div style="font-size:13px;color:var(--c-text);line-height:1.6">시 안에 사는 유저에게 시 단위 채팅방 추가(총 3단계: 시·구·동) · Nominatim zoom=10 fallback으로 시 정보 정확도 향상</div>
+        </div>
+        <div style="background:#f0faf4;border:1px solid #b8ddc8;border-radius:var(--radius-md);padding:12px 14px">
+          <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:4px">군(郡) 지역 지원</div>
+          <div style="font-size:13px;color:var(--c-text);line-height:1.6">군·읍·면 체계 감지 · 농어촌 지역 채팅방 구조 분리(군/읍·면 2단계)</div>
+        </div>
+        <div style="background:#f0faf4;border:1px solid #b8ddc8;border-radius:var(--radius-md);padding:12px 14px">
+          <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:4px">같은 언어 채팅방</div>
+          <div style="font-size:13px;color:var(--c-text);line-height:1.6">같은 언어를 사용하는 이웃끼리 구·동 단위 별도 채팅방 생성 · 한국어 선택 시 한국어 전용 방 미생성(중복 방지)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2026.03 -->
+    <div style="margin-bottom:28px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <div style="font-size:12px;font-weight:700;color:#fff;background:var(--blue);border-radius:20px;padding:3px 12px;white-space:nowrap">2026.03</div>
+        <div style="flex:1;height:1px;background:var(--c-border)"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="background:#f0faf4;border:1px solid #b8ddc8;border-radius:var(--radius-md);padding:12px 14px">
+          <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:4px">1:1 채팅(DM)</div>
+          <div style="font-size:13px;color:var(--c-text);line-height:1.6">그룹 채팅에서 상대 프로필 탭 → DM 시작 · 수신함 알림 · 읽지 않은 메시지 배지 · 상대방 나감 감지</div>
+        </div>
+        <div style="background:#f0faf4;border:1px solid #b8ddc8;border-radius:var(--radius-md);padding:12px 14px">
+          <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:4px">프로필 시스템</div>
+          <div style="font-size:13px;color:var(--c-text);line-height:1.6">닉네임 · 성별 · 국적 · 아바타 사진 · 자기소개 · 붐업/다운 평가 · 프로필 삭제 기능</div>
+        </div>
+        <div style="background:#f0faf4;border:1px solid #b8ddc8;border-radius:var(--radius-md);padding:12px 14px">
+          <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:4px">다국어 지원</div>
+          <div style="font-size:13px;color:var(--c-text);line-height:1.6">8개 언어 UI(한·영·중·일·스·불·힌·아) · 언어별 국기 선택 · 비속어 필터 다국어 적용</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2026.01 -->
+    <div style="margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <div style="font-size:12px;font-weight:700;color:#fff;background:var(--blue);border-radius:20px;padding:3px 12px;white-space:nowrap">2026.01</div>
+        <div style="flex:1;height:1px;background:var(--c-border)"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="background:#f0faf4;border:1px solid #b8ddc8;border-radius:var(--radius-md);padding:12px 14px">
+          <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:4px">Village Chat 출시</div>
+          <div style="font-size:13px;color:var(--c-text);line-height:1.6">위치 기반 실시간 그룹 채팅 · Nominatim 역지오코딩으로 구·동 자동 감지 · Firebase Firestore 실시간 메시지 동기화 · GitHub Pages + Cloudflare 배포</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <footer class="about-footer" id="devlogFooter" style="width:100%;max-width:480px;margin:24px auto 0"></footer>
 </div>
 
 <!-- ⓪-b 서비스 소개 화면 -->
@@ -693,6 +803,28 @@ body {
          data-ad-format="horizontal"
          data-full-width-responsive="true"></ins>
     <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+  <!-- 메뉴 하단 배너 -->
+  <div id="menuFooter" style="padding:12px 16px 20px;border-top:1px solid var(--c-border);background:var(--c-bg)">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:11.5px;color:var(--c-muted)">
+      <span style="font-weight:600;color:var(--c-muted)">Village Chat</span>
+      <a href="#" onclick="event.preventDefault();showScreen('privacyScreen')" style="color:var(--blue);text-decoration:none" data-i18n="privacy">개인정보처리방침</a>
+      <a href="#" onclick="event.preventDefault();showScreen('termsScreen')" style="color:var(--blue);text-decoration:none" data-i18n="terms">이용약관</a>
+      <a href="mailto:contact@village-chat.com" style="color:var(--blue);text-decoration:none">contact@village-chat.com</a>
+      <button onclick="toggleDevInquiry()" style="background:var(--blue);color:#fff;border:none;border-radius:20px;padding:3px 11px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit" data-i18n="dev_inquiry">개발 문의</button>
+    </div>
+    <div style="font-size:10.5px;color:var(--c-muted);margin-top:5px" id="menuCopyright"></div>
+    <!-- 개발 문의 폼 -->
+    <div id="devInquiryForm" style="display:none;margin-top:10px">
+      <textarea id="devInquiryText" maxlength="500" style="width:100%;padding:10px 12px;border:1px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;resize:none;height:90px;background:var(--c-input);color:var(--c-text);box-sizing:border-box" placeholder="개발을 원하는 서비스나 기능이 있다면 자유롭게 작성해주세요. 아이디어, 협업 제안 모두 환영합니다 :)"></textarea>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+        <span id="devInquiryCounter" style="font-size:11px;color:var(--c-muted)">0 / 500</span>
+        <div style="display:flex;gap:8px">
+          <button onclick="toggleDevInquiry()" style="padding:6px 14px;border:1px solid var(--c-border);border-radius:var(--radius-sm);background:none;font-size:12px;cursor:pointer;font-family:inherit;color:var(--c-text)" data-i18n="close_btn">취소</button>
+          <button onclick="submitDevInquiry()" style="padding:6px 14px;border:none;border-radius:var(--radius-sm);background:var(--blue);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit" data-i18n="submit">제출</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1352,6 +1484,47 @@ function renderAbout() {
     <div class="about-footer-row">${c.contact}: <a href="mailto:contact@village-chat.com">contact@village-chat.com</a></div>
     <div class="about-footer-row"><a href="#" onclick="event.preventDefault();showScreen('privacyScreen')">${c.privacy}</a> &nbsp;·&nbsp; <a href="#" onclick="event.preventDefault();showScreen('termsScreen')">${c.terms}</a></div>
     <div class="about-footer-row" style="margin-top:10px;font-size:11.5px">${c.copyright}</div>`;
+
+  // 개발 로그 푸터
+  const df = document.getElementById('devlogFooter');
+  if (df) df.innerHTML = `
+    <div class="about-footer-title">Village Chat</div>
+    <div class="about-footer-row">${c.contact}: <a href="mailto:contact@village-chat.com">contact@village-chat.com</a></div>
+    <div class="about-footer-row"><a href="#" onclick="event.preventDefault();showScreen('privacyScreen')">${c.privacy}</a> &nbsp;·&nbsp; <a href="#" onclick="event.preventDefault();showScreen('termsScreen')">${c.terms}</a></div>
+    <div class="about-footer-row" style="margin-top:10px;font-size:11.5px">${c.copyright}</div>`;
+
+  // 메뉴 하단 copyright
+  const mc = document.getElementById('menuCopyright');
+  if (mc) mc.textContent = c.copyright;
+}
+
+// 개발 문의 폼
+function toggleDevInquiry() {
+  const f = document.getElementById('devInquiryForm');
+  const isHidden = f.style.display === 'none';
+  f.style.display = isHidden ? 'block' : 'none';
+  if (isHidden) {
+    document.getElementById('devInquiryText').focus();
+    document.getElementById('devInquiryText').oninput = function() {
+      document.getElementById('devInquiryCounter').textContent = this.value.length + ' / 500';
+    };
+  }
+}
+async function submitDevInquiry() {
+  const text = document.getElementById('devInquiryText').value.trim();
+  if (!text) { alert('내용을 입력해주세요.'); return; }
+  if (window._firebaseReady) {
+    window._addDoc(window._collection(window._db, 'inquiries'), {
+      type: 'dev',
+      text,
+      nickname: profile?.nickname || '',
+      ts: new Date(),
+    }).catch(() => {});
+  }
+  document.getElementById('devInquiryForm').style.display = 'none';
+  document.getElementById('devInquiryText').value = '';
+  document.getElementById('devInquiryCounter').textContent = '0 / 500';
+  alert('문의가 접수됐습니다. 검토 후 연락드릴게요 :)');
 }
 
 function legalDateStr(lang, effectiveDate, updatedDate) {
@@ -2378,31 +2551,32 @@ async function enterDM(partnerNick, partnerAvatarData, partnerGender, partnerNat
   closePartnerModal();
   const dmId = 'dm_' + [profile.nickname, partnerNick].sort().join('__');
   const partnerLeft = getLeftDms().includes(dmId);
+  // 내가 먼저 DM을 거는 경우: 상대가 나간 것으로 표시되어 있어도 초기화
+  // (프로필 삭제 후 동일 닉네임으로 재가입한 경우 대화 재개 허용)
+  if (partnerLeft) clearLeftMark(dmId);
   saveDmToList({ id: dmId, partnerNick, partnerAvatar: partnerAvatarData, partnerGender, partnerNationality });
   subscribeDmRooms();
 
   if (window._firebaseReady) {
-    // 상대방 UID 조회 후 dmRooms 참여자 문서 생성 (DM 접근 보안)
+    // 상대방 UID 조회 후 dmRooms 참여자 문서 갱신 (재가입 시 새 UID 반영)
     if (window._myUid) {
       try {
         const partnerSnap = await window._getDoc(window._doc(window._db, 'users', partnerNick));
         const partnerUid = partnerSnap.exists() ? partnerSnap.data().uid : null;
         const participants = [window._myUid];
         if (partnerUid) participants.push(partnerUid);
-        await window._setDoc(window._doc(window._db, 'dmRooms', dmId), { participants }, { merge: true });
+        await window._setDoc(window._doc(window._db, 'dmRooms', dmId), { participants });
       } catch(e) {}
     }
-    // 상대가 나가지 않은 경우에만 초대 알림 전송
-    if (!partnerLeft) {
-      const inboxRef = window._doc(window._db, 'users', partnerNick, 'inbox', dmId);
-      window._setDoc(inboxRef, {
-        dmId, partnerNick: profile.nickname,
-        partnerAvatar: profile.avatar || '',
-        partnerGender: profile.gender,
-        partnerNationality: profile.nationality || '',
-        ts: new Date()
-      }).catch(() => {});
-    }
+    // 항상 초대 알림 전송 (재가입 케이스 포함)
+    const inboxRef = window._doc(window._db, 'users', partnerNick, 'inbox', dmId);
+    window._setDoc(inboxRef, {
+      dmId, partnerNick: profile.nickname,
+      partnerAvatar: profile.avatar || '',
+      partnerGender: profile.gender,
+      partnerNationality: profile.nationality || '',
+      ts: new Date()
+    }).catch(() => {});
   }
   enterChat(dmId, partnerNick, t('dm_chat'), '', 'dmListScreen', true);
 }
@@ -2964,11 +3138,6 @@ async function submitReport() {
   if (window._firebaseReady) {
     window._addDoc(window._collection(window._db, 'reports'), reportData).catch(() => {});
   }
-  const subject = encodeURIComponent(`[신고] ${modalTarget.nick} 신고`);
-  const body = encodeURIComponent(
-    `신고자: ${profile.nickname}\n신고 대상: ${modalTarget.nick}\n일시: ${now.toLocaleString('ko-KR')}\n채팅방: ${currentRoom?.id || '-'}\n\n사유:\n${reason}`
-  );
-  window.open(`mailto:contact@village-chat.com?subject=${subject}&body=${body}`, '_blank');
   document.getElementById('reportForm').style.display = 'none';
   document.getElementById('reportReason').value = '';
   alert(currentLang === 'ko' ? '신고가 접수되었습니다.' : 'Report submitted.');
