@@ -31,7 +31,7 @@
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9066647165342853" crossorigin="anonymous"></script>
 
 <script type="module">
-  import { initializeFirestore, collection, addDoc, setDoc, deleteDoc, getDocs, getDoc, doc, query, orderBy, onSnapshot, limit, where, enableNetwork, disableNetwork }
+  import { initializeFirestore, collection, addDoc, setDoc, updateDoc, deleteDoc, getDocs, getDoc, doc, query, orderBy, onSnapshot, limit, where, arrayUnion, arrayRemove, enableNetwork, disableNetwork }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -67,6 +67,9 @@
   window._onSnapshot = onSnapshot;
   window._limit = limit;
   window._where = where;
+  window._updateDoc = updateDoc;
+  window._arrayUnion = arrayUnion;
+  window._arrayRemove = arrayRemove;
   window._enableNetwork = enableNetwork;
   window._disableNetwork = disableNetwork;
 
@@ -267,7 +270,7 @@ body {
 }
 
 /* ── 채팅 화면 ── */
-#chatScreen { flex: 1; overflow: hidden; }
+#chatScreen { flex: 1; overflow: hidden; position: relative; }
 #chatScreen.active { display: flex; flex-direction: column; }
 #messages { flex: 1; overflow-y: auto; padding: 14px 14px 8px; display: flex; flex-direction: column; gap: 3px; background: #e8f5ed; }
 #messages::-webkit-scrollbar { width: 4px; }
@@ -767,7 +770,7 @@ body {
 <div id="customRoomListScreen" class="screen">
   <div class="top-bar">
     <button class="back-btn" onclick="showScreen('menuScreen')" aria-label="뒤로">←</button>
-    <div class="room-title" data-i18n="menu_custom">그룹 채팅</div>
+    <div class="room-title" data-i18n="menu_custom">그룹 채팅 목록</div>
   </div>
   <div style="padding:12px 16px 0;display:flex;gap:8px">
     <button id="btnCreateRoom" onclick="toggleCustomForm('create')" style="flex:1;padding:10px 0;border:none;border-radius:var(--radius-sm);background:var(--blue);color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit" data-i18n="create_room">방 만들기</button>
@@ -816,7 +819,10 @@ body {
       <div class="room-sub" id="roomSub"></div>
     </div>
     <div class="room-badge" id="roomBadge"></div>
-    <div id="onlineCount" style="font-size:12px;color:var(--c-muted);white-space:nowrap;margin-left:4px"></div>
+    <button id="onlineCount" onclick="toggleParticipantPanel()" style="font-size:12px;color:rgba(255,255,255,0.85);white-space:nowrap;margin-left:4px;background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:8px;transition:background 0.15s" onmouseenter="this.style.background='rgba(255,255,255,0.12)'" onmouseleave="this.style.background='none'"></button>
+  </div>
+  <div id="participantPanel" style="display:none;position:absolute;top:56px;right:8px;width:200px;background:var(--c-bg);border:1px solid var(--c-border);border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.15);z-index:200;overflow:hidden;max-height:300px;overflow-y:auto">
+    <div id="participantList" style="padding:8px 0"></div>
   </div>
   <div id="adBanner" style="display:none">
     <div id="adTrack">
@@ -955,6 +961,7 @@ document.addEventListener('firebaseReady', () => { registerUid(); }, { once: tru
 let currentLocation = { gu: '', dong: '' };
 let currentRoom = null;
 let chatBackTarget = 'menuScreen';
+let currentRoomMembers = [];
 let unsubscribe = null;
 let lastDate = '';
 let selectedGender = '';
@@ -1292,14 +1299,14 @@ const STRINGS = {
 // custom group room i18n
 ['en','ko','zh','ja','es','fr','hi','ar'].forEach(l => {
   const x = {
-    en:{ menu_custom:'Group Chats', menu_custom_sub:'Rooms you created or joined', create_room:'Create Room', join_room:'Join Room', room_name_ph:'Room name', enter_room_id_ph:'Room ID (e.g. ABC123)', room_id_label:'Room ID', room_id_hint:'Share this ID so friends can join', enter_room:'Enter Room', copy_id:'Copy', copied:'Copied!', custom_empty:'No group chats yet.\nCreate or join a room!', room_not_found:'Room not found. Check the ID and try again.', room_name_err:'Please enter a room name.' },
-    ko:{ menu_custom:'그룹 채팅', menu_custom_sub:'직접 만든 채팅방', create_room:'방 만들기', join_room:'방 참여하기', room_name_ph:'채팅방 이름', enter_room_id_ph:'채팅방 ID (예: ABC123)', room_id_label:'채팅방 ID', room_id_hint:'이 ID를 공유하면 친구들이 입장할 수 있어요', enter_room:'방 입장하기', copy_id:'복사', copied:'복사됨!', custom_empty:'참여한 그룹 채팅이 없어요.\n방을 만들거나 참여해보세요!', room_not_found:'채팅방을 찾을 수 없어요. ID를 확인해주세요.', room_name_err:'채팅방 이름을 입력해주세요.' },
-    zh:{ menu_custom:'群聊', menu_custom_sub:'您创建或加入的群聊', create_room:'创建房间', join_room:'加入房间', room_name_ph:'房间名称', enter_room_id_ph:'房间ID（如 ABC123）', room_id_label:'房间ID', room_id_hint:'分享此ID，朋友们即可加入', enter_room:'进入房间', copy_id:'复制', copied:'已复制！', custom_empty:'还没有群聊。\n创建或加入一个房间吧！', room_not_found:'找不到该房间，请确认ID后再试。', room_name_err:'请输入房间名称。' },
-    ja:{ menu_custom:'グループチャット', menu_custom_sub:'作成・参加した部屋', create_room:'部屋を作る', join_room:'部屋に参加', room_name_ph:'部屋の名前', enter_room_id_ph:'部屋ID（例：ABC123）', room_id_label:'部屋ID', room_id_hint:'このIDをシェアすると友達が入れます', enter_room:'入室する', copy_id:'コピー', copied:'コピー済み！', custom_empty:'グループチャットがまだありません。\n部屋を作るか参加してみましょう！', room_not_found:'部屋が見つかりません。IDを確認してください。', room_name_err:'部屋の名前を入力してください。' },
-    es:{ menu_custom:'Chats grupales', menu_custom_sub:'Salas creadas o unidas', create_room:'Crear sala', join_room:'Unirse a sala', room_name_ph:'Nombre de la sala', enter_room_id_ph:'ID de sala (ej. ABC123)', room_id_label:'ID de sala', room_id_hint:'Comparte este ID para que tus amigos puedan unirse', enter_room:'Entrar', copy_id:'Copiar', copied:'¡Copiado!', custom_empty:'No hay chats grupales aún.\n¡Crea o únete a una sala!', room_not_found:'Sala no encontrada. Verifica el ID.', room_name_err:'Por favor introduce el nombre de la sala.' },
-    fr:{ menu_custom:'Chats de groupe', menu_custom_sub:'Salons créés ou rejoints', create_room:'Créer un salon', join_room:'Rejoindre un salon', room_name_ph:'Nom du salon', enter_room_id_ph:'ID du salon (ex. ABC123)', room_id_label:'ID du salon', room_id_hint:'Partagez cet ID pour que vos amis puissent rejoindre', enter_room:'Entrer', copy_id:'Copier', copied:'Copié !', custom_empty:'Aucun chat de groupe pour l\'instant.\nCréez ou rejoignez un salon !', room_not_found:'Salon introuvable. Vérifiez l\'ID.', room_name_err:'Veuillez entrer le nom du salon.' },
-    hi:{ menu_custom:'ग्रुप चैट', menu_custom_sub:'बनाए या जुड़े कमरे', create_room:'कमरा बनाएं', join_room:'कमरे में जुड़ें', room_name_ph:'कमरे का नाम', enter_room_id_ph:'कमरा ID (जैसे ABC123)', room_id_label:'कमरा ID', room_id_hint:'यह ID शेयर करें ताकि दोस्त जुड़ सकें', enter_room:'प्रवेश करें', copy_id:'कॉपी', copied:'कॉपी हो गया!', custom_empty:'कोई ग्रुप चैट नहीं।\nकमरा बनाएं या जुड़ें!', room_not_found:'कमरा नहीं मिला। ID जांचें।', room_name_err:'कृपया कमरे का नाम दर्ज करें।' },
-    ar:{ menu_custom:'الدردشات الجماعية', menu_custom_sub:'الغرف التي أنشأتها أو انضممت إليها', create_room:'إنشاء غرفة', join_room:'الانضمام لغرفة', room_name_ph:'اسم الغرفة', enter_room_id_ph:'معرّف الغرفة (مثل ABC123)', room_id_label:'معرّف الغرفة', room_id_hint:'شارك هذا المعرّف ليتمكن أصدقاؤك من الانضمام', enter_room:'دخول', copy_id:'نسخ', copied:'تم النسخ!', custom_empty:'لا توجد دردشات جماعية بعد.\nأنشئ أو انضم لغرفة!', room_not_found:'الغرفة غير موجودة. تحقق من المعرّف.', room_name_err:'الرجاء إدخال اسم الغرفة.' },
+    en:{ menu_custom:'Group Chat List', menu_custom_sub:'Rooms you created or joined', create_room:'Create Room', join_room:'Join Room', room_name_ph:'Room name', enter_room_id_ph:'Room ID (e.g. ABC123)', room_id_label:'Room ID', room_id_hint:'Share this ID so friends can join', enter_room:'Enter Room', copy_id:'Copy', copied:'Copied!', custom_empty:'No group chats yet.\nCreate or join a room!', room_not_found:'Room not found. Check the ID and try again.', room_name_err:'Please enter a room name.' },
+    ko:{ menu_custom:'그룹 채팅 목록', menu_custom_sub:'직접 만든 채팅방', create_room:'방 만들기', join_room:'방 참여하기', room_name_ph:'채팅방 이름', enter_room_id_ph:'채팅방 ID (예: ABC123)', room_id_label:'채팅방 ID', room_id_hint:'이 ID를 공유하면 친구들이 입장할 수 있어요', enter_room:'방 입장하기', copy_id:'복사', copied:'복사됨!', custom_empty:'참여한 그룹 채팅이 없어요.\n방을 만들거나 참여해보세요!', room_not_found:'채팅방을 찾을 수 없어요. ID를 확인해주세요.', room_name_err:'채팅방 이름을 입력해주세요.' },
+    zh:{ menu_custom:'群聊列表', menu_custom_sub:'您创建或加入的群聊', create_room:'创建房间', join_room:'加入房间', room_name_ph:'房间名称', enter_room_id_ph:'房间ID（如 ABC123）', room_id_label:'房间ID', room_id_hint:'分享此ID，朋友们即可加入', enter_room:'进入房间', copy_id:'复制', copied:'已复制！', custom_empty:'还没有群聊。\n创建或加入一个房间吧！', room_not_found:'找不到该房间，请确认ID后再试。', room_name_err:'请输入房间名称。' },
+    ja:{ menu_custom:'グループチャット一覧', menu_custom_sub:'作成・参加した部屋', create_room:'部屋を作る', join_room:'部屋に参加', room_name_ph:'部屋の名前', enter_room_id_ph:'部屋ID（例：ABC123）', room_id_label:'部屋ID', room_id_hint:'このIDをシェアすると友達が入れます', enter_room:'入室する', copy_id:'コピー', copied:'コピー済み！', custom_empty:'グループチャットがまだありません。\n部屋を作るか参加してみましょう！', room_not_found:'部屋が見つかりません。IDを確認してください。', room_name_err:'部屋の名前を入力してください。' },
+    es:{ menu_custom:'Lista de chats grupales', menu_custom_sub:'Salas creadas o unidas', create_room:'Crear sala', join_room:'Unirse a sala', room_name_ph:'Nombre de la sala', enter_room_id_ph:'ID de sala (ej. ABC123)', room_id_label:'ID de sala', room_id_hint:'Comparte este ID para que tus amigos puedan unirse', enter_room:'Entrar', copy_id:'Copiar', copied:'¡Copiado!', custom_empty:'No hay chats grupales aún.\n¡Crea o únete a una sala!', room_not_found:'Sala no encontrada. Verifica el ID.', room_name_err:'Por favor introduce el nombre de la sala.' },
+    fr:{ menu_custom:'Liste des chats de groupe', menu_custom_sub:'Salons créés ou rejoints', create_room:'Créer un salon', join_room:'Rejoindre un salon', room_name_ph:'Nom du salon', enter_room_id_ph:'ID du salon (ex. ABC123)', room_id_label:'ID du salon', room_id_hint:'Partagez cet ID pour que vos amis puissent rejoindre', enter_room:'Entrer', copy_id:'Copier', copied:'Copié !', custom_empty:'Aucun chat de groupe pour l\'instant.\nCréez ou rejoignez un salon !', room_not_found:'Salon introuvable. Vérifiez l\'ID.', room_name_err:'Veuillez entrer le nom du salon.' },
+    hi:{ menu_custom:'ग्रुप चैट सूची', menu_custom_sub:'बनाए या जुड़े कमरे', create_room:'कमरा बनाएं', join_room:'कमरे में जुड़ें', room_name_ph:'कमरे का नाम', enter_room_id_ph:'कमरा ID (जैसे ABC123)', room_id_label:'कमरा ID', room_id_hint:'यह ID शेयर करें ताकि दोस्त जुड़ सकें', enter_room:'प्रवेश करें', copy_id:'कॉपी', copied:'कॉपी हो गया!', custom_empty:'कोई ग्रुप चैट नहीं।\nकमरा बनाएं या जुड़ें!', room_not_found:'कमरा नहीं मिला। ID जांचें।', room_name_err:'कृपया कमरे का नाम दर्ज करें।' },
+    ar:{ menu_custom:'قائمة الدردشات الجماعية', menu_custom_sub:'الغرف التي أنشأتها أو انضممت إليها', create_room:'إنشاء غرفة', join_room:'الانضمام لغرفة', room_name_ph:'اسم الغرفة', enter_room_id_ph:'معرّف الغرفة (مثل ABC123)', room_id_label:'معرّف الغرفة', room_id_hint:'شارك هذا المعرّف ليتمكن أصدقاؤك من الانضمام', enter_room:'دخول', copy_id:'نسخ', copied:'تم النسخ!', custom_empty:'لا توجد دردشات جماعية بعد.\nأنشئ أو انضم لغرفة!', room_not_found:'الغرفة غير موجودة. تحقق من المعرّف.', room_name_err:'الرجاء إدخال اسم الغرفة.' },
   }[l];
   if (STRINGS[l] && x) Object.assign(STRINGS[l], x);
 });
@@ -1720,6 +1727,13 @@ document.addEventListener('click', function(e) {
       form.style.display = 'none';
     }
   }
+  const panel = document.getElementById('participantPanel');
+  const countBtn = document.getElementById('onlineCount');
+  if (panel && panel.style.display !== 'none') {
+    if (!panel.contains(e.target) && e.target !== countBtn && !countBtn?.contains(e.target)) {
+      panel.style.display = 'none';
+    }
+  }
 });
 async function submitDevInquiry() {
   const text = document.getElementById('devInquiryText').value.trim();
@@ -1831,6 +1845,8 @@ function renderPrivacy() {
         <li>${isEn ? 'Profile data (nickname, avatar, bio, reputation) is retained until the user deletes their profile via the app.' : '프로필 정보(닉네임, 아바타, 바이오, 평판)는 사용자가 앱 내 "프로필 삭제"를 통해 삭제할 때까지 보관됩니다.'}</li>
         <li>${isEn ? 'Group chat messages are stored in Firestore and may be retained for service continuity. No message history is displayed to new users entering a room.' : '그룹 채팅 메시지는 Firestore에 저장되며 서비스 연속성을 위해 보관될 수 있습니다.'}</li>
         <li>${isEn ? '1:1 private messages are stored only during the active conversation. Once both parties leave the room, messages are no longer accessible.' : '1:1 메시지는 대화가 활성화된 동안만 저장되며, 양측 퇴장 후 접근이 불가합니다.'}</li>
+        <li>${isEn ? 'Inactive profiles (no activity for 30 days) may be automatically deleted to protect storage and user privacy.' : '비활성 프로필(마지막 접속 후 30일 경과)은 저장 공간 보호 및 개인정보 보호를 위해 자동으로 삭제될 수 있습니다.'}</li>
+        <li>${isEn ? 'Chat room data (messages and room records) is permanently deleted from our servers once all participants have left the room.' : '채팅방 데이터(메시지 및 방 정보)는 모든 참여자가 방을 나간 후 서버에서 영구 삭제됩니다.'}</li>
         <li>${isEn ? 'Spam ban records are retained for up to 7 days (maximum ban duration).' : '도배 제재 기록은 최대 7일(최장 제재 기간) 보관 후 자동 만료됩니다.'}</li>
         <li>${isEn ? 'Device IDs are stored only in your browser\'s local storage and are not transmitted to our servers.' : '디바이스 ID는 사용자 브라우저의 로컬 스토리지에만 저장되며 서버로 전송되지 않습니다.'}</li>
       </ul>
@@ -1900,6 +1916,8 @@ function renderTerms() {
         <li>${isEn ? 'You are responsible for all activity conducted under your profile.' : '프로필 하에서 이루어지는 모든 활동에 대한 책임은 이용자에게 있습니다.'}</li>
         <li>${isEn ? 'Impersonating another person or creating a misleading profile is prohibited.' : '타인을 사칭하거나 오해를 유발하는 프로필 생성은 금지됩니다.'}</li>
         <li>${isEn ? 'You may delete your profile at any time via the app. Deletion permanently removes your profile, reputation, and associated data.' : '언제든지 앱 내에서 프로필을 삭제할 수 있습니다. 삭제 시 프로필, 평판 및 관련 데이터가 영구적으로 제거됩니다.'}</li>
+        <li>${isEn ? 'Inactive profiles (no activity for 30 days) may be automatically deleted. This helps keep the service clean and protects dormant accounts.' : '비활성 프로필(마지막 접속 후 30일 경과)은 자동으로 삭제될 수 있습니다. 이는 서비스 환경을 청결하게 유지하고 휴면 계정을 보호하기 위함입니다.'}</li>
+        <li>${isEn ? 'Chat room data is permanently deleted once all participants have left. Neither you nor Village Chat can recover deleted room data.' : '채팅방 데이터는 모든 참여자가 퇴장하면 영구 삭제됩니다. 삭제된 채팅방 데이터는 복구되지 않습니다.'}</li>
       </ul>
     </div>
     <div class="legal-section">
@@ -2994,13 +3012,46 @@ function joinPresence(roomId) {
   const presColRef = window._collection(window._db, 'rooms', roomId, 'presence');
   unsubPresence = window._onSnapshot(presColRef, snap => {
     const cutoff = new Date(Date.now() - 5 * 60 * 1000);
-    const count = snap.docs.filter(d => {
-      const ts = d.data().ts;
-      return ts && (ts.toDate ? ts.toDate() : new Date(ts)) > cutoff;
-    }).length;
+    const onlineNicks = new Set();
+    snap.docs.forEach(d => {
+      const data = d.data();
+      const ts = data.ts;
+      if (ts && (ts.toDate ? ts.toDate() : new Date(ts)) > cutoff) onlineNicks.add(data.nick);
+    });
     const el = document.getElementById('onlineCount');
-    if (el) el.textContent = '👥 ' + count + t('members');
+    if (!el) return;
+    const total = currentRoomMembers.length;
+    if (total > 0) {
+      el.textContent = '👥 ' + onlineNicks.size + '/' + total;
+    } else {
+      el.textContent = '👥 ' + onlineNicks.size + t('members');
+    }
+    renderParticipantList(onlineNicks);
   });
+}
+
+function renderParticipantList(onlineNicks) {
+  const panel = document.getElementById('participantList');
+  if (!panel) return;
+  if (currentRoomMembers.length === 0) { panel.innerHTML = ''; return; }
+  panel.innerHTML = currentRoomMembers.map(nick => {
+    const online = onlineNicks.has(nick);
+    const dot = `<span style="width:8px;height:8px;border-radius:50%;background:${online ? '#22c55e' : '#9ca3af'};flex-shrink:0;display:inline-block"></span>`;
+    const initials = nick.slice(-2);
+    const bg = avatarColor(nick);
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 14px">
+      <div style="width:28px;height:28px;border-radius:50%;background:${bg};display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0">${esc(initials)}</div>
+      <span style="font-size:13px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(nick)}</span>
+      ${dot}
+    </div>`;
+  }).join('');
+}
+
+function toggleParticipantPanel() {
+  if (currentRoomMembers.length === 0) return;
+  const panel = document.getElementById('participantPanel');
+  if (!panel) return;
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
 }
 
 function leavePresence() {
@@ -3012,6 +3063,9 @@ function leavePresence() {
   }
   const el = document.getElementById('onlineCount');
   if (el) el.textContent = '';
+  const panel = document.getElementById('participantPanel');
+  if (panel) panel.style.display = 'none';
+  currentRoomMembers = [];
 }
 
 // ── 채팅 입장 (공통) ─────────────────────────────────────
@@ -3064,7 +3118,20 @@ function enterChat(roomId, title, sub, badge, backTarget, isDM = false, isCustom
       });
     });
 
-    if (!isDM) joinPresence(roomId);
+    if (isDM) {
+      const parts = roomId.replace('dm_', '').split('__');
+      currentRoomMembers = parts;
+      joinPresence(roomId);
+    } else if (isCustom) {
+      joinPresence(roomId);
+      window._getDoc(window._doc(window._db, 'customRooms', roomId)).then(snap => {
+        if (snap.exists() && Array.isArray(snap.data().members)) {
+          currentRoomMembers = snap.data().members;
+        }
+      }).catch(() => {});
+    } else {
+      joinPresence(roomId);
+    }
   };
 
   if (window._firebaseReady) connect();
@@ -3128,13 +3195,38 @@ function toggleMute(dmId, e) {
   localStorage.setItem('dnTalk_mute', JSON.stringify(muted));
   showDmList();
 }
+async function deleteRoomData(roomId, roomCollection) {
+  if (!window._firebaseReady) return;
+  try {
+    const colRef = window._collection(window._db, 'rooms', roomId, 'messages');
+    const snap = await window._getDocs(colRef);
+    snap.docs.forEach(d => window._deleteDoc(d.ref).catch(() => {}));
+    if (roomCollection) {
+      window._deleteDoc(window._doc(window._db, roomCollection, roomId)).catch(() => {});
+    }
+  } catch(e) {}
+}
+
 function leaveDm(dmId, partnerNick, e) {
   e.stopPropagation();
   if (!confirm(partnerNick + '님과의 채팅방을 나가시겠어요?')) return;
-  // 상대방에게 나갔음 알림
   if (window._firebaseReady) {
+    // 퇴장 시스템 메시지
+    const colRef = window._collection(window._db, 'rooms', dmId, 'messages');
+    window._addDoc(colRef, { type: 'system', text: profile.nickname + '님이 퇴장했습니다', ts: new Date() }).catch(() => {});
+    // 상대방에게 나갔음 알림
     const inboxRef = window._doc(window._db, 'users', partnerNick, 'inbox', dmId + '_left');
     window._setDoc(inboxRef, { dmId, type: 'left', from: profile.nickname, ts: new Date() }).catch(() => {});
+    // 내가 나간 것을 dmRooms에 기록 → 양쪽 모두 나가면 삭제
+    const dmRef = window._doc(window._db, 'dmRooms', dmId);
+    window._updateDoc(dmRef, { leftBy: window._arrayUnion(profile.nickname) }).then(() => {
+      window._getDoc(dmRef).then(snap => {
+        if (!snap.exists()) return;
+        const leftBy = snap.data().leftBy || [];
+        const nicks = dmId.replace('dm_', '').split('__');
+        if (nicks.every(n => leftBy.includes(n))) deleteRoomData(dmId, 'dmRooms');
+      }).catch(() => {});
+    }).catch(() => {});
   }
   // 해당 방 구독 해제
   if (dmRoomSubs[dmId]) { dmRoomSubs[dmId](); delete dmRoomSubs[dmId]; }
@@ -3240,6 +3332,16 @@ function toggleCustomMute(roomId, e) {
 function leaveCustomRoom(roomId, name, e) {
   e.stopPropagation();
   if (!confirm((t('leave_chat') || '나가기') + ': ' + name + '?')) return;
+  if (window._firebaseReady) {
+    const roomRef = window._doc(window._db, 'customRooms', roomId);
+    window._updateDoc(roomRef, { members: window._arrayRemove(profile.nickname) }).then(() => {
+      window._getDoc(roomRef).then(snap => {
+        if (!snap.exists()) return;
+        const members = snap.data().members || [];
+        if (members.length === 0) deleteRoomData(roomId, 'customRooms');
+      }).catch(() => {});
+    }).catch(() => {});
+  }
   if (customRoomSubs[roomId]) { customRoomSubs[roomId](); delete customRoomSubs[roomId]; }
   clearCustomUnread(roomId);
   removeCustomRoomFromList(roomId);
@@ -3351,7 +3453,7 @@ async function submitCreateRoom() {
     if (!existing.exists()) break;
     tries++;
   } while (tries < 5);
-  const roomData = { name, photo: _createRoomPhotoData || null, creatorNick: profile.nickname, createdAt: new Date() };
+  const roomData = { name, photo: _createRoomPhotoData || null, creatorNick: profile.nickname, createdAt: new Date(), members: [profile.nickname] };
   await window._setDoc(window._doc(window._db, 'customRooms', roomId), roomData).catch(() => {});
   saveCustomRoomToList({ id: roomId, name, photo: _createRoomPhotoData || null });
   subscribeCustomRooms();
@@ -3390,6 +3492,7 @@ async function submitJoinRoom() {
   if (!snap || !snap.exists()) { alert(t('room_not_found') || '채팅방을 찾을 수 없어요.'); return; }
   const data = snap.data();
   saveCustomRoomToList({ id: rawId, name: data.name, photo: data.photo || null });
+  window._updateDoc(window._doc(window._db, 'customRooms', rawId), { members: window._arrayUnion(profile.nickname) }).catch(() => {});
   subscribeCustomRooms();
   document.getElementById('joinRoomForm').style.display = 'none';
   document.getElementById('joinRoomIdInput').value = '';
