@@ -704,6 +704,21 @@ body {
       <span class="notif-badge" id="dmBadge"></span>
       <span class="menu-arrow">›</span>
     </button>
+    <button class="menu-item" onclick="showCustomRoomList()">
+      <span class="menu-icon" style="background:#dcf3e8">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#00704A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
+        </svg>
+      </span>
+      <div class="menu-item-body">
+        <div class="menu-item-title" data-i18n="menu_custom">그룹 채팅</div>
+        <div class="menu-item-sub" data-i18n="menu_custom_sub">직접 만든 채팅방</div>
+      </div>
+      <span class="notif-badge" id="customBadge"></span>
+      <span class="menu-arrow">›</span>
+    </button>
   </div>
   <!-- AdSense 광고 슬롯 — Ad Unit ID 발급 후 data-ad-slot 값 교체 -->
   <div class="adsense-wrap">
@@ -746,6 +761,50 @@ body {
     <div class="room-title" data-i18n="menu_dm">1:1 채팅 목록</div>
   </div>
   <div class="dm-list" id="dmList"></div>
+</div>
+
+<!-- ④-b 그룹 채팅 목록 -->
+<div id="customRoomListScreen" class="screen">
+  <div class="top-bar">
+    <button class="back-btn" onclick="showScreen('menuScreen')" aria-label="뒤로">←</button>
+    <div class="room-title" data-i18n="menu_custom">그룹 채팅</div>
+  </div>
+  <div style="padding:12px 16px 0;display:flex;gap:8px">
+    <button id="btnCreateRoom" onclick="toggleCustomForm('create')" style="flex:1;padding:10px 0;border:none;border-radius:var(--radius-sm);background:var(--blue);color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit" data-i18n="create_room">방 만들기</button>
+    <button id="btnJoinRoom" onclick="toggleCustomForm('join')" style="flex:1;padding:10px 0;border:1.5px solid var(--blue);border-radius:var(--radius-sm);background:none;color:var(--blue);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit" data-i18n="join_room">방 참여하기</button>
+  </div>
+
+  <!-- 방 만들기 폼 -->
+  <div id="createRoomForm" style="display:none;padding:12px 16px;border-bottom:1px solid var(--c-border)">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+      <div id="createRoomPhotoWrap" onclick="document.getElementById('createRoomPhotoInput').click()" style="width:52px;height:52px;border-radius:50%;background:var(--c-input);border:1.5px dashed var(--c-border);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;flex-shrink:0">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--c-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      </div>
+      <input type="file" id="createRoomPhotoInput" accept="image/*" style="display:none" onchange="previewCreateRoomPhoto(this)">
+      <input id="createRoomNameInput" maxlength="30" style="flex:1;padding:10px 12px;border:1px solid var(--c-border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--c-input);color:var(--c-text)" data-i18n-ph="room_name_ph" placeholder="채팅방 이름">
+    </div>
+    <button onclick="submitCreateRoom()" style="width:100%;padding:10px;border:none;border-radius:var(--radius-sm);background:var(--blue);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit" data-i18n="create_room">만들기</button>
+    <!-- 생성 완료 후 ID 표시 -->
+    <div id="createdRoomInfo" style="display:none;margin-top:12px;background:#f0faf4;border:1px solid #b8ddc8;border-radius:var(--radius-md);padding:12px 14px">
+      <div style="font-size:12px;color:var(--c-muted);margin-bottom:4px" data-i18n="room_id_label">채팅방 ID</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div id="createdRoomId" style="font-size:20px;font-weight:900;letter-spacing:3px;color:var(--blue);flex:1"></div>
+        <button onclick="copyRoomId()" style="padding:4px 12px;border:1px solid var(--blue);border-radius:20px;background:none;color:var(--blue);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit" data-i18n="copy_id">복사</button>
+      </div>
+      <div style="font-size:11.5px;color:var(--c-muted);margin-top:6px" data-i18n="room_id_hint">이 ID를 공유하면 친구들이 입장할 수 있어요</div>
+      <button id="enterCreatedRoomBtn" onclick="enterCreatedRoom()" style="width:100%;margin-top:10px;padding:9px;border:none;border-radius:var(--radius-sm);background:var(--blue);color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit" data-i18n="enter_room">방 입장하기</button>
+    </div>
+  </div>
+
+  <!-- 방 참여하기 폼 -->
+  <div id="joinRoomForm" style="display:none;padding:12px 16px;border-bottom:1px solid var(--c-border)">
+    <div style="display:flex;gap:8px">
+      <input id="joinRoomIdInput" maxlength="6" style="flex:1;padding:10px 12px;border:1px solid var(--c-border);border-radius:var(--radius-sm);font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;font-family:inherit;background:var(--c-input);color:var(--c-text)" data-i18n-ph="enter_room_id_ph" placeholder="ABC123" oninput="this.value=this.value.toUpperCase()">
+      <button onclick="submitJoinRoom()" style="padding:10px 18px;border:none;border-radius:var(--radius-sm);background:var(--blue);color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit" data-i18n="enter_room">입장</button>
+    </div>
+  </div>
+
+  <div class="dm-list" id="customRoomList"></div>
 </div>
 
 <!-- ⑤ 채팅 화면 -->
@@ -1226,6 +1285,21 @@ const STRINGS = {
     fr:{ loc_finding:'Vérification de la localisation...', delete_profile:'Supprimer le profil', close_btn:'Fermer', nick_taken:'Ce pseudo est déjà utilisé. Veuillez en choisir un autre.', menu_si_sub:'Discutez avec les voisins de toute la ville', menu_lang_gu_sub:'Même langue · chat de quartier', menu_lang_dong_sub:'Même langue · chat de voisinage' },
     hi:{ loc_finding:'स्थान जांच रहे हैं...', delete_profile:'प्रोफ़ाइल हटाएं', close_btn:'बंद करें', nick_taken:'यह उपनाम पहले से उपयोग में है। कृपया कोई अन्य उपनाम चुनें।', menu_si_sub:'पूरे शहर के पड़ोसियों से चैट करें', menu_lang_gu_sub:'समान भाषा · जिला चैट', menu_lang_dong_sub:'समान भाषा · पड़ोस चैट' },
     ar:{ loc_finding:'جارٍ التحقق من الموقع...', delete_profile:'حذف الملف الشخصي', close_btn:'إغلاق', nick_taken:'هذا الاسم المستعار مستخدم بالفعل. يرجى اختيار اسم آخر.', menu_si_sub:'تحدث مع جيران المدينة بأكملها', menu_lang_gu_sub:'نفس اللغة · دردشة المنطقة', menu_lang_dong_sub:'نفس اللغة · دردشة الحي' },
+  }[l];
+  if (STRINGS[l] && x) Object.assign(STRINGS[l], x);
+});
+
+// custom group room i18n
+['en','ko','zh','ja','es','fr','hi','ar'].forEach(l => {
+  const x = {
+    en:{ menu_custom:'Group Chats', menu_custom_sub:'Rooms you created or joined', create_room:'Create Room', join_room:'Join Room', room_name_ph:'Room name', enter_room_id_ph:'Room ID (e.g. ABC123)', room_id_label:'Room ID', room_id_hint:'Share this ID so friends can join', enter_room:'Enter Room', copy_id:'Copy', copied:'Copied!', custom_empty:'No group chats yet.\nCreate or join a room!', room_not_found:'Room not found. Check the ID and try again.', room_name_err:'Please enter a room name.' },
+    ko:{ menu_custom:'그룹 채팅', menu_custom_sub:'직접 만든 채팅방', create_room:'방 만들기', join_room:'방 참여하기', room_name_ph:'채팅방 이름', enter_room_id_ph:'채팅방 ID (예: ABC123)', room_id_label:'채팅방 ID', room_id_hint:'이 ID를 공유하면 친구들이 입장할 수 있어요', enter_room:'방 입장하기', copy_id:'복사', copied:'복사됨!', custom_empty:'참여한 그룹 채팅이 없어요.\n방을 만들거나 참여해보세요!', room_not_found:'채팅방을 찾을 수 없어요. ID를 확인해주세요.', room_name_err:'채팅방 이름을 입력해주세요.' },
+    zh:{ menu_custom:'群聊', menu_custom_sub:'您创建或加入的群聊', create_room:'创建房间', join_room:'加入房间', room_name_ph:'房间名称', enter_room_id_ph:'房间ID（如 ABC123）', room_id_label:'房间ID', room_id_hint:'分享此ID，朋友们即可加入', enter_room:'进入房间', copy_id:'复制', copied:'已复制！', custom_empty:'还没有群聊。\n创建或加入一个房间吧！', room_not_found:'找不到该房间，请确认ID后再试。', room_name_err:'请输入房间名称。' },
+    ja:{ menu_custom:'グループチャット', menu_custom_sub:'作成・参加した部屋', create_room:'部屋を作る', join_room:'部屋に参加', room_name_ph:'部屋の名前', enter_room_id_ph:'部屋ID（例：ABC123）', room_id_label:'部屋ID', room_id_hint:'このIDをシェアすると友達が入れます', enter_room:'入室する', copy_id:'コピー', copied:'コピー済み！', custom_empty:'グループチャットがまだありません。\n部屋を作るか参加してみましょう！', room_not_found:'部屋が見つかりません。IDを確認してください。', room_name_err:'部屋の名前を入力してください。' },
+    es:{ menu_custom:'Chats grupales', menu_custom_sub:'Salas creadas o unidas', create_room:'Crear sala', join_room:'Unirse a sala', room_name_ph:'Nombre de la sala', enter_room_id_ph:'ID de sala (ej. ABC123)', room_id_label:'ID de sala', room_id_hint:'Comparte este ID para que tus amigos puedan unirse', enter_room:'Entrar', copy_id:'Copiar', copied:'¡Copiado!', custom_empty:'No hay chats grupales aún.\n¡Crea o únete a una sala!', room_not_found:'Sala no encontrada. Verifica el ID.', room_name_err:'Por favor introduce el nombre de la sala.' },
+    fr:{ menu_custom:'Chats de groupe', menu_custom_sub:'Salons créés ou rejoints', create_room:'Créer un salon', join_room:'Rejoindre un salon', room_name_ph:'Nom du salon', enter_room_id_ph:'ID du salon (ex. ABC123)', room_id_label:'ID du salon', room_id_hint:'Partagez cet ID pour que vos amis puissent rejoindre', enter_room:'Entrer', copy_id:'Copier', copied:'Copié !', custom_empty:'Aucun chat de groupe pour l\'instant.\nCréez ou rejoignez un salon !', room_not_found:'Salon introuvable. Vérifiez l\'ID.', room_name_err:'Veuillez entrer le nom du salon.' },
+    hi:{ menu_custom:'ग्रुप चैट', menu_custom_sub:'बनाए या जुड़े कमरे', create_room:'कमरा बनाएं', join_room:'कमरे में जुड़ें', room_name_ph:'कमरे का नाम', enter_room_id_ph:'कमरा ID (जैसे ABC123)', room_id_label:'कमरा ID', room_id_hint:'यह ID शेयर करें ताकि दोस्त जुड़ सकें', enter_room:'प्रवेश करें', copy_id:'कॉपी', copied:'कॉपी हो गया!', custom_empty:'कोई ग्रुप चैट नहीं।\nकमरा बनाएं या जुड़ें!', room_not_found:'कमरा नहीं मिला। ID जांचें।', room_name_err:'कृपया कमरे का नाम दर्ज करें।' },
+    ar:{ menu_custom:'الدردشات الجماعية', menu_custom_sub:'الغرف التي أنشأتها أو انضممت إليها', create_room:'إنشاء غرفة', join_room:'الانضمام لغرفة', room_name_ph:'اسم الغرفة', enter_room_id_ph:'معرّف الغرفة (مثل ABC123)', room_id_label:'معرّف الغرفة', room_id_hint:'شارك هذا المعرّف ليتمكن أصدقاؤك من الانضمام', enter_room:'دخول', copy_id:'نسخ', copied:'تم النسخ!', custom_empty:'لا توجد دردشات جماعية بعد.\nأنشئ أو انضم لغرفة!', room_not_found:'الغرفة غير موجودة. تحقق من المعرّف.', room_name_err:'الرجاء إدخال اسم الغرفة.' },
   }[l];
   if (STRINGS[l] && x) Object.assign(STRINGS[l], x);
 });
@@ -2215,9 +2289,11 @@ async function goLocation() {
     const resetTime = Date.now();
     localStorage.setItem('dnTalk_resetTime', resetTime.toString());
     profileResetTime = new Date(resetTime);
-    ['dnTalk_dms','dnTalk_left','dnTalk_unread','dnTalk_lastMsgs','dnTalk_mute'].forEach(k => localStorage.removeItem(k));
+    ['dnTalk_dms','dnTalk_left','dnTalk_unread','dnTalk_lastMsgs','dnTalk_mute','dnTalk_customRooms','dnTalk_customUnread','dnTalk_customLastMsgs','dnTalk_customMute'].forEach(k => localStorage.removeItem(k));
     try { Object.values(dmRoomSubs).forEach(u => u()); } catch(_) {}
     dmRoomSubs = {};
+    try { Object.values(customRoomSubs).forEach(u => u()); } catch(_) {}
+    customRoomSubs = {};
     showScreen('locationScreen');
     resetLocUI();
     // Firestore: profileId 공개 + 이전 inbox 정리
@@ -2392,12 +2468,12 @@ function showMenu() {
   loadBanStatus();
   showScreen('menuScreen');
   if (window._firebaseReady) {
-    subscribeInbox(); subscribeDmRooms();
+    subscribeInbox(); subscribeDmRooms(); subscribeCustomRooms();
     window._setDoc(window._doc(window._db, 'users', profile.nickname), { profileId: profile.profileId, lastSeen: new Date() }, { merge: true }).catch(() => {});
     cleanupInactiveUsers();
   } else {
     document.addEventListener('firebaseReady', () => {
-      subscribeInbox(); subscribeDmRooms();
+      subscribeInbox(); subscribeDmRooms(); subscribeCustomRooms();
       window._setDoc(window._doc(window._db, 'users', profile.nickname), { profileId: profile.profileId, lastSeen: new Date() }, { merge: true }).catch(() => {});
       cleanupInactiveUsers();
     }, { once: true });
@@ -2539,6 +2615,8 @@ function deleteProfile() {
   if (unsubscribe) { unsubscribe(); unsubscribe = null; }
   Object.values(dmRoomSubs).forEach(u => u());
   dmRoomSubs = {};
+  Object.values(customRoomSubs).forEach(u => u());
+  customRoomSubs = {};
   leavePresence();
   if (deletingNick) {
     deleteMyInbox(deletingNick);
@@ -2547,7 +2625,8 @@ function deleteProfile() {
     }
   }
   ['dnTalk_profile','dnTalk_resetTime','dnTalk_dms','dnTalk_left',
-   'dnTalk_unread','dnTalk_lastMsgs','dnTalk_mute','dnTalk_avatar'].forEach(k => localStorage.removeItem(k));
+   'dnTalk_unread','dnTalk_lastMsgs','dnTalk_mute','dnTalk_avatar',
+   'dnTalk_customRooms','dnTalk_customUnread','dnTalk_customLastMsgs','dnTalk_customMute'].forEach(k => localStorage.removeItem(k));
   profile = null;
   currentRoom = null;
   document.getElementById('myProfileModal').classList.remove('open');
@@ -2617,9 +2696,11 @@ function saveProfile() {
   const resetTime = Date.now();
   localStorage.setItem('dnTalk_resetTime', resetTime.toString());
   profileResetTime = new Date(resetTime);
-  ['dnTalk_dms','dnTalk_left','dnTalk_unread','dnTalk_lastMsgs','dnTalk_mute'].forEach(k => localStorage.removeItem(k));
+  ['dnTalk_dms','dnTalk_left','dnTalk_unread','dnTalk_lastMsgs','dnTalk_mute','dnTalk_customRooms','dnTalk_customUnread','dnTalk_customLastMsgs','dnTalk_customMute'].forEach(k => localStorage.removeItem(k));
   Object.values(dmRoomSubs).forEach(u => u());
   dmRoomSubs = {};
+  Object.values(customRoomSubs).forEach(u => u());
+  customRoomSubs = {};
   if (unsubscribe) { unsubscribe(); unsubscribe = null; }
   // Firestore에 새 profileId 공개
   window._setDoc(window._doc(window._db, 'users', nick), { profileId }).catch(() => {});
@@ -2820,22 +2901,27 @@ function subscribeDmRooms() {
   list.forEach(dm => {
     if (dmRoomSubs[dm.id]) return; // 이미 구독 중
     const colRef = window._collection(window._db, 'rooms', dm.id, 'messages');
-
-    // 마지막 메시지 미리보기 초기화 (1회성 조회, 알림 없음)
-    window._getDocs(window._query(colRef, window._orderBy('ts'), window._limit(50))).then(snap => {
-      const docs = snap.docs.filter(d => d.data().text && d.data().type !== 'system');
-      if (docs.length > 0) {
-        const last = docs[docs.length - 1].data();
-        saveDmLastMsg(dm.id, last.text, last.sender);
-        if (document.getElementById('dmListScreen').classList.contains('active')) showDmList();
+    const q = window._query(colRef, window._orderBy('ts'), window._limit(100));
+    let initialized = false;
+    const knownIds = new Set();
+    dmRoomSubs[dm.id] = window._onSnapshot(q, snap => {
+      if (!initialized) {
+        initialized = true;
+        // 첫 스냅샷: 기존 메시지 ID 기록 (알림 생략) + 마지막 메시지 미리보기 저장
+        snap.docs.forEach(d => knownIds.add(d.id));
+        const docs = snap.docs.filter(d => d.data().text && d.data().type !== 'system');
+        if (docs.length > 0) {
+          const last = docs[docs.length - 1].data();
+          saveDmLastMsg(dm.id, last.text, last.sender);
+          if (document.getElementById('dmListScreen').classList.contains('active')) showDmList();
+        }
+        return;
       }
-    }).catch(() => {});
-
-    // 구독 시작 이후 도착하는 새 메시지만 알림 처리
-    const notifQ = window._query(colRef, window._where('ts', '>', new Date()), window._orderBy('ts'));
-    dmRoomSubs[dm.id] = window._onSnapshot(notifQ, snap => {
+      // 이후 스냅샷: knownIds에 없는 것만 진짜 새 메시지
       snap.docChanges().forEach(ch => {
         if (ch.type !== 'added') return;
+        if (knownIds.has(ch.doc.id)) return;
+        knownIds.add(ch.doc.id);
         const d = ch.doc.data();
         if (!d.text || d.type === 'system') return;
         saveDmLastMsg(dm.id, d.text, d.sender);
@@ -2877,13 +2963,19 @@ function showDmToast(fromNick, dmId, msgText) {
 function goToDmFromToast() {
   document.getElementById('dmToast').classList.remove('show');
   if (!toastDmId) return;
-  const list = getDmList();
-  const dm = list.find(d => d.id === toastDmId);
+  const id = toastDmId;
+  toastDmId = null;
+  const dm = getDmList().find(d => d.id === id);
   if (dm) {
     updateDmBadge();
-    enterChat(dm.id, dm.partnerNick, '1:1 채팅', '', 'dmListScreen', true);
+    enterChat(dm.id, dm.partnerNick, t('dm_chat'), '', 'dmListScreen', true);
+    return;
   }
-  toastDmId = null;
+  const cr = getCustomRoomList().find(r => r.id === id);
+  if (cr) {
+    updateCustomBadge();
+    enterChat(cr.id, esc(cr.name), '', '', 'customRoomListScreen', false, true);
+  }
 }
 
 // ── Presence (접속자 수) ──────────────────────────────────
@@ -2923,10 +3015,10 @@ function leavePresence() {
 }
 
 // ── 채팅 입장 (공통) ─────────────────────────────────────
-function enterChat(roomId, title, sub, badge, backTarget, isDM = false) {
+function enterChat(roomId, title, sub, badge, backTarget, isDM = false, isCustom = false) {
   leavePresence();
   if (unsubscribe) { unsubscribe(); unsubscribe = null; }
-  currentRoom = { id: roomId, isDM };
+  currentRoom = { id: roomId, isDM, isCustom };
   chatBackTarget = backTarget;
   lastDate = '';
   document.getElementById('roomTitle').innerHTML = title;
@@ -2934,6 +3026,7 @@ function enterChat(roomId, title, sub, badge, backTarget, isDM = false) {
   document.getElementById('roomBadge').textContent = badge;
   document.getElementById('onlineCount').textContent = '';
   if (isDM) { clearDmUnread(roomId); updateDmBadge(); }
+  if (isCustom) { clearCustomUnread(roomId); updateCustomBadge(); }
   document.getElementById('messages').innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
   // 입력창 초기화
   lockDmInput(false);
@@ -3105,6 +3198,246 @@ function showDmList() {
     });
   }
   showScreen('dmListScreen');
+}
+
+// ── 그룹 채팅 (커스텀 방) ────────────────────────────────
+let customRoomSubs = {};
+let _pendingCreatedRoom = null;
+
+function getCustomRoomList() { return JSON.parse(localStorage.getItem('dnTalk_customRooms') || '[]'); }
+function saveCustomRoomToList(room) {
+  const list = getCustomRoomList().filter(r => r.id !== room.id);
+  list.unshift(room);
+  localStorage.setItem('dnTalk_customRooms', JSON.stringify(list));
+}
+function removeCustomRoomFromList(roomId) {
+  localStorage.setItem('dnTalk_customRooms', JSON.stringify(getCustomRoomList().filter(r => r.id !== roomId)));
+}
+function getCustomUnread() { return JSON.parse(localStorage.getItem('dnTalk_customUnread') || '{}'); }
+function addCustomUnread(roomId) {
+  const u = getCustomUnread(); u[roomId] = (u[roomId] || 0) + 1;
+  localStorage.setItem('dnTalk_customUnread', JSON.stringify(u));
+}
+function clearCustomUnread(roomId) {
+  const u = getCustomUnread(); delete u[roomId];
+  localStorage.setItem('dnTalk_customUnread', JSON.stringify(u));
+}
+function getCustomLastMsg(roomId) { return (JSON.parse(localStorage.getItem('dnTalk_customLastMsgs') || '{}'))[roomId] || null; }
+function saveCustomLastMsg(roomId, text, sender) {
+  const m = JSON.parse(localStorage.getItem('dnTalk_customLastMsgs') || '{}');
+  m[roomId] = { text, sender };
+  localStorage.setItem('dnTalk_customLastMsgs', JSON.stringify(m));
+}
+function isCustomMuted(roomId) { return (JSON.parse(localStorage.getItem('dnTalk_customMute') || '[]')).includes(roomId); }
+function toggleCustomMute(roomId, e) {
+  e.stopPropagation();
+  const list = JSON.parse(localStorage.getItem('dnTalk_customMute') || '[]');
+  const idx = list.indexOf(roomId);
+  if (idx >= 0) list.splice(idx, 1); else list.push(roomId);
+  localStorage.setItem('dnTalk_customMute', JSON.stringify(list));
+  showCustomRoomList();
+}
+function leaveCustomRoom(roomId, name, e) {
+  e.stopPropagation();
+  if (!confirm((t('leave_chat') || '나가기') + ': ' + name + '?')) return;
+  if (customRoomSubs[roomId]) { customRoomSubs[roomId](); delete customRoomSubs[roomId]; }
+  clearCustomUnread(roomId);
+  removeCustomRoomFromList(roomId);
+  updateCustomBadge();
+  showCustomRoomList();
+}
+
+function updateCustomBadge() {
+  const badge = document.getElementById('customBadge');
+  if (!badge) return;
+  const unread = getCustomUnread();
+  const count = Object.keys(unread).filter(id => (unread[id] || 0) > 0).length;
+  if (count > 0) { badge.textContent = count; badge.classList.add('show'); }
+  else { badge.textContent = ''; badge.classList.remove('show'); }
+}
+
+function subscribeCustomRooms() {
+  if (!window._firebaseReady || !profile) return;
+  const list = getCustomRoomList();
+  const activeIds = new Set(list.map(r => r.id));
+  Object.keys(customRoomSubs).forEach(id => {
+    if (!activeIds.has(id)) { customRoomSubs[id](); delete customRoomSubs[id]; }
+  });
+  list.forEach(room => {
+    if (customRoomSubs[room.id]) return;
+    const colRef = window._collection(window._db, 'rooms', room.id, 'messages');
+    window._getDocs(window._query(colRef, window._orderBy('ts'), window._limit(50))).then(snap => {
+      const docs = snap.docs.filter(d => d.data().text && d.data().type !== 'system');
+      if (docs.length > 0) {
+        const last = docs[docs.length - 1].data();
+        saveCustomLastMsg(room.id, last.text, last.sender);
+        if (document.getElementById('customRoomListScreen').classList.contains('active')) showCustomRoomList();
+      }
+    }).catch(() => {});
+    const notifQ = window._query(colRef, window._where('ts', '>', new Date()), window._orderBy('ts'));
+    customRoomSubs[room.id] = window._onSnapshot(notifQ, snap => {
+      snap.docChanges().forEach(ch => {
+        if (ch.type !== 'added') return;
+        const d = ch.doc.data();
+        if (!d.text || d.type === 'system') return;
+        saveCustomLastMsg(room.id, d.text, d.sender);
+        if (document.getElementById('customRoomListScreen').classList.contains('active')) showCustomRoomList();
+        if (d.sender === profile.nickname) return;
+        if (currentRoom?.id === room.id) return;
+        addCustomUnread(room.id);
+        updateCustomBadge();
+        if (!isCustomMuted(room.id)) showDmToast(d.sender, room.id, d.text);
+      });
+    });
+  });
+}
+
+function generateRoomId() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return Array.from({length: 6}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+}
+
+function toggleCustomForm(type) {
+  const createEl = document.getElementById('createRoomForm');
+  const joinEl = document.getElementById('joinRoomForm');
+  const infoEl = document.getElementById('createdRoomInfo');
+  if (type === 'create') {
+    const isOpen = createEl.style.display !== 'none';
+    createEl.style.display = isOpen ? 'none' : 'block';
+    joinEl.style.display = 'none';
+    if (!isOpen) {
+      infoEl.style.display = 'none';
+      document.getElementById('createRoomNameInput').value = '';
+      document.getElementById('createRoomPhotoWrap').innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--c-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>';
+      _createRoomPhotoData = null;
+    }
+  } else {
+    const isOpen = joinEl.style.display !== 'none';
+    joinEl.style.display = isOpen ? 'none' : 'block';
+    createEl.style.display = 'none';
+    if (!isOpen) document.getElementById('joinRoomIdInput').value = '';
+  }
+}
+
+let _createRoomPhotoData = null;
+function previewCreateRoomPhoto(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const tempImg = new Image();
+    tempImg.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 120; canvas.height = 120;
+      const ctx = canvas.getContext('2d');
+      const size = Math.min(tempImg.width, tempImg.height);
+      ctx.drawImage(tempImg, (tempImg.width-size)/2, (tempImg.height-size)/2, size, size, 0, 0, 120, 120);
+      _createRoomPhotoData = canvas.toDataURL('image/jpeg', 0.75);
+      const wrap = document.getElementById('createRoomPhotoWrap');
+      wrap.innerHTML = `<img src="${_createRoomPhotoData}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    };
+    tempImg.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function submitCreateRoom() {
+  const name = document.getElementById('createRoomNameInput').value.trim();
+  if (!name) { alert(t('room_name_err') || '채팅방 이름을 입력해주세요.'); return; }
+  if (!window._firebaseReady) return;
+  let roomId, tries = 0;
+  do {
+    roomId = generateRoomId();
+    const existing = await window._getDoc(window._doc(window._db, 'customRooms', roomId));
+    if (!existing.exists()) break;
+    tries++;
+  } while (tries < 5);
+  const roomData = { name, photo: _createRoomPhotoData || null, creatorNick: profile.nickname, createdAt: new Date() };
+  await window._setDoc(window._doc(window._db, 'customRooms', roomId), roomData).catch(() => {});
+  saveCustomRoomToList({ id: roomId, name, photo: _createRoomPhotoData || null });
+  subscribeCustomRooms();
+  _pendingCreatedRoom = { id: roomId, name, photo: _createRoomPhotoData || null };
+  document.getElementById('createdRoomId').textContent = roomId;
+  document.getElementById('createdRoomInfo').style.display = 'block';
+  document.querySelector('#createRoomForm > button').style.display = 'none';
+  showCustomRoomList();
+}
+
+function copyRoomId() {
+  const id = document.getElementById('createdRoomId').textContent;
+  navigator.clipboard.writeText(id).then(() => {
+    const btn = event.target;
+    btn.textContent = t('copied') || '복사됨!';
+    setTimeout(() => { btn.setAttribute('data-i18n','copy_id'); btn.textContent = t('copy_id') || '복사'; }, 1500);
+  }).catch(() => {});
+}
+
+function enterCreatedRoom() {
+  if (!_pendingCreatedRoom) return;
+  const r = _pendingCreatedRoom;
+  document.getElementById('createRoomForm').style.display = 'none';
+  document.getElementById('createdRoomInfo').style.display = 'none';
+  const submitBtn = document.querySelector('#createRoomForm > button');
+  if (submitBtn) submitBtn.style.display = '';
+  enterChat(r.id, esc(r.name), '', '', 'customRoomListScreen', false, true);
+  _pendingCreatedRoom = null;
+}
+
+async function submitJoinRoom() {
+  const rawId = document.getElementById('joinRoomIdInput').value.trim().toUpperCase();
+  if (!rawId) return;
+  if (!window._firebaseReady) return;
+  const snap = await window._getDoc(window._doc(window._db, 'customRooms', rawId)).catch(() => null);
+  if (!snap || !snap.exists()) { alert(t('room_not_found') || '채팅방을 찾을 수 없어요.'); return; }
+  const data = snap.data();
+  saveCustomRoomToList({ id: rawId, name: data.name, photo: data.photo || null });
+  subscribeCustomRooms();
+  document.getElementById('joinRoomForm').style.display = 'none';
+  document.getElementById('joinRoomIdInput').value = '';
+  showCustomRoomList();
+  enterChat(rawId, esc(data.name), '', '', 'customRoomListScreen', false, true);
+}
+
+function showCustomRoomList() {
+  subscribeCustomRooms();
+  updateCustomBadge();
+  const list = getCustomRoomList();
+  const el = document.getElementById('customRoomList');
+  if (!el) { showScreen('customRoomListScreen'); return; }
+  if (list.length === 0) {
+    el.innerHTML = '<div class="dm-empty">' + (t('custom_empty') || '참여한 그룹 채팅이 없어요.').replace('\n','<br>') + '</div>';
+  } else {
+    el.innerHTML = '';
+    list.forEach(room => {
+      const item = document.createElement('div');
+      item.className = 'dm-item';
+      item.onclick = () => enterChat(room.id, esc(room.name), '', '', 'customRoomListScreen', false, true);
+      const avatarHtml = room.photo
+        ? `<img src="${room.photo}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
+        : `<span style="background:${avatarColor(room.name||'')};width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;border-radius:50%">${(room.name||'?').slice(0,2)}</span>`;
+      const lastMsg = getCustomLastMsg(room.id);
+      const isMine = lastMsg?.sender === profile.nickname;
+      const subText = lastMsg
+        ? `<div class="dm-item-left">${isMine ? t('msg_mine') : ''}${esc(lastMsg.text.slice(0,30))}${lastMsg.text.length>30?'…':''}</div>`
+        : `<div class="dm-item-left" style="font-size:11px;color:var(--c-muted)">${t('room_id_label')||'ID'}: ${room.id}</div>`;
+      const muted = isCustomMuted(room.id);
+      const unread = (getCustomUnread()[room.id] || 0);
+      const unreadBadge = unread > 0
+        ? `<span style="min-width:18px;height:18px;background:#E24B4A;color:#fff;border-radius:20px;font-size:11px;font-weight:700;padding:0 5px;display:inline-flex;align-items:center;justify-content:center;margin-left:4px">${unread}</span>`
+        : '';
+      item.innerHTML = `
+        <div class="dm-item-avatar">${avatarHtml}</div>
+        <div class="dm-item-info">
+          <div class="dm-item-name" style="display:flex;align-items:center;gap:4px">${esc(room.name)}${unreadBadge}</div>
+          ${subText}
+        </div>
+        <div class="dm-item-actions">
+          <button class="dm-action-btn${muted?' muted':''}" title="${muted?t('mute_off'):t('mute_on')}" onclick="toggleCustomMute('${room.id}',event)">${muted?'🔕':'🔔'}</button>
+          <button class="dm-action-btn" title="${t('leave_chat')}" onclick="leaveCustomRoom('${room.id}','${esc(room.name)}',event)">🚪</button>
+        </div>`;
+      el.appendChild(item);
+    });
+  }
+  showScreen('customRoomListScreen');
 }
 
 // ── 메시지 렌더 ──────────────────────────────────────────
@@ -3483,23 +3816,24 @@ function goBack() {
   stopAdBanner();
   if (unsubscribe) { unsubscribe(); unsubscribe = null; }
   if (currentRoom?.isDM) {
-    if (!dmMsgSent) {
-      // 메시지를 하나도 안 보낸 DM은 목록에서 제거
-      const dmId = currentRoom.id;
+    const dmId = currentRoom.id;
+    const hasMsg = getDmLastMsg(dmId); // 주고받은 메시지가 있으면 유지
+    if (!dmMsgSent && !hasMsg) {
+      // 아무 메시지도 없는 빈 DM만 정리
       removeDmFromList(dmId);
-      // 상대방 inbox에 보낸 초대 알림도 삭제
       if (window._firebaseReady && profile) {
         const partnerNick = dmId.replace('dm_', '').split('__').find(n => n !== profile.nickname);
         if (partnerNick) window._deleteDoc(window._doc(window._db, 'users', partnerNick, 'inbox', dmId)).catch(() => {});
       }
     } else {
-      clearDmUnread(currentRoom.id);
+      clearDmUnread(dmId);
       updateDmBadge();
     }
   }
   currentRoom = null;
   lastDate = '';
   if (chatBackTarget === 'dmListScreen') showDmList();
+  else if (chatBackTarget === 'customRoomListScreen') showCustomRoomList();
   else showMenu();
 }
 </script>
