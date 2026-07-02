@@ -70,19 +70,19 @@
 }
 </script>
 
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%2300704A'/%3E%3Cpath d='M11 65 L50 18 L89 65' stroke='white' stroke-width='6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='50' cy='50' r='17' fill='none' stroke='white' stroke-width='4'/%3E%3Cpath d='M50 33 L44 50 L50 44 L56 50 Z' fill='white'/%3E%3Cpath d='M50 67 L56 50 L50 56 L44 50 Z' fill='white' opacity='.35'/%3E%3Ccircle cx='38' cy='79' r='4' fill='white'/%3E%3Ccircle cx='50' cy='79' r='4' fill='white'/%3E%3Ccircle cx='62' cy='79' r='4' fill='white'/%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="https://www.village-chat.com/og-image.png">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/favicon.png">
 
 <!-- ═══ Google AdSense + Analytics ═══════════════════════════════════
      Publisher ID 발급 후 아래 2곳의 ca-pub-9066647165342853 를 교체하세요.
      Ad Unit ID 발급 후 data-ad-slot="XXXXXXXXXX" 값도 교체하세요.
 ═══════════════════════════════════════════════════════════════════ -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0F36QD3WK9"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-XXXXXXXXXX');   /* ← Google Analytics Measurement ID 교체 */
+  gtag('config', 'G-0F36QD3WK9');   /* ← Google Analytics Measurement ID 교체 */
 </script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9066647165342853" crossorigin="anonymous"></script>
 
@@ -385,7 +385,7 @@ body {
 .loading-dots span:nth-child(2) { animation-delay: .2s; }
 .loading-dots span:nth-child(3) { animation-delay: .4s; }
 @keyframes dot { 0%,80%,100%{opacity:.2} 40%{opacity:1} }
-.room-badge { margin-left: auto; font-size: 11px; color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.2); padding: 3px 9px; border-radius: 20px; }
+.room-badge { font-size: 11px; color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.2); padding: 3px 9px; border-radius: 20px; }
 .notif-badge {
   display: none; min-width: 18px; height: 18px; background: #E24B4A; color: #fff;
   border-radius: 20px; font-size: 11px; font-weight: 700; padding: 0 5px;
@@ -504,8 +504,8 @@ body {
 }
 @media (max-width: 520px) {
   #introCountries {
-    top: auto; transform: none;
-    bottom: 16px; right: 14px; text-align: right;
+    top: 16px; transform: none;
+    right: 14px; text-align: right;
   }
 }
 /* ── About 화면 ── */
@@ -919,7 +919,7 @@ body {
       <div class="room-sub" id="roomSub"></div>
     </div>
     <div class="room-badge" id="roomBadge"></div>
-    <button id="onlineCount" onclick="toggleParticipantPanel()" style="font-size:12px;color:rgba(255,255,255,0.85);white-space:nowrap;margin-left:4px;background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:8px;transition:background 0.15s" onmouseenter="this.style.background='rgba(255,255,255,0.12)'" onmouseleave="this.style.background='none'"></button>
+    <button id="onlineCount" onclick="toggleParticipantPanel()" style="font-size:12px;color:rgba(255,255,255,0.85);white-space:nowrap;margin-left:auto;background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:8px;transition:background 0.15s" onmouseenter="this.style.background='rgba(255,255,255,0.12)'" onmouseleave="this.style.background='none'"></button>
   </div>
   <div id="participantPanel" style="display:none;position:absolute;top:56px;right:8px;width:200px;background:var(--c-panel);border:1px solid var(--c-border);border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.15);z-index:200;overflow:hidden;max-height:300px;overflow-y:auto">
     <div id="participantList" style="padding:8px 0"></div>
