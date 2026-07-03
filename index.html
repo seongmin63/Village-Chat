@@ -980,8 +980,10 @@ body {
       <div class="room-sub" id="roomSub"></div>
     </div>
     <div class="room-badge" id="roomBadge"></div>
-    <button id="shareRoomBtn" onclick="shareRoom()" style="display:none;background:none;border:none;color:rgba(255,255,255,0.8);cursor:pointer;padding:6px;line-height:1;margin-left:auto" aria-label="share"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
-    <button id="onlineCount" onclick="toggleParticipantPanel()" style="font-size:12px;color:rgba(255,255,255,0.85);white-space:nowrap;margin-left:auto;background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:8px;transition:background 0.15s" onmouseenter="this.style.background='rgba(255,255,255,0.12)'" onmouseleave="this.style.background='none'"></button>
+    <div style="display:flex;align-items:center;gap:4px;margin-left:auto;flex-shrink:0">
+      <button id="shareRoomBtn" onclick="shareRoom()" style="display:none;background:none;border:none;color:rgba(255,255,255,0.8);cursor:pointer;padding:6px;line-height:1" aria-label="share"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
+      <button id="onlineCount" onclick="toggleParticipantPanel()" style="font-size:12px;color:rgba(255,255,255,0.85);white-space:nowrap;background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:8px;transition:background 0.15s" onmouseenter="this.style.background='rgba(255,255,255,0.12)'" onmouseleave="this.style.background='none'"></button>
+    </div>
   </div>
   <div id="participantPanel" style="display:none;position:absolute;top:56px;right:8px;width:200px;background:var(--c-panel);border:1px solid var(--c-border);border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.15);z-index:200;overflow:hidden;max-height:300px;overflow-y:auto">
     <div id="participantList" style="padding:8px 0"></div>
@@ -1136,7 +1138,17 @@ function registerUid() {
   if (!window._firebaseReady || !window._myUid || !profile?.nickname) return;
   window._setDoc(window._doc(window._db, 'users', profile.nickname), { uid: window._myUid }, { merge: true }).catch(() => {});
 }
-document.addEventListener('firebaseReady', () => { registerUid(); if (profile?.nickname) initFCM(); }, { once: true });
+document.addEventListener('firebaseReady', () => {
+  registerUid();
+  if (profile?.nickname) {
+    initFCM();
+    // localStorage의 touristStatus를 Firestore에 동기화 (기존 프로필 대응)
+    if (profile.touristStatus !== undefined) {
+      window._setDoc(window._doc(window._db, 'users', profile.nickname),
+        { touristStatus: profile.touristStatus || null }, { merge: true }).catch(() => {});
+    }
+  }
+}, { once: true });
 
 let currentLocation = { gu: '', dong: '' };
 let currentRoom = null;
@@ -3851,10 +3863,13 @@ function enterChat(roomId, title, sub, badge, backTarget, isDM = false, isCustom
 
   const connect = () => {
     const colRef = window._collection(window._db, 'rooms', roomId, 'messages');
-    const cutoff = isDM
-      ? profileResetTime
-      : new Date(Math.max(profileResetTime.getTime(), Date.now() - 60 * 60 * 1000));
-    const q = window._query(colRef, window._where('ts', '>=', cutoff), window._orderBy('ts'), window._limit(100));
+    let q;
+    if (isDM || isCustom) {
+      q = window._query(colRef, window._where('ts', '>=', profileResetTime), window._orderBy('ts'), window._limit(100));
+    } else {
+      // 위치기반 공개방: 최근 50개 메시지 (프로필 생성 시각 무관)
+      q = window._query(colRef, window._orderBy('ts', 'desc'), window._limit(50));
+    }
 
     const renderedIds = new Set();
     let initialSnapDone = false;
@@ -3869,6 +3884,15 @@ function enterChat(roomId, title, sub, badge, backTarget, isDM = false, isCustom
             window._addDoc(colRef, { type:'system', text: profile.nickname + '님이 입장했습니다', ts: new Date() });
           }
           localStorage.setItem(enteredKey, '1');
+        }
+        // 위치기반 공개방은 desc 쿼리이므로 초기 로드 시 역순 렌더링
+        if (!isDM && !isCustom) {
+          const docs = snap.docs.slice().reverse();
+          docs.forEach(d => {
+            if (!renderedIds.has(d.id)) { renderedIds.add(d.id); appendMsg(d.data()); }
+          });
+          el.scrollTop = el.scrollHeight;
+          return;
         }
       }
       snap.docChanges().forEach(ch => {
