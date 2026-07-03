@@ -88,7 +88,7 @@
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9066647165342853" crossorigin="anonymous"></script>
 
 <script type="module">
-  import { initializeFirestore, collection, addDoc, setDoc, updateDoc, deleteDoc, getDocs, getDoc, doc, query, orderBy, onSnapshot, limit, where, arrayUnion, arrayRemove, enableNetwork, disableNetwork }
+  import { initializeFirestore, collection, addDoc, setDoc, updateDoc, deleteDoc, getDocs, getDoc, doc, query, orderBy, onSnapshot, limit, where, arrayUnion, arrayRemove, enableNetwork, disableNetwork, getCountFromServer }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -129,6 +129,7 @@
   window._arrayRemove = arrayRemove;
   window._enableNetwork = enableNetwork;
   window._disableNetwork = disableNetwork;
+  window._getCountFromServer = getCountFromServer;
 
   // 익명 로그인 — 기기마다 고유 UID 발급
   signInAnonymously(auth).then(cred => {
@@ -517,6 +518,8 @@ body {
 .ic-dim span { color:rgba(255,255,255,0.35); }
 .ic-dim img { opacity:0.3; }
 .ic-soon { font-size:10px;color:rgba(255,255,255,0.32);font-style:italic;margin:6px 0 2px; }
+.ic-member-count { margin-top:10px;text-align:right; }
+.ic-member-count span { font-size:10px;color:rgba(255,255,255,0.45);letter-spacing:.02em; }
 @media (max-width: 520px) {
   #introCountries { top:12px; transform:none; right:12px; }
   .ic-item span { display:none; }
@@ -578,6 +581,9 @@ body {
     <div class="ic-soon" id="icSoonLabel">— coming soon —</div>
     <div class="ic-list">
       <div class="ic-item ic-dim" data-country="eu"><span>Europe</span><img src="https://flagcdn.com/eu.svg" alt="EU"></div>
+    </div>
+    <div class="ic-member-count" id="icMemberCount" style="display:none">
+      <span id="icMemberCountNum"></span>
     </div>
   </div>
   <div class="intro-content">
@@ -1277,6 +1283,20 @@ function updateIntroCountries(lang) {
     if (span && COUNTRY_NAMES[cc]) span.textContent = COUNTRY_NAMES[cc][lang] || COUNTRY_NAMES[cc]['en'];
   });
 }
+
+async function loadMemberCount() {
+  try {
+    const snap = await window._getCountFromServer(window._collection(window._db, 'users'));
+    const count = snap.data().count;
+    if (count <= 0) return;
+    const el = document.getElementById('icMemberCount');
+    const numEl = document.getElementById('icMemberCountNum');
+    if (!el || !numEl) return;
+    numEl.textContent = t('member_count').replace('{n}', count.toLocaleString());
+    el.style.display = '';
+  } catch(e) {}
+}
+document.addEventListener('firebaseReady', loadMemberCount, { once: true });
 const LANG_DEFAULT_NATIONALITY = {ko:'🇰🇷', en:'🇺🇸', zh:'🇨🇳', ja:'🇯🇵', es:'🇪🇸', fr:'🇫🇷', hi:'🇮🇳', ar:'🇸🇦'};
 
 const STRINGS = {
@@ -1574,6 +1594,25 @@ const STRINGS = {
   if (STRINGS[l] && x) Object.assign(STRINGS[l], x);
 });
 
+// member count label
+['en','ko','zh','ja','es','fr','hi','ar','id','vi','th','tl'].forEach(l => {
+  const x = {
+    en:{ member_count:'👥 {n} members worldwide' },
+    ko:{ member_count:'👥 전 세계 {n}명 함께해요' },
+    zh:{ member_count:'👥 全球 {n} 位成员' },
+    ja:{ member_count:'👥 世界で {n} 人参加中' },
+    es:{ member_count:'👥 {n} miembros en el mundo' },
+    fr:{ member_count:'👥 {n} membres dans le monde' },
+    hi:{ member_count:'👥 विश्वभर में {n} सदस्य' },
+    ar:{ member_count:'👥 {n} عضو حول العالم' },
+    id:{ member_count:'👥 {n} anggota di seluruh dunia' },
+    vi:{ member_count:'👥 {n} thành viên toàn cầu' },
+    th:{ member_count:'👥 {n} สมาชิกทั่วโลก' },
+    tl:{ member_count:'👥 {n} miyembro sa buong mundo' },
+  }[l];
+  if (STRINGS[l] && x) Object.assign(STRINGS[l], x);
+});
+
 // ── About 컨텐츠 (8개 언어) ──────────────────────────────
 const ABOUT_CONTENT = {
   ko: {
@@ -1703,6 +1742,70 @@ const ABOUT_CONTENT = {
     copyright:'© 2025–2026 Village Chat. جميع الحقوق محفوظة.',
     privacy:'سياسة الخصوصية',
     terms:'شروط الخدمة',
+  },
+  id: {
+    sub: 'Komunitas real-time yang terhubung berdasarkan lokasi & bahasa',
+    cards: [
+      { emoji:'📍', title:'Obrolan Dimulai Tepat di Tempatmu', desc:'Terhubung secara real-time dengan orang-orang di dekat lokasimu. Bagikan berita lokal, rekomendasi restoran, dan info sehari-hari — bantu jadikan lingkunganmu lebih hidup dan hangat!' },
+      { emoji:'🔒', title:'Anonim, Aman & Bebas Stres', desc:'Lokasimu dibagikan, tapi info pribadimu tetap terlindungi. Chat bebas dengan nama panggilan dan avatar — filter anti-spam dan kata kasar menjaga komunitas tetap positif.' },
+      { emoji:'💬', title:'Dari Grup ke Privat — Hanya Kalian Berdua', desc:'Menemukan seseorang yang cocok di grup? Lanjutkan dengan percakapan 1:1 privat. Setelah kamu keluar, orang lain tidak bisa lagi melihat pesanmu — bebas dari kekhawatiran stalking.' },
+      { emoji:'⭐', title:'Sistem Reputasi yang Menghargai Sopan Santun', desc:'Terima rating 👍 atau 👎 dari tetangga berdasarkan perilakumu. Karena mereset profil menghapus semua riwayat, menjadi tetangga yang baik adalah strategi terbaik jangka panjang.' },
+      { emoji:'🌍', title:'Ruang Bahasa — Temukan Orang-orangmu di Mana Saja', desc:'Sedang bepergian ke luar negeri atau belajar bahasa baru? Bergabunglah dengan ruang chat khusus bahasa di mana semua orang berbicara bahasamu. Terhubung dengan tetangga globalmu!' },
+      { emoji:'👥', title:'Grup Chat Privatmu Sendiri', desc:'Buat ruang grup chat dengan teman-teman pilihanmu. Bagikan ID ruangan dan hanya orang dengan ID tersebut yang bisa bergabung — tanpa undangan yang tidak diinginkan.' },
+      { emoji:'🔐', title:'Percakapan yang Hilang Sendiri', desc:'Pesan di chat 1:1 dan grup secara otomatis dihapus dari server kami saat semua peserta keluar atau ruangan tidak aktif selama 30 hari. Chat bebas — tanpa rekam jejak permanen.' },
+    ],
+    contact: 'Kontak',
+    copyright: '© 2025–2026 Village Chat. All rights reserved.',
+    privacy: 'Kebijakan Privasi',
+    terms: 'Ketentuan Layanan',
+  },
+  vi: {
+    sub: 'Cộng đồng real-time kết nối qua vị trí & ngôn ngữ',
+    cards: [
+      { emoji:'📍', title:'Trò Chuyện Bắt Đầu Ngay Tại Nơi Bạn Đứng', desc:'Kết nối theo thời gian thực với mọi người gần vị trí của bạn. Chia sẻ tin tức địa phương, gợi ý nhà hàng và thông tin hàng ngày — giúp khu phố của bạn thêm sôi động!' },
+      { emoji:'🔒', title:'Ẩn Danh, An Toàn & Không Căng Thẳng', desc:'Vị trí của bạn được chia sẻ nhưng thông tin cá nhân vẫn được bảo vệ. Chat thoải mái với biệt danh và avatar — bộ lọc chống spam giữ cộng đồng tích cực và lành mạnh.' },
+      { emoji:'💬', title:'Từ Nhóm Đến Riêng Tư — Chỉ Hai Người', desc:'Tìm được người hợp ý trong nhóm chat? Chuyển sang cuộc trò chuyện riêng tư 1:1. Sau khi bạn rời chat, người kia không còn xem được tin nhắn của bạn — không lo bị theo dõi.' },
+      { emoji:'⭐', title:'Hệ Thống Uy Tín Thưởng Cho Phép Lịch Sự', desc:'Nhận đánh giá 👍 hoặc 👎 từ hàng xóm dựa trên cách bạn cư xử. Vì đặt lại hồ sơ sẽ xóa mọi lịch sử, làm hàng xóm tốt là chiến lược tốt nhất lâu dài.' },
+      { emoji:'🌍', title:'Phòng Ngôn Ngữ — Tìm Người Của Bạn Ở Bất Cứ Đâu', desc:'Đang du lịch nước ngoài hoặc học ngôn ngữ mới? Tham gia phòng chat theo ngôn ngữ nơi mọi người đều nói ngôn ngữ của bạn. Kết nối với hàng xóm toàn cầu!' },
+      { emoji:'👥', title:'Nhóm Chat Riêng Của Bạn', desc:'Tạo phòng nhóm chat với những người bạn chọn. Chia sẻ ID phòng và chỉ những người có ID mới có thể tham gia — không có lời mời không mong muốn.' },
+      { emoji:'🔐', title:'Cuộc Trò Chuyện Tự Động Biến Mất', desc:'Tin nhắn trong chat 1:1 và nhóm tự động bị xóa khỏi máy chủ khi tất cả người tham gia rời đi hoặc phòng không hoạt động 30 ngày. Chat thoải mái — không lưu lại vĩnh viễn.' },
+    ],
+    contact: 'Liên hệ',
+    copyright: '© 2025–2026 Village Chat. All rights reserved.',
+    privacy: 'Chính sách Bảo mật',
+    terms: 'Điều khoản Dịch vụ',
+  },
+  th: {
+    sub: 'ชุมชนเรียลไทม์ที่เชื่อมต่อด้วยตำแหน่งและภาษา',
+    cards: [
+      { emoji:'📍', title:'แชทเริ่มต้นตรงที่คุณอยู่', desc:'เชื่อมต่อแบบเรียลไทม์กับผู้คนใกล้ตำแหน่งของคุณ แบ่งปันข่าวท้องถิ่น เคล็ดลับร้านอาหาร และข้อมูลประจำวัน ช่วยทำให้ละแวกบ้านของคุณมีชีวิตชีวาและอบอุ่นยิ่งขึ้น!' },
+      { emoji:'🔒', title:'ไม่ระบุตัวตน ปลอดภัย ไม่ต้องกังวล', desc:'ตำแหน่งของคุณถูกแชร์ แต่ข้อมูลส่วนตัวยังคงได้รับการปกป้อง แชทอย่างอิสระด้วยชื่อเล่นและอวตาร ตัวกรองสแปมช่วยให้ชุมชนเป็นบวกและมีสุขภาพดี' },
+      { emoji:'💬', title:'จากกลุ่มสู่ส่วนตัว — แค่สองคน', desc:'พบคนที่ถูกใจในกลุ่มแชทหรือเปล่า? เปลี่ยนไปสนทนาแบบ 1:1 ส่วนตัว เมื่อคุณออกจากแชท อีกฝ่ายไม่สามารถดูข้อความของคุณได้อีกต่อไป ไม่ต้องกังวลเรื่องการสะกดรอย' },
+      { emoji:'⭐', title:'ระบบชื่อเสียงที่ให้รางวัลกับมารยาทที่ดี', desc:'รับคะแนน 👍 หรือ 👎 จากเพื่อนบ้านตามพฤติกรรมของคุณ เนื่องจากการรีเซ็ตโปรไฟล์จะลบประวัติทั้งหมด การเป็นเพื่อนบ้านที่ดีคือกลยุทธ์ที่ดีที่สุดในระยะยาว' },
+      { emoji:'🌍', title:'ห้องภาษา — ค้นหาคนของคุณได้ทุกที่', desc:'กำลังเดินทางไปต่างประเทศหรือเรียนภาษาใหม่? เข้าร่วมห้องแชทเฉพาะภาษาที่ทุกคนพูดภาษาเดียวกับคุณ เชื่อมต่อกับเพื่อนบ้านทั่วโลก!' },
+      { emoji:'👥', title:'กลุ่มแชทส่วนตัวของคุณ', desc:'สร้างห้องกลุ่มแชทกับเพื่อนที่คุณเลือก แชร์ ID ห้องและเฉพาะผู้ที่มี ID เท่านั้นที่สามารถเข้าร่วมได้ ไม่มีคำเชิญที่ไม่ต้องการ' },
+      { emoji:'🔐', title:'การสนทนาที่หายไปเอง', desc:'ข้อความในแชท 1:1 และกลุ่มจะถูกลบออกจากเซิร์ฟเวอร์โดยอัตโนมัติเมื่อผู้เข้าร่วมทั้งหมดออกไปหรือห้องไม่มีกิจกรรมเป็นเวลา 30 วัน แชทอย่างอิสระ ไม่มีบันทึกถาวร' },
+    ],
+    contact: 'ติดต่อ',
+    copyright: '© 2025–2026 Village Chat. All rights reserved.',
+    privacy: 'นโยบายความเป็นส่วนตัว',
+    terms: 'ข้อกำหนดการให้บริการ',
+  },
+  tl: {
+    sub: 'Isang real-time na komunidad na nakakonekta sa pamamagitan ng lokasyon at wika',
+    cards: [
+      { emoji:'📍', title:'Nagsisimula ang Chat Doon sa Kinatatayuan Mo', desc:'Kumonekta sa real time sa mga taong malapit sa iyong kasalukuyang lokasyon. Ibahagi ang lokal na balita, rekomendasyon sa restaurant, at pang-araw-araw na impormasyon — tumulong sa pagpapasaya ng iyong kapitbahayan!' },
+      { emoji:'🔒', title:'Anonymous, Ligtas at Walang Stress', desc:'Ibinabahagi ang iyong lokasyon, ngunit nananatiling protektado ang iyong personal na impormasyon. Mag-chat nang malaya gamit ang palayaw at avatar — pinapanatiling positibo ng aming anti-spam filter ang komunidad.' },
+      { emoji:'💬', title:'Mula sa Grupo Hanggang Pribado — Kayo Lang Dalawa', desc:'Nakahanap ng kasama sa group chat? Lumipat sa pribadong 1:1 na pag-uusap. Kapag umalis ka sa chat, hindi na maaaring makita ng kabilang tao ang iyong mga mensahe — walang pag-aalala sa stalking.' },
+      { emoji:'⭐', title:'Sistemang Reputasyon na Ginagantimpalaan ang Magandang Asal', desc:'Tumanggap ng 👍 o 👎 na rating mula sa mga kapitbahay batay sa iyong pag-uugali. Dahil ang pag-reset ng profile ay nagtatanggal ng lahat ng kasaysayan, ang maging mabuting kapitbahay ang pinakamahusay na pangmatagalang diskarte.' },
+      { emoji:'🌍', title:'Mga Silid na Pang-wika — Hanapin ang Iyong mga Tao Kahit Saan', desc:'Nagbabiyahe sa ibang bansa o natututo ng bagong wika? Sumali sa isang chat room na espesipiko sa wika kung saan lahat ay nagsasalita ng iyong wika. Kumonekta sa iyong mga kapitbahay sa buong mundo!' },
+      { emoji:'👥', title:'Ang Sarili Mong Pribadong Group Chat', desc:'Lumikha ng group chat room kasama ang mga kaibigan na iyong pinili. Ibahagi ang ID ng silid at ang mga taong may ID lamang ang makakasampa — walang mga hindi gustong imbitasyon.' },
+      { emoji:'🔐', title:'Mga Pag-uusap na Nawawala sa Sarili Nito', desc:'Ang mga mensahe sa 1:1 at group chat ay awtomatikong tinatanggal mula sa aming mga server kapag umalis ang lahat ng kalahok o naging hindi aktibo ang silid sa loob ng 30 araw. Mag-chat nang malaya — walang permanenteng rekord.' },
+    ],
+    contact: 'Makipag-ugnayan',
+    copyright: '© 2025–2026 Village Chat. All rights reserved.',
+    privacy: 'Patakaran sa Privacy',
+    terms: 'Mga Tuntunin ng Serbisyo',
   },
 };
 
@@ -1883,6 +1986,94 @@ const DEVLOG_LOG = {
       { title: 'إطلاق Village Chat', desc: 'دردشة جماعية فورية قائمة على الموقع · كشف تلقائي للحي عبر Nominatim · مزامنة رسائل فورية' },
     ]},
   ],
+  id: [
+    { month: '2026.06', cards: [
+      { title: 'Keamanan', desc: 'Login anonim · App Check (reCAPTCHA v3) · Aturan Firestore lebih ketat · Kontrol akses DM berbasis UID' },
+      { title: 'Laporan & Moderasi', desc: 'Tombol laporan di profil pengguna · Deteksi spam & larangan sementara otomatis · Penyimpanan catatan laporan' },
+      { title: 'Iklan & Monetisasi', desc: 'Integrasi Google AdSense · Spanduk iklan berbasis HTML (kontak periklanan)' },
+      { title: 'Peningkatan UX', desc: 'UI pengeditan bio profil · Deduplikasi voting harian · Kualitas foto profil lebih baik · Desain daftar DM yang seragam' },
+      { title: 'Dokumen Hukum', desc: 'Kebijakan Privasi & Ketentuan Layanan dalam 8 bahasa · Tanggal berlaku/diperbarui per bahasa' },
+    ]},
+    { month: '2026.05', cards: [
+      { title: 'Ruang Obrolan Tingkat Kota', desc: 'Ruang tingkat kota ditambahkan untuk pengguna dalam kota yang sama (3 tingkat: kota · distrik · lingkungan) · Akurasi lokasi ditingkatkan' },
+      { title: 'Dukungan Area Pedesaan', desc: 'Deteksi hierarki kabupaten/kecamatan/desa · Struktur ruangan terpisah untuk area pedesaan (2 tingkat)' },
+      { title: 'Ruang Bahasa yang Sama', desc: 'Ruangan terpisah untuk tetangga yang berbahasa sama · Tidak ada ruangan khusus Indonesia saat memilih Indonesia (mencegah duplikasi)' },
+    ]},
+    { month: '2026.03', cards: [
+      { title: 'Pesan Langsung (DM)', desc: 'Mulai DM dari profil di grup chat · Notifikasi kotak masuk · Lencana belum dibaca · Deteksi partner keluar' },
+      { title: 'Sistem Profil', desc: 'Nama panggilan · jenis kelamin · kebangsaan · avatar · bio · penilaian · penghapusan profil' },
+      { title: 'Dukungan Multibahasa', desc: 'UI 8 bahasa (KO·EN·ZH·JA·ES·FR·HI·AR) · Pemilih bahasa berbasis bendera · Filter kata kasar multibahasa' },
+    ]},
+    { month: '2026.01', cards: [
+      { title: 'Peluncuran Village Chat', desc: 'Grup chat real-time berbasis lokasi · Deteksi otomatis distrik/lingkungan via Nominatim · Sinkronisasi pesan real-time' },
+    ]},
+  ],
+  vi: [
+    { month: '2026.06', cards: [
+      { title: 'Bảo mật', desc: 'Đăng nhập ẩn danh · App Check (reCAPTCHA v3) · Quy tắc Firestore nghiêm ngặt hơn · Kiểm soát truy cập DM dựa trên UID' },
+      { title: 'Báo cáo & Kiểm duyệt', desc: 'Nút báo cáo trên hồ sơ người dùng · Phát hiện spam & tạm cấm tự động · Lưu trữ hồ sơ báo cáo' },
+      { title: 'Quảng cáo & Kiếm tiền', desc: 'Tích hợp Google AdSense · Banner quảng cáo dựa trên HTML (liên hệ quảng cáo)' },
+      { title: 'Cải thiện UX', desc: 'Giao diện chỉnh sửa bio · Loại bỏ bỏ phiếu trùng lặp hàng ngày · Chất lượng ảnh hồ sơ tốt hơn · Thiết kế danh sách DM thống nhất' },
+      { title: 'Tài liệu pháp lý', desc: 'Chính sách Bảo mật & Điều khoản Dịch vụ bằng 8 ngôn ngữ · Ngày có hiệu lực/cập nhật theo ngôn ngữ' },
+    ]},
+    { month: '2026.05', cards: [
+      { title: 'Phòng Chat Cấp Thành Phố', desc: 'Thêm phòng cấp thành phố cho người dùng trong cùng thành phố (3 cấp: thành phố · quận · phường) · Cải thiện độ chính xác vị trí' },
+      { title: 'Hỗ trợ Khu vực Nông thôn', desc: 'Phát hiện phân cấp huyện/xã/thôn · Cấu trúc phòng riêng cho khu vực nông thôn (2 cấp)' },
+      { title: 'Phòng Cùng Ngôn ngữ', desc: 'Phòng riêng cho những người hàng xóm sử dụng cùng ngôn ngữ · Không tạo phòng riêng tiếng Việt khi chọn tiếng Việt (tránh trùng lặp)' },
+    ]},
+    { month: '2026.03', cards: [
+      { title: 'Tin nhắn Trực tiếp (DM)', desc: 'Bắt đầu DM từ hồ sơ trong chat nhóm · Thông báo hộp thư đến · Huy hiệu chưa đọc · Phát hiện đối tác rời đi' },
+      { title: 'Hệ thống Hồ sơ', desc: 'Biệt danh · giới tính · quốc tịch · avatar · bio · đánh giá · xóa hồ sơ' },
+      { title: 'Hỗ trợ Đa ngôn ngữ', desc: 'Giao diện 8 ngôn ngữ (KO·EN·ZH·JA·ES·FR·HI·AR) · Chọn ngôn ngữ bằng cờ · Bộ lọc từ tục đa ngôn ngữ' },
+    ]},
+    { month: '2026.01', cards: [
+      { title: 'Ra mắt Village Chat', desc: 'Chat nhóm real-time dựa trên vị trí · Tự động phát hiện quận/phường qua Nominatim · Đồng bộ tin nhắn real-time' },
+    ]},
+  ],
+  th: [
+    { month: '2026.06', cards: [
+      { title: 'ความปลอดภัย', desc: 'เข้าสู่ระบบแบบไม่ระบุตัวตน · App Check (reCAPTCHA v3) · กฎ Firestore เข้มงวดขึ้น · การควบคุมการเข้าถึง DM ตาม UID' },
+      { title: 'การรายงานและการกลั่นกรอง', desc: 'ปุ่มรายงานในโปรไฟล์ผู้ใช้ · ตรวจจับสแปมและแบนชั่วคราวอัตโนมัติ · เก็บบันทึกการรายงาน' },
+      { title: 'โฆษณาและการสร้างรายได้', desc: 'รวม Google AdSense · แบนเนอร์โฆษณาแบบ HTML (ติดต่อโฆษณา)' },
+      { title: 'การปรับปรุง UX', desc: 'UI แก้ไข bio โปรไฟล์ · ลดการโหวตซ้ำรายวัน · คุณภาพรูปโปรไฟล์ดีขึ้น · ออกแบบรายการ DM แบบเดียวกัน' },
+      { title: 'เอกสารทางกฎหมาย', desc: 'นโยบายความเป็นส่วนตัวและข้อกำหนดการให้บริการใน 8 ภาษา · แสดงวันมีผล/อัปเดตตามภาษา' },
+    ]},
+    { month: '2026.05', cards: [
+      { title: 'ห้องแชทระดับเมือง', desc: 'เพิ่มห้องระดับเมืองสำหรับผู้ใช้ในเมืองเดียวกัน (3 ระดับ: เมือง · เขต · ชุมชน) · ปรับปรุงความแม่นยำของตำแหน่ง' },
+      { title: 'รองรับพื้นที่ชนบท', desc: 'ตรวจจับลำดับชั้นอำเภอ/ตำบล/หมู่บ้าน · โครงสร้างห้องแยกสำหรับพื้นที่ชนบท (2 ระดับ)' },
+      { title: 'ห้องภาษาเดียวกัน', desc: 'ห้องแยกสำหรับเพื่อนบ้านที่ใช้ภาษาเดียวกัน · ไม่สร้างห้องไทยเฉพาะเมื่อเลือกภาษาไทย (ป้องกันการซ้ำกัน)' },
+    ]},
+    { month: '2026.03', cards: [
+      { title: 'ข้อความตรง (DM)', desc: 'เริ่ม DM จากโปรไฟล์ในกลุ่มแชท · การแจ้งเตือนกล่องจดหมาย · แบดจ์ยังไม่ได้อ่าน · ตรวจจับเมื่อคู่สนทนาออก' },
+      { title: 'ระบบโปรไฟล์', desc: 'ชื่อเล่น · เพศ · สัญชาติ · อวตาร · bio · การให้คะแนน · การลบโปรไฟล์' },
+      { title: 'รองรับหลายภาษา', desc: 'UI 8 ภาษา (KO·EN·ZH·JA·ES·FR·HI·AR) · เลือกภาษาด้วยธง · ตัวกรองคำหยาบหลายภาษา' },
+    ]},
+    { month: '2026.01', cards: [
+      { title: 'เปิดตัว Village Chat', desc: 'กลุ่มแชทเรียลไทม์ตามตำแหน่ง · ตรวจจับเขต/ชุมชนอัตโนมัติผ่าน Nominatim · ซิงค์ข้อความเรียลไทม์' },
+    ]},
+  ],
+  tl: [
+    { month: '2026.06', cards: [
+      { title: 'Seguridad', desc: 'Anonymous na login · App Check (reCAPTCHA v3) · Mas mahigpit na mga panuntunan ng Firestore · Kontrol sa pag-access ng DM batay sa UID' },
+      { title: 'Pag-uulat at Moderasyon', desc: 'Pindutan ng pag-uulat sa mga profile ng gumagamit · Pagtuklas ng spam at awtomatikong pansamantalang pagbabawal · Pag-iimbak ng mga rekord ng ulat' },
+      { title: 'Mga Ad at Monetisasyon', desc: 'Integrasyon ng Google AdSense · Mga HTML-based na banner ng ad (pakikipag-ugnayan sa advertising)' },
+      { title: 'Mga Pagpapabuti ng UX', desc: 'UI ng pag-edit ng bio ng profile · Pag-aalis ng dobleng pagboto araw-araw · Mas magandang kalidad ng larawan · Pinag-isang disenyo ng listahan ng DM' },
+      { title: 'Mga Legal na Dokumento', desc: 'Patakaran sa Privacy at Mga Tuntunin ng Serbisyo sa 8 wika · Mga petsa ng pagpapatupad/pag-update ayon sa wika' },
+    ]},
+    { month: '2026.05', cards: [
+      { title: 'Chat Room sa Antas ng Lungsod', desc: 'Idinagdag ang silid sa antas ng lungsod para sa mga gumagamit sa loob ng parehong lungsod (3 antas: lungsod · distrito · kapitbahayan) · Pinahusay na katumpakan ng lokasyon' },
+      { title: 'Suporta para sa Kanayunan', desc: 'Pagtuklas ng hierarchy ng lalawigan/bayan/nayon · Hiwalay na istraktura ng silid para sa mga rural na lugar (2 antas)' },
+      { title: 'Silid na Parehong Wika', desc: 'Hiwalay na mga silid para sa mga kapitbahay na may parehong wika · Walang eksklusibong Filipino na silid kapag pinili ang Filipino (iniiwasan ang pagdoble)' },
+    ]},
+    { month: '2026.03', cards: [
+      { title: 'Direktang Mensahe (DM)', desc: 'Magsimula ng DM mula sa profile sa group chat · Mga notification sa inbox · Badge ng hindi pa nababasa · Pagtuklas ng pag-alis ng kasosyo' },
+      { title: 'Sistema ng Profile', desc: 'Palayaw · kasarian · nasyonalidad · avatar · bio · mga rating · pagtanggal ng profile' },
+      { title: 'Suporta sa Maraming Wika', desc: 'UI sa 8 wika (KO·EN·ZH·JA·ES·FR·HI·AR) · Tagapili ng wika na nakabatay sa bandila · Filter ng masamang salita sa maraming wika' },
+    ]},
+    { month: '2026.01', cards: [
+      { title: 'Paglulunsad ng Village Chat', desc: 'Real-time na group chat batay sa lokasyon · Awtomatikong pagtuklas ng distrito/kapitbahayan sa pamamagitan ng Nominatim · Real-time na pag-sync ng mensahe' },
+    ]},
+  ],
 };
 
 function renderDevlog() {
@@ -2047,7 +2238,7 @@ const LEGAL_DATES = {
 
 function renderPrivacy() {
   const lang = currentLang;
-  const isEn = lang === 'en';
+  const isEn = lang !== 'ko';
   document.getElementById('privacyTitle').textContent = isEn ? 'Privacy Policy' : '개인정보처리방침';
   document.getElementById('privacyDate').innerHTML = legalDateStr(lang, LEGAL_DATES.effective, LEGAL_DATES.updated);
   document.getElementById('privacyBody').innerHTML = `
@@ -2157,7 +2348,7 @@ function renderPrivacy() {
 
 function renderTerms() {
   const lang = currentLang;
-  const isEn = lang === 'en';
+  const isEn = lang !== 'ko';
   document.getElementById('termsTitle').textContent = isEn ? 'Terms of Service' : '이용약관';
   document.getElementById('termsDate').innerHTML = legalDateStr(lang, LEGAL_DATES.effective, LEGAL_DATES.updated);
   document.getElementById('termsBody').innerHTML = `
@@ -2373,6 +2564,12 @@ function setLang(code) {
   buildNationalitySelect(code);
   // 인트로 국가명 업데이트
   updateIntroCountries(code);
+  // 멤버 카운트 텍스트 언어 반영
+  const mcNum = document.getElementById('icMemberCountNum');
+  if (mcNum && mcNum.textContent) {
+    const m = mcNum.textContent.match(/[\d,]+/);
+    if (m) mcNum.textContent = t('member_count').replace('{n}', m[0]);
+  }
   // 드롭다운 트리거 업데이트
   const trigFlag = document.getElementById('langTriggerFlag');
   const trigName = document.getElementById('langTriggerName');
@@ -3026,8 +3223,11 @@ function getLangFlagHtml() {
 function renderLangMenuItems() {
   document.querySelectorAll('.menu-item-lang').forEach(el => el.remove());
   if (!currentLocation) return;
-  // 한국어는 기본 위치별 채팅방으로 충분 — 언어방 별도 생성 안 함
-  if (currentLang === 'ko') return;
+  // 해당 국가의 주요 언어 선택 시 위치방으로 충분 — 언어방 별도 생성 안 함
+  // 인도/필리핀은 영어도 공용어라 영어 선택 시에도 언어방 미생성
+  const COUNTRY_PRIMARY_LANGS = { kr:['ko'], jp:['ja'], us:['en'], in:['hi','en'], id:['id'], vn:['vi'], th:['th'], ph:['tl','en'] };
+  const country = currentLocation.country;
+  if ((COUNTRY_PRIMARY_LANGS[country] || []).includes(currentLang)) return;
   const { guDisplay: gd, dongDisplay: dd } = currentLocation;
   const list = document.querySelector('.menu-list');
   const dmBtn = list ? list.querySelector('[onclick="showDmList()"]') : null;
@@ -4088,7 +4288,7 @@ function slideAdBanner() {
   if (!banner || banner.style.display === 'none') return;
   const w = banner.offsetWidth;
   if (!w) return;
-  adIndex = (adIndex + 1) % AD_COUNT;
+  adIndex = (adIndex + 1) % (window._adCount || AD_COUNT);
   // transition은 CSS에 이미 적용되어 있으므로 transform만 바꾸면 슬라이드됨
   document.getElementById('adTrack').style.transform = `translateX(-${adIndex * w}px)`;
 }
@@ -4097,7 +4297,10 @@ function startAdBanner() {
   const banner = document.getElementById('adBanner');
   banner.style.display = '';
   adIndex = 0;
-  // 슬라이드 폭 세팅 (transition 없이)
+  const isKorea = currentLocation?.country === 'kr';
+  const oeeoSlide = banner.querySelector('.ad-slide:first-child');
+  if (oeeoSlide) oeeoSlide.style.display = isKorea ? '' : 'none';
+  window._adCount = isKorea ? 2 : 1;
   resizeAdBanner();
   clearInterval(adTimer);
   adTimer = setInterval(slideAdBanner, 6000);
