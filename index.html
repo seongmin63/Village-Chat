@@ -753,6 +753,15 @@ body {
       </div>
       <input type="hidden" id="nationalityInput" value="🇰🇷">
     </div>
+    <div class="field" id="touristFieldWrap" style="display:none">
+      <label data-i18n="tourist_status_label">현재 상태 (선택)</label>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">
+        <button type="button" class="tourist-btn" id="pTouristNone" data-status="" onclick="selectProfileTourist('')">🏠 현지인</button>
+        <button type="button" class="tourist-btn" id="pTouristTravel" data-status="travel" onclick="selectProfileTourist('travel')">✈️ 여행 중</button>
+        <button type="button" class="tourist-btn" id="pTouristStudy" data-status="study" onclick="selectProfileTourist('study')">📚 어학연수</button>
+        <button type="button" class="tourist-btn" id="pTouristNomad" data-status="nomad" onclick="selectProfileTourist('nomad')">🌏 디지털노마드</button>
+      </div>
+    </div>
     <button class="btn-primary" id="startBtn" data-i18n="profile_btn" onclick="goLocation()" disabled>내 위치로 동네 찾기 →</button>
     <p style="font-size:11px;color:var(--c-muted);text-align:center;margin-top:-4px;line-height:1.5" data-i18n="data_note"></p>
   </div>
@@ -1011,6 +1020,7 @@ body {
       </div>
     </div>
   </div>
+  <div id="welcomeBanner" style="display:none;padding:10px 16px;background:linear-gradient(135deg,rgba(0,112,74,0.08),rgba(0,112,74,0.04));border-bottom:1px solid rgba(0,112,74,0.12);font-size:12px;color:var(--c-muted);text-align:center;line-height:1.5"></div>
   <div id="messages"><div class="loading-dots"><span></span><span></span><span></span></div></div>
   <div id="touristTemplates" style="display:none"></div>
   <div id="inputArea">
@@ -2579,6 +2589,17 @@ const TOURIST_TEMPLATES = [
   '🌐 Does anyone speak English here?',
   '👋 Hello! I\'m a traveler here. Nice to meet you!',
 ];
+let profileTouristStatus = '';
+function selectProfileTourist(status) {
+  profileTouristStatus = status;
+  document.querySelectorAll('#touristFieldWrap .tourist-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.status === status);
+  });
+}
+function onNatChange() {
+  const wrap = document.getElementById('touristFieldWrap');
+  if (wrap) wrap.style.display = '';
+}
 function setTouristStatus(status) {
   if (status) profile.touristStatus = status;
   else delete profile.touristStatus;
@@ -2591,8 +2612,8 @@ function setTouristStatus(status) {
   }
 }
 function updateTouristUI() {
-  document.querySelectorAll('.tourist-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.status === (profile.touristStatus || ''));
+  document.querySelectorAll('#touristStatusWrap .tourist-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.status === (profile?.touristStatus || ''));
   });
 }
 function populateTouristTemplates() {
@@ -2650,6 +2671,7 @@ function buildNationalitySelect(lang) {
       closeNatPicker();
       updateNationalityFlag();
       checkReady();
+      onNatChange();
     };
     list.appendChild(item);
   });
@@ -2949,7 +2971,7 @@ async function goLocation() {
     notifyDmPartnersLeft();
     const profileId = generateProfileId();
     const nationality = document.getElementById('nationalityInput')?.value || '';
-    profile = { nickname: nick, gender, avatar, profileId, nationality };
+    profile = { nickname: nick, gender, avatar, profileId, nationality, ...(profileTouristStatus ? { touristStatus: profileTouristStatus } : {}) };
     localStorage.setItem('dnTalk_profile', JSON.stringify(profile));
     const resetTime = Date.now();
     localStorage.setItem('dnTalk_resetTime', resetTime.toString());
@@ -3282,7 +3304,7 @@ function openMyProfile() {
   const tWrap = document.getElementById('touristStatusWrap');
   if (tWrap) {
     const isAbroad = currentLocation && flagEmojiToCode(profile?.nationality || '') !== currentLocation.country;
-    tWrap.style.display = (isAbroad || profile?.touristStatus) ? '' : 'none';
+    tWrap.style.display = '';
     updateTouristUI();
   }
   document.getElementById('myProfileModal').classList.add('open');
@@ -3807,6 +3829,20 @@ function enterChat(roomId, title, sub, badge, backTarget, isDM = false, isCustom
   showScreen('chatScreen');
   if (isDM) { stopAdBanner(); if (getLeftDms().includes(roomId)) showLeftBanner(); }
   else startAdBanner();
+  // 환영 배너 (위치 기반 채팅방만, 첫 입장 시)
+  const wb = document.getElementById('welcomeBanner');
+  if (wb) {
+    if (!isDM && !isCustom) {
+      const wKey = 'vc_welcomed_' + roomId;
+      if (!localStorage.getItem(wKey)) {
+        localStorage.setItem(wKey, '1');
+        const roomName = document.getElementById('roomTitle')?.textContent || '';
+        wb.innerHTML = `🏘️ <b>${roomName}</b>에 오신 걸 환영해요!<br><span style="font-size:11px">이웃들과 자유롭게 대화해보세요 😊</span>`;
+        wb.style.display = '';
+        setTimeout(() => { wb.style.display = 'none'; }, 5000);
+      } else { wb.style.display = 'none'; }
+    } else { wb.style.display = 'none'; }
+  }
 
   const connect = () => {
     const colRef = window._collection(window._db, 'rooms', roomId, 'messages');
