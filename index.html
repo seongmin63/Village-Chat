@@ -1097,6 +1097,7 @@ body {
     </div>
     <div class="modal-name" id="partnerName"></div>
     <div class="partner-bio" id="partnerBio"></div>
+    <div id="partnerTouristBadge" style="display:none;font-size:13px;color:var(--c-muted);background:var(--c-input);border:1px solid var(--c-border);border-radius:20px;padding:4px 12px;margin-top:-4px"></div>
     <button class="btn-modal" id="partnerDmBtn" onclick="startDM()">1:1 채팅</button>
     <button onclick="toggleReportForm()" style="background:none;border:none;color:var(--c-muted);font-size:12px;cursor:pointer;padding:2px 0;font-family:inherit;text-decoration:underline" data-i18n="report_btn">신고하기</button>
     <div id="reportForm" style="display:none;width:100%;margin-top:4px">
@@ -2604,6 +2605,10 @@ function setTouristStatus(status) {
   if (status) profile.touristStatus = status;
   else delete profile.touristStatus;
   localStorage.setItem('dnTalk_profile', JSON.stringify(profile));
+  if (window._firebaseReady && profile?.nickname) {
+    window._setDoc(window._doc(window._db, 'users', profile.nickname),
+      { touristStatus: status || null }, { merge: true }).catch(() => {});
+  }
   updateTouristUI();
   const tmpl = document.getElementById('touristTemplates');
   if (tmpl && currentRoom && !currentRoom.isDM) {
@@ -2986,11 +2991,11 @@ async function goLocation() {
     initFCM();
     // Firestore: profileId 공개 + 이전 inbox 정리
     if (window._firebaseReady) {
-      window._setDoc(window._doc(window._db, 'users', nick), { profileId, lastSeen: new Date() }).catch(() => {});
+      window._setDoc(window._doc(window._db, 'users', nick), { profileId, lastSeen: new Date(), ...(profileTouristStatus ? { touristStatus: profileTouristStatus } : {}) }).catch(() => {});
       deleteMyInbox(nick);
     } else {
       document.addEventListener('firebaseReady', () => {
-        window._setDoc(window._doc(window._db, 'users', nick), { profileId, lastSeen: new Date() }).catch(() => {});
+        window._setDoc(window._doc(window._db, 'users', nick), { profileId, lastSeen: new Date(), ...(profileTouristStatus ? { touristStatus: profileTouristStatus } : {}) }).catch(() => {});
         deleteMyInbox(nick);
       }, { once: true });
     }
@@ -4371,7 +4376,7 @@ function appendMsg(data) {
   row.innerHTML = `
     <div class="avatar-sm" ${avatarClick}>${avatarHtml}</div>
     <div class="bubble-wrap">
-      <div class="bubble-meta">${natFlagImg(data.nationality)}${touristBadgeHtml}<span class="meta-name">${esc(data.sender||'')}</span><span class="meta-gender">${genderLabel}</span></div>
+      <div class="bubble-meta">${natFlagImg(data.nationality)}<span class="meta-name">${esc(data.sender||'')}</span><span class="meta-gender">${genderLabel}</span>${touristBadgeHtml}</div>
       <div class="bubble">${esc(data.text)}</div>
       <div class="bubble-time">${timeStr}</div>
     </div>`;
@@ -4419,6 +4424,19 @@ async function openPartnerModal(sender, gender, avatar, avatarHtml, nationality 
     // bio
     if (userSnap.exists() && userSnap.data().bio) {
       bioEl.textContent = userSnap.data().bio;
+    }
+
+    // tourist status
+    const tbEl = document.getElementById('partnerTouristBadge');
+    if (tbEl) {
+      const ts = userSnap.exists() ? userSnap.data().touristStatus : null;
+      const TOURIST_LABEL = { travel: '✈️ 여행 중', study: '📚 어학연수', nomad: '🌏 디지털노마드' };
+      if (ts && TOURIST_LABEL[ts]) {
+        tbEl.textContent = TOURIST_LABEL[ts];
+        tbEl.style.display = '';
+      } else {
+        tbEl.style.display = 'none';
+      }
     }
 
     // boom 카운트
