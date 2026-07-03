@@ -90,6 +90,8 @@
 <script type="module">
   import { initializeFirestore, collection, addDoc, setDoc, updateDoc, deleteDoc, getDocs, getDoc, doc, query, orderBy, onSnapshot, limit, where, arrayUnion, arrayRemove, enableNetwork, disableNetwork, getCountFromServer }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getMessaging, getToken, onMessage }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js";
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app-check.js";
@@ -130,6 +132,16 @@
   window._enableNetwork = enableNetwork;
   window._disableNetwork = disableNetwork;
   window._getCountFromServer = getCountFromServer;
+  try {
+    const messaging = getMessaging(app);
+    window._messaging = messaging;
+    // 포그라운드 메시지 수신
+    onMessage(messaging, payload => {
+      const title = payload.notification?.title || 'Village Chat';
+      const body  = payload.notification?.body  || '';
+      showPushToast(title, body, payload.data?.roomId);
+    });
+  } catch(e) {}
 
   // 익명 로그인 — 기기마다 고유 UID 발급
   signInAnonymously(auth).then(cred => {
@@ -528,6 +540,14 @@ body {
   .ic-item img { width:22px;height:16px; }
   .ic-soon { font-size:9px; margin:3px 0 1px; }
 }
+/* ── 핀 배너 ── */
+#pinBanner { background:rgba(0,80,50,0.07);border-bottom:1px solid rgba(0,112,74,0.18);padding:7px 14px;align-items:center;gap:8px; }
+#pinBannerText { font-size:12px;color:var(--c-text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+/* ── 관광객 모드 ── */
+.tourist-btn { padding:5px 11px;border:1.5px solid var(--c-border);border-radius:20px;background:var(--c-input);color:var(--c-text);font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s; }
+.tourist-btn.active { border-color:var(--blue);background:rgba(0,112,74,0.12);color:var(--blue);font-weight:600; }
+#touristTemplates { overflow-x:auto;white-space:nowrap;padding:6px 12px;border-top:1px solid var(--c-border);background:var(--c-panel); }
+#touristTemplates button { display:inline-block;white-space:nowrap;margin-right:6px;padding:5px 11px;border:1px solid var(--c-border);border-radius:16px;background:var(--c-input);color:var(--c-text);font-size:12px;cursor:pointer;font-family:inherit; }
 /* ── About 화면 ── */
 #aboutScreen { align-items: flex-start; overflow-y: auto; padding: 0; }
 .about-header { width: 100%; background: linear-gradient(150deg, #00704A 0%, #004f35 100%); padding: 52px 24px 32px; display: flex; flex-direction: column; align-items: center; position: relative; flex-shrink: 0; }
@@ -951,10 +971,16 @@ body {
       <div class="room-sub" id="roomSub"></div>
     </div>
     <div class="room-badge" id="roomBadge"></div>
+    <button id="shareRoomBtn" onclick="shareRoom()" style="display:none;background:none;border:none;color:rgba(255,255,255,0.8);cursor:pointer;padding:6px;line-height:1;margin-left:auto" aria-label="share"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
     <button id="onlineCount" onclick="toggleParticipantPanel()" style="font-size:12px;color:rgba(255,255,255,0.85);white-space:nowrap;margin-left:auto;background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:8px;transition:background 0.15s" onmouseenter="this.style.background='rgba(255,255,255,0.12)'" onmouseleave="this.style.background='none'"></button>
   </div>
   <div id="participantPanel" style="display:none;position:absolute;top:56px;right:8px;width:200px;background:var(--c-panel);border:1px solid var(--c-border);border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.15);z-index:200;overflow:hidden;max-height:300px;overflow-y:auto">
     <div id="participantList" style="padding:8px 0"></div>
+  </div>
+  <div id="pinBanner" style="display:none;flex-direction:row">
+    <span style="font-size:14px;flex-shrink:0">📌</span>
+    <span id="pinBannerText"></span>
+    <button onclick="hidePinBanner()" style="background:none;border:none;color:var(--c-muted);font-size:18px;line-height:1;cursor:pointer;padding:0 2px;flex-shrink:0;margin-left:auto">×</button>
   </div>
   <div id="adBanner" style="display:none">
     <div id="adTrack">
@@ -986,6 +1012,7 @@ body {
     </div>
   </div>
   <div id="messages"><div class="loading-dots"><span></span><span></span><span></span></div></div>
+  <div id="touristTemplates" style="display:none"></div>
   <div id="inputArea">
     <textarea id="msgInput" data-i18n-ph="msg_placeholder" placeholder="메시지를 입력하세요..." rows="1"
       onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
@@ -1018,6 +1045,16 @@ body {
             <button onclick="cancelBioEdit()" style="font-size:12px;padding:3px 10px;border-radius:12px;border:1px solid var(--c-border);background:none;color:var(--c-muted);cursor:pointer;font-family:inherit" data-i18n="close_btn">취소</button>
             <button onclick="saveBio()" style="font-size:12px;padding:3px 10px;border-radius:12px;border:none;background:var(--blue);color:#fff;cursor:pointer;font-family:inherit;font-weight:600" data-i18n="bio_save">완료</button>
           </div>
+        </div>
+      </div>
+      <div id="myVisitorCount" style="font-size:12px;color:var(--c-muted);min-height:16px;text-align:center"></div>
+      <div id="touristStatusWrap" style="width:100%;display:none">
+        <div style="font-size:11px;color:var(--c-muted);margin-bottom:6px;text-align:left" id="touristStatusLabel">여행 상태</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="tourist-btn" data-status="travel" onclick="setTouristStatus('travel')">✈️ 여행 중</button>
+          <button class="tourist-btn" data-status="study" onclick="setTouristStatus('study')">📚 어학연수</button>
+          <button class="tourist-btn" data-status="nomad" onclick="setTouristStatus('nomad')">🌏 디지털노마드</button>
+          <button class="tourist-btn" data-status="" onclick="setTouristStatus('')">🏠 현지인</button>
         </div>
       </div>
       <button class="btn-modal" onclick="confirmDeleteProfile()" style="background:#e74c3c" data-i18n="delete_profile">프로필 삭제</button>
@@ -1088,7 +1125,7 @@ function registerUid() {
   if (!window._firebaseReady || !window._myUid || !profile?.nickname) return;
   window._setDoc(window._doc(window._db, 'users', profile.nickname), { uid: window._myUid }, { merge: true }).catch(() => {});
 }
-document.addEventListener('firebaseReady', () => { registerUid(); }, { once: true });
+document.addEventListener('firebaseReady', () => { registerUid(); if (profile?.nickname) initFCM(); }, { once: true });
 
 let currentLocation = { gu: '', dong: '' };
 let currentRoom = null;
@@ -2464,6 +2501,126 @@ function flagEmojiToCode(emoji) {
     return /^[a-z]{2}$/.test(code) ? code : null;
   } catch(e) { return null; }
 }
+// ── 푸시 알림 ───────────────────────────────────────────
+// ⚠️ VAPID 키: Firebase Console → 프로젝트 설정 → 클라우드 메시징 → 웹 Push 인증서 → 키 쌍 생성 후 아래에 붙여넣기
+const FCM_VAPID_KEY = 'YOUR_VAPID_KEY_HERE';
+
+async function initFCM() {
+  if (!('Notification' in window) || !window._messaging || !profile?.nickname) return;
+  try {
+    const permission = Notification.permission === 'granted'
+      ? 'granted'
+      : await Notification.requestPermission();
+    if (permission !== 'granted') return;
+    const swReg = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+    const token = await getToken(window._messaging, { vapidKey: FCM_VAPID_KEY, serviceWorkerRegistration: swReg });
+    if (token && window._firebaseReady) {
+      await window._setDoc(window._doc(window._db, 'users', profile.nickname), { fcmToken: token }, { merge: true });
+    }
+  } catch(e) { console.warn('FCM init failed:', e); }
+}
+
+function showPushToast(title, body, roomId) {
+  // 이미 해당 채팅방이 열려있으면 토스트 생략
+  if (roomId && currentRoom?.id === roomId) return;
+  const el = document.getElementById('dmToast');
+  const txt = document.getElementById('dmToastText');
+  if (!el || !txt) return;
+  txt.textContent = title + (body ? ' — ' + body : '');
+  el.classList.add('show');
+  if (window._pushToastTimer) clearTimeout(window._pushToastTimer);
+  window._pushToastTimer = setTimeout(() => el.classList.remove('show'), 4000);
+}
+
+// ── 공유 ────────────────────────────────────────────────
+function shareRoom() {
+  if (!currentRoom) return;
+  const title = document.getElementById('roomTitle')?.textContent || 'Village Chat';
+  const url = 'https://www.village-chat.com';
+  if (navigator.share) {
+    navigator.share({ title: 'Village Chat', text: title, url }).catch(() => {});
+  } else {
+    navigator.clipboard?.writeText(url + '\n' + title).then(() => {
+      const btn = document.getElementById('shareRoomBtn');
+      if (btn) { btn.style.opacity = '0.4'; setTimeout(() => btn.style.opacity = '', 1000); }
+    }).catch(() => {});
+  }
+}
+
+// ── 핀 메시지 ───────────────────────────────────────────
+let pinUnsub = null;
+function subscribePinBanner(roomId) {
+  if (pinUnsub) { pinUnsub(); pinUnsub = null; }
+  if (!window._firebaseReady) return;
+  pinUnsub = window._onSnapshot(window._doc(window._db, 'pins', roomId), snap => {
+    const banner = document.getElementById('pinBanner');
+    if (!banner) return;
+    const data = snap.exists() ? snap.data() : null;
+    if (data?.text) {
+      document.getElementById('pinBannerText').textContent = data.text;
+      banner.style.display = 'flex';
+    } else {
+      banner.style.display = 'none';
+    }
+  });
+}
+function hidePinBanner() {
+  const banner = document.getElementById('pinBanner');
+  if (banner) banner.style.display = 'none';
+}
+
+// ── 관광객 모드 ─────────────────────────────────────────
+const TOURIST_BADGE = { travel: '✈️', study: '📚', nomad: '🌏' };
+const TOURIST_TEMPLATES = [
+  '🍜 Can you recommend a good restaurant nearby?',
+  '🚇 Where is the nearest subway/train station?',
+  '🏪 Is there a convenience store around here?',
+  '📸 What\'s a good spot to visit here?',
+  '🌐 Does anyone speak English here?',
+  '👋 Hello! I\'m a traveler here. Nice to meet you!',
+];
+function setTouristStatus(status) {
+  if (status) profile.touristStatus = status;
+  else delete profile.touristStatus;
+  localStorage.setItem('dnTalk_profile', JSON.stringify(profile));
+  updateTouristUI();
+  const tmpl = document.getElementById('touristTemplates');
+  if (tmpl && currentRoom && !currentRoom.isDM) {
+    if (profile.touristStatus) { populateTouristTemplates(); tmpl.style.display = ''; }
+    else tmpl.style.display = 'none';
+  }
+}
+function updateTouristUI() {
+  document.querySelectorAll('.tourist-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.status === (profile.touristStatus || ''));
+  });
+}
+function populateTouristTemplates() {
+  const el = document.getElementById('touristTemplates');
+  if (!el) return;
+  el.innerHTML = TOURIST_TEMPLATES.map(tmpl =>
+    `<button onclick="insertTemplate(${JSON.stringify(tmpl)})">${tmpl}</button>`
+  ).join('');
+}
+function insertTemplate(text) {
+  const input = document.getElementById('msgInput');
+  if (input) { input.value = text; autoResize(input); input.focus(); }
+}
+function detectTouristStatus() {
+  if (!profile || !currentLocation) return;
+  const natCC = flagEmojiToCode(profile.nationality || '');
+  const locCC = currentLocation.country || '';
+  if (natCC && locCC && natCC !== locCC) {
+    if (!profile.touristStatus) {
+      profile.touristStatus = 'travel';
+      localStorage.setItem('dnTalk_profile', JSON.stringify(profile));
+    }
+  } else if (profile.touristStatus === 'travel') {
+    delete profile.touristStatus;
+    localStorage.setItem('dnTalk_profile', JSON.stringify(profile));
+  }
+}
+
 function natFlagImg(emoji, w = 20, h = 15) {
   if (!emoji) return '';
   const code = flagEmojiToCode(emoji);
@@ -2804,6 +2961,7 @@ async function goLocation() {
     customRoomSubs = {};
     showScreen('locationScreen');
     resetLocUI();
+    initFCM();
     // Firestore: profileId 공개 + 이전 inbox 정리
     if (window._firebaseReady) {
       window._setDoc(window._doc(window._db, 'users', nick), { profileId, lastSeen: new Date() }).catch(() => {});
@@ -3003,6 +3161,7 @@ function showMenu() {
   renderLangMenuItems();
   renderMyAvatarBtn();
   loadBanStatus();
+  detectTouristStatus();
   showScreen('menuScreen');
   const _saveMenuPresence = () => {
     const cc = currentLocation?.country || null;
@@ -3106,6 +3265,25 @@ function openMyProfile() {
         `<span style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:#5a6b60;background:rgba(100,100,100,0.07);border:1.5px solid rgba(100,100,100,0.2);border-radius:14px;padding:4px 11px">` +
         `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 003 3l4-9V2H5.72a2 2 0 00-2 1.7l-1.38 9a2 2 0 002 2.3H10z"/><path d="M17 2h2.67A2.31 2.31 0 0122 4v7a2.31 2.31 0 01-2.33 2H17"/></svg>${down}</span>`;
     }).catch(() => {});
+  }
+  // 방문자 수 (근 24시간)
+  const vcEl = document.getElementById('myVisitorCount');
+  if (vcEl) vcEl.textContent = '';
+  if (window._firebaseReady && profile?.nickname) {
+    const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    window._getDocs(window._query(
+      window._collection(window._db, 'users', profile.nickname, 'visitors'),
+      window._where('ts', '>=', cutoff)
+    )).then(snap => {
+      if (vcEl && snap.size > 0) vcEl.textContent = `👀 ${snap.size}명이 프로필을 봤어요`;
+    }).catch(() => {});
+  }
+  // 관광객 상태 UI
+  const tWrap = document.getElementById('touristStatusWrap');
+  if (tWrap) {
+    const isAbroad = currentLocation && flagEmojiToCode(profile?.nationality || '') !== currentLocation.country;
+    tWrap.style.display = (isAbroad || profile?.touristStatus) ? '' : 'none';
+    updateTouristUI();
   }
   document.getElementById('myProfileModal').classList.add('open');
 }
@@ -3614,6 +3792,18 @@ function enterChat(roomId, title, sub, badge, backTarget, isDM = false, isCustom
   // 상대방 나감 배너
   const existingBanner = document.getElementById('chatLeftBanner');
   if (existingBanner) existingBanner.remove();
+  // 공유 버튼 (위치 기반 그룹채팅에서만 표시)
+  const shareBtn = document.getElementById('shareRoomBtn');
+  if (shareBtn) shareBtn.style.display = (!isDM && !isCustom) ? '' : 'none';
+  // 핀 배너
+  hidePinBanner();
+  subscribePinBanner(roomId);
+  // 관광객 템플릿 바
+  const tmplBar = document.getElementById('touristTemplates');
+  if (tmplBar) {
+    if (!isDM && profile?.touristStatus) { populateTouristTemplates(); tmplBar.style.display = ''; }
+    else tmplBar.style.display = 'none';
+  }
   showScreen('chatScreen');
   if (isDM) { stopAdBanner(); if (getLeftDms().includes(roomId)) showLeftBanner(); }
   else startAdBanner();
@@ -4141,10 +4331,11 @@ function appendMsg(data) {
   const avatarClick = (!isMine && !currentRoom?.isDM)
     ? `style="cursor:pointer" onclick="openPartnerModal('${esc(data.sender||'')}','${esc(data.gender||'')}','${esc(data.avatar||'')}',this.innerHTML,'${esc(data.nationality||'')}')"`
     : '';
+  const touristBadgeHtml = TOURIST_BADGE[data.touristStatus] ? `<span style="font-size:11px;margin:0 2px;vertical-align:middle">${TOURIST_BADGE[data.touristStatus]}</span>` : '';
   row.innerHTML = `
     <div class="avatar-sm" ${avatarClick}>${avatarHtml}</div>
     <div class="bubble-wrap">
-      <div class="bubble-meta">${natFlagImg(data.nationality)}<span class="meta-name">${esc(data.sender||'')}</span><span class="meta-gender">${genderLabel}</span></div>
+      <div class="bubble-meta">${natFlagImg(data.nationality)}${touristBadgeHtml}<span class="meta-name">${esc(data.sender||'')}</span><span class="meta-gender">${genderLabel}</span></div>
       <div class="bubble">${esc(data.text)}</div>
       <div class="bubble-time">${timeStr}</div>
     </div>`;
@@ -4173,6 +4364,14 @@ async function openPartnerModal(sender, gender, avatar, avatarHtml, nationality 
   upBtn.disabled = true; downBtn.disabled = true;
 
   document.getElementById('partnerModal').classList.add('open');
+
+  // 프로필 방문 기록 (본인 제외)
+  if (sender !== profile?.nickname && window._firebaseReady && profile?.nickname) {
+    window._setDoc(
+      window._doc(window._db, 'users', sender, 'visitors', profile.nickname),
+      { ts: new Date(), nick: profile.nickname }
+    ).catch(() => {});
+  }
 
   if (!window._firebaseReady) return;
   try {
@@ -4322,7 +4521,7 @@ function startAdBanner() {
   adIndex = 0;
   const isKorea = currentLocation?.country === 'kr';
   const oeeoSlide = banner.querySelector('.ad-slide:first-child');
-  if (oeeoSlide) oeeoSlide.style.display = isKorea ? '' : 'none';
+  if (oeeoSlide) oeeoSlide.style.display = isKorea ? 'flex' : 'none';
   window._adCount = isKorea ? 2 : 1;
   resizeAdBanner();
   clearInterval(adTimer);
@@ -4469,10 +4668,19 @@ async function sendMsg() {
     return;
   }
   if (!await checkSpam()) return;
+  // /pin 커맨드 (커스텀 방 한정)
+  if (text.startsWith('/pin ') && currentRoom?.isCustom) {
+    const pinText = text.slice(5).trim();
+    if (pinText) window._setDoc(window._doc(window._db, 'pins', currentRoom.id), { text: pinText, by: profile.nickname, ts: new Date() }).catch(() => {});
+    else window._deleteDoc(window._doc(window._db, 'pins', currentRoom.id)).catch(() => {});
+    input.value = ''; input.style.height = 'auto';
+    return;
+  }
   const colRef = window._collection(window._db, 'rooms', currentRoom.id, 'messages');
   window._addDoc(colRef, {
     sender: profile.nickname, gender: profile.gender,
-    avatar: profile.avatar || '', nationality: profile.nationality || '', text, ts: new Date(),
+    avatar: profile.avatar || '', nationality: profile.nationality || '',
+    touristStatus: profile.touristStatus || null, text, ts: new Date(),
   }).catch(() => {});
   if (currentRoom?.isDM) {
     dmMsgSent = true;
@@ -4492,6 +4700,8 @@ function goBack() {
   leavePresence();
   stopAdBanner();
   if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+  if (pinUnsub) { pinUnsub(); pinUnsub = null; }
+  hidePinBanner();
   if (currentRoom?.isDM) {
     const dmId = currentRoom.id;
     const hasMsg = getDmLastMsg(dmId); // 주고받은 메시지가 있으면 유지
