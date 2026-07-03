@@ -518,6 +518,7 @@ body {
 .ic-dim span { color:rgba(255,255,255,0.35); }
 .ic-dim img { opacity:0.3; }
 .ic-soon { font-size:10px;color:rgba(255,255,255,0.32);font-style:italic;margin:6px 0 2px; }
+.ic-cnt { font-size:10px;color:rgba(255,255,255,0.4);margin-left:2px;min-width:16px;text-align:right; }
 .ic-member-count { margin-top:10px;text-align:right; }
 .ic-member-count span { font-size:10px;color:rgba(255,255,255,0.45);letter-spacing:.02em; }
 @media (max-width: 520px) {
@@ -569,14 +570,14 @@ body {
   <div id="introCountries">
     <div class="ic-label">Available in</div>
     <div class="ic-list">
-      <div class="ic-item" data-country="kr"><span>South Korea</span><img src="https://flagcdn.com/kr.svg" alt="KR"></div>
-      <div class="ic-item" data-country="jp"><span>Japan</span><img src="https://flagcdn.com/jp.svg" alt="JP"></div>
-      <div class="ic-item" data-country="us"><span>United States</span><img src="https://flagcdn.com/us.svg" alt="US"></div>
-      <div class="ic-item" data-country="in"><span>India</span><img src="https://flagcdn.com/in.svg" alt="IN"></div>
-      <div class="ic-item" data-country="id"><span>Indonesia</span><img src="https://flagcdn.com/id.svg" alt="ID"></div>
-      <div class="ic-item" data-country="vn"><span>Vietnam</span><img src="https://flagcdn.com/vn.svg" alt="VN"></div>
-      <div class="ic-item" data-country="th"><span>Thailand</span><img src="https://flagcdn.com/th.svg" alt="TH"></div>
-      <div class="ic-item" data-country="ph"><span>Philippines</span><img src="https://flagcdn.com/ph.svg" alt="PH"></div>
+      <div class="ic-item" data-country="kr"><span>South Korea</span><img src="https://flagcdn.com/kr.svg" alt="KR"><small class="ic-cnt" id="ic-cnt-kr"></small></div>
+      <div class="ic-item" data-country="jp"><span>Japan</span><img src="https://flagcdn.com/jp.svg" alt="JP"><small class="ic-cnt" id="ic-cnt-jp"></small></div>
+      <div class="ic-item" data-country="us"><span>United States</span><img src="https://flagcdn.com/us.svg" alt="US"><small class="ic-cnt" id="ic-cnt-us"></small></div>
+      <div class="ic-item" data-country="in"><span>India</span><img src="https://flagcdn.com/in.svg" alt="IN"><small class="ic-cnt" id="ic-cnt-in"></small></div>
+      <div class="ic-item" data-country="id"><span>Indonesia</span><img src="https://flagcdn.com/id.svg" alt="ID"><small class="ic-cnt" id="ic-cnt-id"></small></div>
+      <div class="ic-item" data-country="vn"><span>Vietnam</span><img src="https://flagcdn.com/vn.svg" alt="VN"><small class="ic-cnt" id="ic-cnt-vn"></small></div>
+      <div class="ic-item" data-country="th"><span>Thailand</span><img src="https://flagcdn.com/th.svg" alt="TH"><small class="ic-cnt" id="ic-cnt-th"></small></div>
+      <div class="ic-item" data-country="ph"><span>Philippines</span><img src="https://flagcdn.com/ph.svg" alt="PH"><small class="ic-cnt" id="ic-cnt-ph"></small></div>
     </div>
     <div class="ic-soon" id="icSoonLabel">— coming soon —</div>
     <div class="ic-list">
@@ -1286,14 +1287,30 @@ function updateIntroCountries(lang) {
 
 async function loadMemberCount() {
   try {
-    const snap = await window._getCountFromServer(window._collection(window._db, 'users'));
-    const count = snap.data().count;
-    if (count <= 0) return;
-    const el = document.getElementById('icMemberCount');
-    const numEl = document.getElementById('icMemberCountNum');
-    if (!el || !numEl) return;
-    numEl.textContent = t('member_count').replace('{n}', count.toLocaleString());
-    el.style.display = '';
+    const countries = ['kr','jp','us','in','id','vn','th','ph'];
+    const results = await Promise.all(
+      countries.map(cc =>
+        window._getCountFromServer(
+          window._query(window._collection(window._db, 'users'), window._where('country', '==', cc))
+        ).then(s => ({ cc, count: s.data().count })).catch(() => ({ cc, count: 0 }))
+      )
+    );
+    let total = 0;
+    results.forEach(({ cc, count }) => {
+      total += count;
+      if (count > 0) {
+        const el = document.getElementById('ic-cnt-' + cc);
+        if (el) el.textContent = count >= 1000 ? (count / 1000).toFixed(1).replace(/\.0$/, '') + 'k' : count;
+      }
+    });
+    if (total > 0) {
+      const el = document.getElementById('icMemberCount');
+      const numEl = document.getElementById('icMemberCountNum');
+      if (el && numEl) {
+        numEl.textContent = t('member_count').replace('{n}', total.toLocaleString());
+        el.style.display = '';
+      }
+    }
   } catch(e) {}
 }
 document.addEventListener('firebaseReady', loadMemberCount, { once: true });
@@ -2987,13 +3004,19 @@ function showMenu() {
   renderMyAvatarBtn();
   loadBanStatus();
   showScreen('menuScreen');
+  const _saveMenuPresence = () => {
+    const cc = currentLocation?.country || null;
+    window._setDoc(window._doc(window._db, 'users', profile.nickname),
+      { profileId: profile.profileId, lastSeen: new Date(), ...(cc ? { country: cc } : {}) },
+      { merge: true }).catch(() => {});
+  };
   if (window._firebaseReady) {
     subscribeInbox(); subscribeDmRooms(); subscribeCustomRooms();
-    window._setDoc(window._doc(window._db, 'users', profile.nickname), { profileId: profile.profileId, lastSeen: new Date() }, { merge: true }).catch(() => {});
+    _saveMenuPresence();
   } else {
     document.addEventListener('firebaseReady', () => {
       subscribeInbox(); subscribeDmRooms(); subscribeCustomRooms();
-      window._setDoc(window._doc(window._db, 'users', profile.nickname), { profileId: profile.profileId, lastSeen: new Date() }, { merge: true }).catch(() => {});
+      _saveMenuPresence();
     }, { once: true });
   }
 }
