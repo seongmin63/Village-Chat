@@ -6,9 +6,9 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 
 <!-- ═══ SEO 기본 ══════════════════════════════════════════════════════════ -->
-<title>Village Chat - 우리 동네 실시간 위치 기반 채팅</title>
-<meta name="description" content="내 위치 기반으로 같은 동네 이웃과 실시간 채팅. 동·구·시 단위 채팅방과 1:1·그룹 채팅 지원. 위치만 켜면 자동으로 내 동네 채팅방에 입장됩니다.">
-<meta name="keywords" content="동네 채팅, 위치 기반 채팅, 실시간 채팅, 이웃 채팅, 근처 채팅, 지역 채팅방, village chat, 동네 커뮤니티, 동네 소통, neighborhood chat, local chat">
+<title>Village Chat - Real-Time Location-Based Neighborhood Chat</title>
+<meta name="description" content="Chat with neighbors in real time based on your location. Automatic entry into local chat rooms by district, city, and region. 1:1 and group chat supported worldwide.">
+<meta name="keywords" content="neighborhood chat, location based chat, real time chat, local chat, nearby chat, community chat, village chat, hyperlocal chat, anonymous chat">
 <meta name="author" content="Village Chat">
 <meta name="robots" content="index, follow">
 <meta name="google-site-verification" content="S7PSEpYrqmzmiUZS49_ToXbb_HgoYj5V1Lv27slFnnM" />
@@ -30,8 +30,8 @@
 <!-- ═══ Open Graph (카카오톡·SNS 링크 미리보기) ═══════════════════════════ -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.village-chat.com">
-<meta property="og:title" content="Village Chat - 우리 동네 실시간 위치 기반 채팅">
-<meta property="og:description" content="내 위치 기반으로 같은 동네 이웃과 실시간 채팅. 동·구·시 단위 채팅방과 1:1·그룹 채팅 지원. 위치만 켜면 자동으로 내 동네 채팅방에 입장됩니다.">
+<meta property="og:title" content="Village Chat - Real-Time Location-Based Neighborhood Chat">
+<meta property="og:description" content="Chat with neighbors in real time based on your location. Automatic entry into local chat rooms by area. 1:1 and group chat supported worldwide.">
 <meta property="og:image" content="https://www.village-chat.com/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -41,8 +41,8 @@
 
 <!-- ═══ Twitter Card ═════════════════════════════════════════════════════ -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Village Chat - 우리 동네 실시간 위치 기반 채팅">
-<meta name="twitter:description" content="내 위치 기반으로 같은 동네 이웃과 실시간 채팅. 위치만 켜면 자동으로 내 동네 채팅방 입장.">
+<meta name="twitter:title" content="Village Chat - Real-Time Location-Based Neighborhood Chat">
+<meta name="twitter:description" content="Chat with neighbors in real time based on your location. Auto-join local chat rooms instantly.">
 <meta name="twitter:image" content="https://www.village-chat.com/og-image.png">
 
 <!-- ═══ JSON-LD 구조화 데이터 ════════════════════════════════════════════ -->
@@ -52,7 +52,7 @@
   "@type": "WebApplication",
   "name": "Village Chat",
   "url": "https://www.village-chat.com",
-  "description": "내 위치 기반으로 같은 동네 이웃과 실시간 채팅. 동·구·시 단위 채팅방과 1:1·그룹 채팅 지원.",
+  "description": "Chat with neighbors in real time based on your location. Auto-join local chat rooms by area. 1:1 and group chat supported worldwide.",
   "applicationCategory": "SocialNetworkingApplication",
   "operatingSystem": "Web",
   "browserRequirements": "Requires JavaScript. Requires HTML5 Geolocation.",
@@ -477,13 +477,19 @@ body {
   transition: transform .15s, box-shadow .15s;
 }
 .intro-btn:active { transform: scale(0.97); box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-.intro-lang-section { width: 100%; max-width: 340px; margin: 0 auto 16px; }
-.intro-lang-label { color: rgba(255,255,255,0.7); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; text-align: center; margin-bottom: 8px; }
-.intro-lang-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-.intro-lang-item { background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 7px 4px; font-size: 12px; color: #fff; cursor: pointer; transition: background .15s, border-color .15s; font-family: inherit; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; justify-content: center; gap: 4px; }
+.intro-lang-section { width: 100%; display: flex; justify-content: center; margin: 0 auto 16px; }
 .lang-flag { width: 20px; height: 15px; object-fit: cover; border-radius: 2px; flex-shrink: 0; }
-.intro-lang-item:hover { background: rgba(255,255,255,0.22); }
-.intro-lang-item.active { background: rgba(255,255,255,0.28); border-color: rgba(255,255,255,0.7); font-weight: 700; }
+.lang-dropdown { position: relative; display: inline-block; }
+.lang-trigger { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.13); border: 1.5px solid rgba(255,255,255,0.28); border-radius: 50px; padding: 9px 18px; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .15s, border-color .15s; }
+.lang-trigger:hover { background: rgba(255,255,255,0.22); border-color: rgba(255,255,255,0.5); }
+.lang-flag-sm { width: 20px; height: 14px; object-fit: cover; border-radius: 2px; flex-shrink: 0; }
+.lang-chevron { width: 14px; height: 14px; transition: transform .2s; opacity: 0.75; flex-shrink: 0; }
+.lang-dropdown.open .lang-chevron { transform: rotate(180deg); }
+.lang-menu { display: none; position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); background: rgba(8,32,18,0.97); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.14); border-radius: 18px; padding: 10px; width: 288px; grid-template-columns: 1fr 1fr; gap: 4px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); z-index: 10; }
+.lang-dropdown.open .lang-menu { display: grid; }
+.lang-menu button { display: flex; align-items: center; gap: 8px; background: none; border: none; border-radius: 10px; padding: 9px 12px; color: rgba(255,255,255,0.78); font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; transition: background .1s; text-align: left; width: 100%; }
+.lang-menu button:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.lang-menu button.active { background: rgba(255,255,255,0.16); color: #fff; font-weight: 700; }
 .nat-picker { position: relative; width: 100%; }
 .nat-btn { display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px 12px; border: 1.5px solid var(--c-border); border-radius: var(--radius-sm); background: var(--c-input); color: var(--c-text); cursor: pointer; font-size: 15px; font-family: inherit; text-align: left; }
 .nat-btn:focus { outline: none; border-color: var(--blue); }
@@ -503,11 +509,20 @@ body {
   position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
   z-index: 3; text-align: right; pointer-events: none;
 }
+.ic-label { font-size:10px;color:rgba(255,255,255,0.45);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px; }
+.ic-list { display:flex;flex-direction:column;gap:5px;align-items:flex-end; }
+.ic-item { display:flex;align-items:center;gap:6px; }
+.ic-item span { font-size:12px;color:rgba(255,255,255,0.75); }
+.ic-item img { width:20px;height:14px;object-fit:cover;border-radius:2px;opacity:0.8; }
+.ic-dim span { color:rgba(255,255,255,0.35); }
+.ic-dim img { opacity:0.3; }
+.ic-soon { font-size:10px;color:rgba(255,255,255,0.32);font-style:italic;margin:6px 0 2px; }
 @media (max-width: 520px) {
-  #introCountries {
-    top: 16px; transform: none;
-    right: 14px; text-align: right;
-  }
+  #introCountries { top:12px; transform:none; right:12px; }
+  .ic-item span { display:none; }
+  .ic-list { flex-direction:row; flex-wrap:wrap; gap:4px; justify-content:flex-end; max-width:110px; }
+  .ic-item img { width:22px;height:16px; }
+  .ic-soon { font-size:9px; margin:3px 0 1px; }
 }
 /* ── About 화면 ── */
 #aboutScreen { align-items: flex-start; overflow-y: auto; padding: 0; }
@@ -549,21 +564,20 @@ body {
 <div id="introScreen" class="screen active">
   <canvas id="introCanvas"></canvas>
   <div id="introCountries">
-    <div style="font-size:10px;color:rgba(255,255,255,0.45);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">Available in</div>
-    <div class="ic-list" style="display:flex;flex-direction:column;gap:5px;align-items:flex-end">
-      <div class="ic-item" style="display:flex;align-items:center;gap:6px">
-        <span style="font-size:12px;color:rgba(255,255,255,0.75)">South Korea</span>
-        <img src="https://flagcdn.com/kr.svg" alt="" style="width:20px;height:14px;object-fit:cover;border-radius:2px;opacity:0.8">
-      </div>
-      <div class="ic-soon" style="font-size:10px;color:rgba(255,255,255,0.32);font-style:italic;margin:6px 0 2px">— coming soon —</div>
-      <div class="ic-item" style="display:flex;align-items:center;gap:6px">
-        <span style="font-size:11px;color:rgba(255,255,255,0.35)">United States</span>
-        <img src="https://flagcdn.com/us.svg" alt="" style="width:20px;height:14px;object-fit:cover;border-radius:2px;opacity:0.3">
-      </div>
-      <div class="ic-item" style="display:flex;align-items:center;gap:6px">
-        <span style="font-size:11px;color:rgba(255,255,255,0.35)">Japan</span>
-        <img src="https://flagcdn.com/jp.svg" alt="" style="width:20px;height:14px;object-fit:cover;border-radius:2px;opacity:0.3">
-      </div>
+    <div class="ic-label">Available in</div>
+    <div class="ic-list">
+      <div class="ic-item" data-country="kr"><span>South Korea</span><img src="https://flagcdn.com/kr.svg" alt="KR"></div>
+      <div class="ic-item" data-country="jp"><span>Japan</span><img src="https://flagcdn.com/jp.svg" alt="JP"></div>
+      <div class="ic-item" data-country="us"><span>United States</span><img src="https://flagcdn.com/us.svg" alt="US"></div>
+      <div class="ic-item" data-country="in"><span>India</span><img src="https://flagcdn.com/in.svg" alt="IN"></div>
+      <div class="ic-item" data-country="id"><span>Indonesia</span><img src="https://flagcdn.com/id.svg" alt="ID"></div>
+      <div class="ic-item" data-country="vn"><span>Vietnam</span><img src="https://flagcdn.com/vn.svg" alt="VN"></div>
+      <div class="ic-item" data-country="th"><span>Thailand</span><img src="https://flagcdn.com/th.svg" alt="TH"></div>
+      <div class="ic-item" data-country="ph"><span>Philippines</span><img src="https://flagcdn.com/ph.svg" alt="PH"></div>
+    </div>
+    <div class="ic-soon" id="icSoonLabel">— coming soon —</div>
+    <div class="ic-list">
+      <div class="ic-item ic-dim" data-country="eu"><span>Europe</span><img src="https://flagcdn.com/eu.svg" alt="EU"></div>
     </div>
   </div>
   <div class="intro-content">
@@ -580,16 +594,26 @@ body {
     <h1 class="intro-title" data-i18n="intro_title">Village Chat</h1>
     <p class="intro-desc" data-i18n="intro_desc">우리 동네 이웃들과 실시간으로 대화해요.<br>위치 기반으로 가까운 사람들을 만나고<br>함께 소통하는 공간이에요.</p>
     <div class="intro-lang-section" id="langBar">
-      <div class="intro-lang-label">Language</div>
-      <div class="intro-lang-grid">
-        <button class="intro-lang-item" data-lang="ko" onclick="setLang('ko')"><img src="https://flagcdn.com/kr.svg" alt="🇰🇷" class="lang-flag"> 한국어</button>
-        <button class="intro-lang-item" data-lang="en" onclick="setLang('en')"><img src="https://flagcdn.com/us.svg" alt="🇺🇸" class="lang-flag"> English</button>
-        <button class="intro-lang-item" data-lang="zh" onclick="setLang('zh')"><img src="https://flagcdn.com/cn.svg" alt="🇨🇳" class="lang-flag"> 中文</button>
-        <button class="intro-lang-item" data-lang="ja" onclick="setLang('ja')"><img src="https://flagcdn.com/jp.svg" alt="🇯🇵" class="lang-flag"> 日本語</button>
-        <button class="intro-lang-item" data-lang="es" onclick="setLang('es')"><img src="https://flagcdn.com/es.svg" alt="🇪🇸" class="lang-flag"> Español</button>
-        <button class="intro-lang-item" data-lang="fr" onclick="setLang('fr')"><img src="https://flagcdn.com/fr.svg" alt="🇫🇷" class="lang-flag"> Français</button>
-        <button class="intro-lang-item" data-lang="hi" onclick="setLang('hi')"><img src="https://flagcdn.com/in.svg" alt="🇮🇳" class="lang-flag"> हिन्दी</button>
-        <button class="intro-lang-item" data-lang="ar" onclick="setLang('ar')"><img src="https://flagcdn.com/sa.svg" alt="🇸🇦" class="lang-flag"> العربية</button>
+      <div class="lang-dropdown" id="langDropdown">
+        <button class="lang-trigger" onclick="toggleLangMenu()">
+          <img class="lang-flag-sm" id="langTriggerFlag" src="https://flagcdn.com/kr.svg" alt="">
+          <span id="langTriggerName">한국어</span>
+          <svg class="lang-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="lang-menu" id="langMenu">
+          <button onclick="setLang('ko')"><img src="https://flagcdn.com/kr.svg" class="lang-flag-sm" alt=""> 한국어</button>
+          <button onclick="setLang('en')"><img src="https://flagcdn.com/us.svg" class="lang-flag-sm" alt=""> English</button>
+          <button onclick="setLang('ja')"><img src="https://flagcdn.com/jp.svg" class="lang-flag-sm" alt=""> 日本語</button>
+          <button onclick="setLang('zh')"><img src="https://flagcdn.com/cn.svg" class="lang-flag-sm" alt=""> 中文</button>
+          <button onclick="setLang('hi')"><img src="https://flagcdn.com/in.svg" class="lang-flag-sm" alt=""> हिन्दी</button>
+          <button onclick="setLang('id')"><img src="https://flagcdn.com/id.svg" class="lang-flag-sm" alt=""> Bahasa</button>
+          <button onclick="setLang('vi')"><img src="https://flagcdn.com/vn.svg" class="lang-flag-sm" alt=""> Tiếng Việt</button>
+          <button onclick="setLang('th')"><img src="https://flagcdn.com/th.svg" class="lang-flag-sm" alt=""> ภาษาไทย</button>
+          <button onclick="setLang('tl')"><img src="https://flagcdn.com/ph.svg" class="lang-flag-sm" alt=""> Filipino</button>
+          <button onclick="setLang('es')"><img src="https://flagcdn.com/es.svg" class="lang-flag-sm" alt=""> Español</button>
+          <button onclick="setLang('fr')"><img src="https://flagcdn.com/fr.svg" class="lang-flag-sm" alt=""> Français</button>
+          <button onclick="setLang('ar')"><img src="https://flagcdn.com/sa.svg" class="lang-flag-sm" alt=""> العربية</button>
+        </div>
       </div>
     </div>
     <button class="intro-btn" data-i18n="intro_btn" onclick="startIntro()">시작하기 →</button>
@@ -767,7 +791,7 @@ body {
       </div>
       <span class="menu-arrow">›</span>
     </button>
-    <button class="menu-item" onclick="enterGroupChat('dong')">
+    <button class="menu-item" id="dongMenuItem" onclick="enterGroupChat('dong')">
       <span class="menu-icon" style="background:#dcf3e8">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#00704A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 11.5L12 4l9 7.5V21a1 1 0 01-1 1H4a1 1 0 01-1-1z"/>
@@ -1233,8 +1257,26 @@ const COUNTRIES = [
 
 const LANG_FLAGS = {ko:'🇰🇷', en:'🇺🇸', zh:'🇨🇳', ja:'🇯🇵', es:'🇪🇸', fr:'🇫🇷', hi:'🇮🇳', ar:'🇸🇦'};
 const LANG_LOCALES = {ko:'ko-KR', en:'en-US', zh:'zh-CN', ja:'ja-JP', es:'es-ES', fr:'fr-FR', hi:'hi-IN', ar:'ar-SA'};
-const LANG_CDN = {ko:'kr', en:'us', zh:'cn', ja:'jp', es:'es', fr:'fr', hi:'in', ar:'sa'};
-const LANG_NATIVE = {ko:'한국어', en:'English', zh:'中文', ja:'日本語', es:'Español', fr:'Français', hi:'हिन्दी', ar:'العربية'};
+const LANG_CDN = {ko:'kr', en:'us', zh:'cn', ja:'jp', es:'es', fr:'fr', hi:'in', ar:'sa', id:'id', vi:'vn', th:'th', tl:'ph'};
+const LANG_NATIVE = {ko:'한국어', en:'English', zh:'中文', ja:'日本語', es:'Español', fr:'Français', hi:'हिन्दी', ar:'العربية', id:'Bahasa Indonesia', vi:'Tiếng Việt', th:'ภาษาไทย', tl:'Filipino'};
+const COUNTRY_NAMES = {
+  kr:{ ko:'대한민국', en:'South Korea', ja:'韓国', zh:'韩国', es:'Corea del Sur', fr:'Corée du Sud', hi:'दक्षिण कोरिया', ar:'كوريا الجنوبية', id:'Korea Selatan', vi:'Hàn Quốc', th:'เกาหลีใต้', tl:'South Korea' },
+  jp:{ ko:'일본', en:'Japan', ja:'日本', zh:'日本', es:'Japón', fr:'Japon', hi:'जापान', ar:'اليابان', id:'Jepang', vi:'Nhật Bản', th:'ญี่ปุ่น', tl:'Japan' },
+  us:{ ko:'미국', en:'United States', ja:'アメリカ', zh:'美国', es:'Estados Unidos', fr:'États-Unis', hi:'अमेरिका', ar:'الولايات المتحدة', id:'Amerika Serikat', vi:'Hoa Kỳ', th:'สหรัฐอเมริกา', tl:'United States' },
+  in:{ ko:'인도', en:'India', ja:'インド', zh:'印度', es:'India', fr:'Inde', hi:'भारत', ar:'الهند', id:'India', vi:'Ấn Độ', th:'อินเดีย', tl:'India' },
+  id:{ ko:'인도네시아', en:'Indonesia', ja:'インドネシア', zh:'印度尼西亚', es:'Indonesia', fr:'Indonésie', hi:'इंडोनेशिया', ar:'إندونيسيا', id:'Indonesia', vi:'Indonesia', th:'อินโดนีเซีย', tl:'Indonesia' },
+  vn:{ ko:'베트남', en:'Vietnam', ja:'ベトナム', zh:'越南', es:'Vietnam', fr:'Viêt Nam', hi:'वियतनाम', ar:'فيتنام', id:'Vietnam', vi:'Việt Nam', th:'เวียดนาม', tl:'Vietnam' },
+  th:{ ko:'태국', en:'Thailand', ja:'タイ', zh:'泰国', es:'Tailandia', fr:'Thaïlande', hi:'थाईलैंड', ar:'تايلاند', id:'Thailand', vi:'Thái Lan', th:'ไทย', tl:'Thailand' },
+  ph:{ ko:'필리핀', en:'Philippines', ja:'フィリピン', zh:'菲律宾', es:'Filipinas', fr:'Philippines', hi:'फिलीपींस', ar:'الفلبين', id:'Filipina', vi:'Philippines', th:'ฟิลิปปินส์', tl:'Pilipinas' },
+  eu:{ ko:'유럽', en:'Europe', ja:'ヨーロッパ', zh:'欧洲', es:'Europa', fr:'Europe', hi:'यूरोप', ar:'أوروبا', id:'Eropa', vi:'Châu Âu', th:'ยุโรป', tl:'Europa' },
+};
+function updateIntroCountries(lang) {
+  document.querySelectorAll('.ic-item[data-country]').forEach(el => {
+    const cc = el.dataset.country;
+    const span = el.querySelector('span');
+    if (span && COUNTRY_NAMES[cc]) span.textContent = COUNTRY_NAMES[cc][lang] || COUNTRY_NAMES[cc]['en'];
+  });
+}
 const LANG_DEFAULT_NATIONALITY = {ko:'🇰🇷', en:'🇺🇸', zh:'🇨🇳', ja:'🇯🇵', es:'🇪🇸', fr:'🇫🇷', hi:'🇮🇳', ar:'🇸🇦'};
 
 const STRINGS = {
@@ -1382,10 +1424,82 @@ const STRINGS = {
     data_note:'سيتم حذف بيانات الحسابات غير النشطة لمدة شهر تلقائياً.',
     delete_confirm:'سيؤدي حذف ملفك الشخصي إلى مسح جميع سجلات الدردشة والعودة إلى البداية.\nهل أنت متأكد؟',
   },
+  id: {
+    app_name:'Village Chat',
+    intro_title:'Village Chat', intro_desc:'Mengobrol dengan tetangga secara real-time.<br>Temui orang-orang di sekitarmu berdasarkan lokasi<br>dan terhubung dengan komunitasmu.', intro_btn:'Mulai →',
+    profile_title:'Mulai', profile_desc:'Mengobrol bebas dengan tetangga lokal.<br>Lokasimu akan menempatkanmu di ruangan yang tepat secara otomatis.',
+    profile_avatar_hint:'Ketuk untuk mengunggah foto (opsional)', profile_nickname_label:'Nama Panggilan *', profile_nickname_ph:'Cth: Tetangga Ramah',
+    profile_gender_label:'Jenis Kelamin *', gender_m:'Pria', gender_f:'Wanita', gender_u:'Lainnya',
+    profile_nationality_label:'Kebangsaan *', profile_btn:'Temukan Lingkunganku →',
+    loc_title:'Menemukan lingkunganmu...', loc_desc:'Izinkan akses lokasi di browser.<br>Kamu akan masuk ke ruang obrolan lokal secara otomatis.',
+    msg_placeholder:'Ketik pesan...', menu_dm:'Chat 1:1', menu_dm_sub:'Pesan pribadi',
+    menu_gu_sub:'Mengobrol dengan tetangga di distrikmu', menu_dong_sub:'Mengobrol dengan tetangga terdekat',
+    system_joined:' bergabung', system_left:' meninggalkan obrolan',
+    room_suffix:' Chat', dm_chat:'Chat 1:1', members:' online',
+    dm_empty:'Belum ada chat 1:1.\nKetuk profil seseorang di ruang obrolan untuk memulai!',
+    partner_left:'Orang lain telah meninggalkan obrolan', msg_mine:'Aku: ',
+    mute_on:'Bisukan', mute_off:'Aktifkan', leave_chat:'Tinggalkan obrolan',
+    data_note:'Data akun yang tidak aktif selama satu bulan akan dihapus secara otomatis.',
+    delete_confirm:'Menghapus profilmu akan menghapus semua riwayat obrolan dan mengembalikanmu ke awal.\nApakah kamu yakin?',
+  },
+  vi: {
+    app_name:'Village Chat',
+    intro_title:'Village Chat', intro_desc:'Trò chuyện với hàng xóm theo thời gian thực.<br>Gặp gỡ người gần bạn dựa trên vị trí<br>và kết nối với cộng đồng của bạn.', intro_btn:'Bắt đầu →',
+    profile_title:'Bắt đầu', profile_desc:'Trò chuyện thoải mái với hàng xóm địa phương.<br>Vị trí của bạn tự động đặt bạn vào phòng phù hợp.',
+    profile_avatar_hint:'Nhấn để tải ảnh lên (tùy chọn)', profile_nickname_label:'Biệt danh *', profile_nickname_ph:'Ví dụ: Hàng xóm thân thiện',
+    profile_gender_label:'Giới tính *', gender_m:'Nam', gender_f:'Nữ', gender_u:'Khác',
+    profile_nationality_label:'Quốc tịch *', profile_btn:'Tìm khu phố của tôi →',
+    loc_title:'Đang tìm khu phố của bạn...', loc_desc:'Vui lòng cho phép truy cập vị trí trong trình duyệt.<br>Bạn sẽ tự động vào phòng chat địa phương.',
+    msg_placeholder:'Nhập tin nhắn...', menu_dm:'Chat 1:1', menu_dm_sub:'Tin nhắn cá nhân',
+    menu_gu_sub:'Trò chuyện với hàng xóm trong quận', menu_dong_sub:'Trò chuyện với hàng xóm gần nhất',
+    system_joined:' đã tham gia', system_left:' đã rời khỏi cuộc trò chuyện',
+    room_suffix:' Chat', dm_chat:'Chat 1:1', members:' trực tuyến',
+    dm_empty:'Chưa có chat 1:1.\nNhấn vào hồ sơ của ai đó trong phòng chat để bắt đầu!',
+    partner_left:'Người kia đã rời cuộc trò chuyện', msg_mine:'Tôi: ',
+    mute_on:'Tắt tiếng', mute_off:'Bật tiếng', leave_chat:'Rời chat',
+    data_note:'Dữ liệu tài khoản không hoạt động trong một tháng sẽ tự động bị xóa.',
+    delete_confirm:'Xóa hồ sơ sẽ xóa tất cả lịch sử trò chuyện và đưa bạn trở về màn hình ban đầu.\nBạn có chắc không?',
+  },
+  th: {
+    app_name:'Village Chat',
+    intro_title:'Village Chat', intro_desc:'แชทกับเพื่อนบ้านแบบเรียลไทม์<br>พบปะผู้คนใกล้เคียงตามตำแหน่งของคุณ<br>และเชื่อมต่อกับชุมชนของคุณ', intro_btn:'เริ่มต้น →',
+    profile_title:'เริ่มต้น', profile_desc:'แชทอย่างอิสระกับเพื่อนบ้านในพื้นที่<br>ตำแหน่งของคุณจะพาคุณเข้าห้องที่ถูกต้องโดยอัตโนมัติ',
+    profile_avatar_hint:'แตะเพื่ออัปโหลดรูปภาพ (ไม่บังคับ)', profile_nickname_label:'ชื่อเล่น *', profile_nickname_ph:'เช่น: เพื่อนบ้านใจดี',
+    profile_gender_label:'เพศ *', gender_m:'ชาย', gender_f:'หญิง', gender_u:'อื่นๆ',
+    profile_nationality_label:'สัญชาติ *', profile_btn:'ค้นหาละแวกบ้านของฉัน →',
+    loc_title:'กำลังค้นหาละแวกบ้านของคุณ...', loc_desc:'โปรดอนุญาตการเข้าถึงตำแหน่งในเบราว์เซอร์<br>คุณจะเข้าร่วมห้องแชทท้องถิ่นโดยอัตโนมัติ',
+    msg_placeholder:'พิมพ์ข้อความ...', menu_dm:'แชท 1:1', menu_dm_sub:'ข้อความส่วนตัว',
+    menu_gu_sub:'แชทกับเพื่อนบ้านในเขต', menu_dong_sub:'แชทกับเพื่อนบ้านใกล้เคียง',
+    system_joined:' เข้าร่วม', system_left:' ออกจากแชท',
+    room_suffix:' แชท', dm_chat:'แชท 1:1', members:' ออนไลน์',
+    dm_empty:'ยังไม่มีแชท 1:1\nแตะโปรไฟล์ของใครสักคนในห้องแชทเพื่อเริ่มต้น!',
+    partner_left:'อีกฝ่ายออกจากแชทแล้ว', msg_mine:'ฉัน: ',
+    mute_on:'ปิดเสียง', mute_off:'เปิดเสียง', leave_chat:'ออกจากแชท',
+    data_note:'ข้อมูลบัญชีที่ไม่มีกิจกรรมเป็นเวลาหนึ่งเดือนจะถูกลบโดยอัตโนมัติ',
+    delete_confirm:'การลบโปรไฟล์จะลบประวัติแชททั้งหมดและนำคุณกลับไปยังหน้าเริ่มต้น\nคุณแน่ใจหรือไม่?',
+  },
+  tl: {
+    app_name:'Village Chat',
+    intro_title:'Village Chat', intro_desc:'Makipag-chat sa mga kapitbahay sa real time.<br>Makilala ang mga taong malapit sa iyo batay sa iyong lokasyon<br>at kumonekta sa iyong komunidad.', intro_btn:'Magsimula →',
+    profile_title:'Magsimula', profile_desc:'Makipag-usap nang malaya sa mga lokal na kapitbahay.<br>Ang iyong lokasyon ang maglalagay sa iyo sa tamang silid nang awtomatiko.',
+    profile_avatar_hint:'I-tap upang mag-upload ng larawan (opsyonal)', profile_nickname_label:'Palayaw *', profile_nickname_ph:'Halimbawa: Magiliw na Kapitbahay',
+    profile_gender_label:'Kasarian *', gender_m:'Lalaki', gender_f:'Babae', gender_u:'Iba pa',
+    profile_nationality_label:'Nasyonalidad *', profile_btn:'Hanapin ang Aking Kapitbahayan →',
+    loc_title:'Hinahanap ang iyong kapitbahayan...', loc_desc:'Mangyaring payagan ang access sa lokasyon sa browser.<br>Awtomatiko kang papasok sa lokal na chat room.',
+    msg_placeholder:'Mag-type ng mensahe...', menu_dm:'Chat 1:1', menu_dm_sub:'Personal na mensahe',
+    menu_gu_sub:'Makipag-chat sa mga kapitbahay sa distrito', menu_dong_sub:'Makipag-chat sa mga kapitbahay sa malapit',
+    system_joined:' sumali', system_left:' umalis sa chat',
+    room_suffix:' Chat', dm_chat:'Chat 1:1', members:' online',
+    dm_empty:'Wala pang 1:1 chat.\nI-tap ang profile ng isang tao sa chat room upang magsimula!',
+    partner_left:'Umalis na ang kabilang tao', msg_mine:'Ako: ',
+    mute_on:'I-mute', mute_off:'I-unmute', leave_chat:'Umalis sa chat',
+    data_note:'Ang data ng mga account na hindi aktibo sa loob ng isang buwan ay awtomatikong mabubura.',
+    delete_confirm:'Ang pag-delete ng iyong profile ay magbubura ng lahat ng history ng chat at ibabalik ka sa simula.\nSigurado ka ba?',
+  },
 };
 
 // Patch: extra keys added across all languages
-['en','ko','zh','ja','es','fr','hi','ar'].forEach(l => {
+['en','ko','zh','ja','es','fr','hi','ar','id','vi','th','tl'].forEach(l => {
   const x = {
     en:{ loc_finding:'Checking location...', delete_profile:'Delete Profile', close_btn:'Close', nick_taken:'This nickname is already taken. Please choose a different one.', menu_si_sub:'Chat with neighbors across the city', menu_lang_gu_sub:'Same language · district chat', menu_lang_dong_sub:'Same language · neighborhood chat' },
     ko:{ loc_finding:'위치를 확인하는 중...', delete_profile:'프로필 삭제', close_btn:'닫기', nick_taken:'이미 사용 중인 닉네임입니다. 다른 닉네임을 선택해주세요.', menu_si_sub:'시 전체 이웃과 대화해요', menu_lang_gu_sub:'같은 언어 · 구 단위 채팅', menu_lang_dong_sub:'같은 언어 · 동 단위 채팅' },
@@ -1395,12 +1509,16 @@ const STRINGS = {
     fr:{ loc_finding:'Vérification de la localisation...', delete_profile:'Supprimer le profil', close_btn:'Fermer', nick_taken:'Ce pseudo est déjà utilisé. Veuillez en choisir un autre.', menu_si_sub:'Discutez avec les voisins de toute la ville', menu_lang_gu_sub:'Même langue · chat de quartier', menu_lang_dong_sub:'Même langue · chat de voisinage' },
     hi:{ loc_finding:'स्थान जांच रहे हैं...', delete_profile:'प्रोफ़ाइल हटाएं', close_btn:'बंद करें', nick_taken:'यह उपनाम पहले से उपयोग में है। कृपया कोई अन्य उपनाम चुनें।', menu_si_sub:'पूरे शहर के पड़ोसियों से चैट करें', menu_lang_gu_sub:'समान भाषा · जिला चैट', menu_lang_dong_sub:'समान भाषा · पड़ोस चैट' },
     ar:{ loc_finding:'جارٍ التحقق من الموقع...', delete_profile:'حذف الملف الشخصي', close_btn:'إغلاق', nick_taken:'هذا الاسم المستعار مستخدم بالفعل. يرجى اختيار اسم آخر.', menu_si_sub:'تحدث مع جيران المدينة بأكملها', menu_lang_gu_sub:'نفس اللغة · دردشة المنطقة', menu_lang_dong_sub:'نفس اللغة · دردشة الحي' },
+    id:{ loc_finding:'Memeriksa lokasi...', delete_profile:'Hapus Profil', close_btn:'Tutup', nick_taken:'Nama panggilan ini sudah digunakan. Silakan pilih yang lain.', menu_si_sub:'Mengobrol dengan tetangga di seluruh kota', menu_lang_gu_sub:'Bahasa sama · obrolan distrik', menu_lang_dong_sub:'Bahasa sama · obrolan lingkungan' },
+    vi:{ loc_finding:'Đang kiểm tra vị trí...', delete_profile:'Xóa Hồ Sơ', close_btn:'Đóng', nick_taken:'Biệt danh này đã được sử dụng. Vui lòng chọn biệt danh khác.', menu_si_sub:'Trò chuyện với hàng xóm trong toàn thành phố', menu_lang_gu_sub:'Cùng ngôn ngữ · chat quận', menu_lang_dong_sub:'Cùng ngôn ngữ · chat khu phố' },
+    th:{ loc_finding:'กำลังตรวจสอบตำแหน่ง...', delete_profile:'ลบโปรไฟล์', close_btn:'ปิด', nick_taken:'ชื่อเล่นนี้ถูกใช้แล้ว โปรดเลือกชื่ออื่น', menu_si_sub:'แชทกับเพื่อนบ้านทั่วเมือง', menu_lang_gu_sub:'ภาษาเดียวกัน · แชทเขต', menu_lang_dong_sub:'ภาษาเดียวกัน · แชทชุมชน' },
+    tl:{ loc_finding:'Sinusuri ang lokasyon...', delete_profile:'I-delete ang Profile', close_btn:'Isara', nick_taken:'Ang palayaw na ito ay ginagamit na. Mangyaring pumili ng iba.', menu_si_sub:'Makipag-chat sa mga kapitbahay sa buong lungsod', menu_lang_gu_sub:'Parehong wika · distrito chat', menu_lang_dong_sub:'Parehong wika · kapitbahayan chat' },
   }[l];
   if (STRINGS[l] && x) Object.assign(STRINGS[l], x);
 });
 
 // custom group room i18n
-['en','ko','zh','ja','es','fr','hi','ar'].forEach(l => {
+['en','ko','zh','ja','es','fr','hi','ar','id','vi','th','tl'].forEach(l => {
   const x = {
     en:{ menu_custom:'Group Chat', menu_custom_sub:'Rooms you created or joined', create_room:'Create Room', create_room_submit:'Create Room ✓', join_room:'Join Room', room_name_ph:'Room name', enter_room_id_ph:'Room ID (e.g. ABC123)', room_id_label:'Room ID', room_id_hint:'Share this ID so friends can join', enter_room:'Enter Room', copy_id:'Copy', copied:'Copied!', custom_empty:'No group chats yet.\nCreate or join a room!', room_not_found:'Room not found. Check the ID and try again.', room_name_err:'Please enter a room name.' },
     ko:{ menu_custom:'그룹 채팅', menu_custom_sub:'직접 만든 채팅방', create_room:'방 만들기', create_room_submit:'방 생성하기', join_room:'방 참여하기', room_name_ph:'채팅방 이름', enter_room_id_ph:'채팅방 ID (예: ABC123)', room_id_label:'채팅방 ID', room_id_hint:'이 ID를 공유하면 친구들이 입장할 수 있어요', enter_room:'방 입장하기', copy_id:'복사', copied:'복사됨!', custom_empty:'참여한 그룹 채팅이 없어요.\n방을 만들거나 참여해보세요!', room_not_found:'채팅방을 찾을 수 없어요. ID를 확인해주세요.', room_name_err:'채팅방 이름을 입력해주세요.' },
@@ -1410,12 +1528,16 @@ const STRINGS = {
     fr:{ menu_custom:'Chat de groupe', menu_custom_sub:'Salons créés ou rejoints', create_room:'Créer un salon', create_room_submit:'Créer maintenant', join_room:'Rejoindre un salon', room_name_ph:'Nom du salon', enter_room_id_ph:'ID du salon (ex. ABC123)', room_id_label:'ID du salon', room_id_hint:'Partagez cet ID pour que vos amis puissent rejoindre', enter_room:'Entrer', copy_id:'Copier', copied:'Copié !', custom_empty:'Aucun chat de groupe pour l\'instant.\nCréez ou rejoignez un salon !', room_not_found:'Salon introuvable. Vérifiez l\'ID.', room_name_err:'Veuillez entrer le nom du salon.' },
     hi:{ menu_custom:'ग्रुप चैट', menu_custom_sub:'बनाए या जुड़े कमरे', create_room:'कमरा बनाएं', create_room_submit:'अभी बनाएं', join_room:'कमरे में जुड़ें', room_name_ph:'कमरे का नाम', enter_room_id_ph:'कमरा ID (जैसे ABC123)', room_id_label:'कमरा ID', room_id_hint:'यह ID शेयर करें ताकि दोस्त जुड़ सकें', enter_room:'प्रवेश करें', copy_id:'कॉपी', copied:'कॉपी हो गया!', custom_empty:'कोई ग्रुप चैट नहीं।\nकमरा बनाएं या जुड़ें!', room_not_found:'कमरा नहीं मिला। ID जांचें।', room_name_err:'कृपया कमरे का नाम दर्ज करें।' },
     ar:{ menu_custom:'الدردشة الجماعية', menu_custom_sub:'الغرف التي أنشأتها أو انضممت إليها', create_room:'إنشاء غرفة', create_room_submit:'إنشاء الآن', join_room:'الانضمام لغرفة', room_name_ph:'اسم الغرفة', enter_room_id_ph:'معرّف الغرفة (مثل ABC123)', room_id_label:'معرّف الغرفة', room_id_hint:'شارك هذا المعرّف ليتمكن أصدقاؤك من الانضمام', enter_room:'دخول', copy_id:'نسخ', copied:'تم النسخ!', custom_empty:'لا توجد دردشات جماعية بعد.\nأنشئ أو انضم لغرفة!', room_not_found:'الغرفة غير موجودة. تحقق من المعرّف.', room_name_err:'الرجاء إدخال اسم الغرفة.' },
+    id:{ menu_custom:'Grup Chat', menu_custom_sub:'Ruangan yang dibuat atau diikuti', create_room:'Buat Ruangan', create_room_submit:'Buat Sekarang', join_room:'Bergabung', room_name_ph:'Nama ruangan', enter_room_id_ph:'ID ruangan (mis. ABC123)', room_id_label:'ID Ruangan', room_id_hint:'Bagikan ID ini agar teman bisa bergabung', enter_room:'Masuk', copy_id:'Salin', copied:'Disalin!', custom_empty:'Belum ada grup chat.\nBuat atau bergabung dengan ruangan!', room_not_found:'Ruangan tidak ditemukan. Periksa ID dan coba lagi.', room_name_err:'Silakan masukkan nama ruangan.' },
+    vi:{ menu_custom:'Chat Nhóm', menu_custom_sub:'Phòng bạn đã tạo hoặc tham gia', create_room:'Tạo Phòng', create_room_submit:'Tạo Ngay', join_room:'Tham gia Phòng', room_name_ph:'Tên phòng', enter_room_id_ph:'ID phòng (ví dụ ABC123)', room_id_label:'ID Phòng', room_id_hint:'Chia sẻ ID này để bạn bè có thể tham gia', enter_room:'Vào Phòng', copy_id:'Sao chép', copied:'Đã sao chép!', custom_empty:'Chưa có chat nhóm.\nTạo hoặc tham gia một phòng!', room_not_found:'Không tìm thấy phòng. Kiểm tra ID và thử lại.', room_name_err:'Vui lòng nhập tên phòng.' },
+    th:{ menu_custom:'แชทกลุ่ม', menu_custom_sub:'ห้องที่สร้างหรือเข้าร่วม', create_room:'สร้างห้อง', create_room_submit:'สร้างเลย', join_room:'เข้าร่วมห้อง', room_name_ph:'ชื่อห้อง', enter_room_id_ph:'ID ห้อง (เช่น ABC123)', room_id_label:'ID ห้อง', room_id_hint:'แชร์ ID นี้เพื่อให้เพื่อนเข้าร่วม', enter_room:'เข้าห้อง', copy_id:'คัดลอก', copied:'คัดลอกแล้ว!', custom_empty:'ยังไม่มีแชทกลุ่ม\nสร้างหรือเข้าร่วมห้อง!', room_not_found:'ไม่พบห้อง ตรวจสอบ ID แล้วลองใหม่', room_name_err:'กรุณาใส่ชื่อห้อง' },
+    tl:{ menu_custom:'Group Chat', menu_custom_sub:'Mga silid na ginawa o sinalihan', create_room:'Gumawa ng Silid', create_room_submit:'Gumawa Ngayon', join_room:'Sumali sa Silid', room_name_ph:'Pangalan ng silid', enter_room_id_ph:'ID ng silid (hal. ABC123)', room_id_label:'ID ng Silid', room_id_hint:'Ibahagi ang ID na ito para makapasok ang mga kaibigan', enter_room:'Pumasok', copy_id:'Kopyahin', copied:'Nakopya!', custom_empty:'Wala pang group chat.\nGumawa o sumali sa silid!', room_not_found:'Hindi nahanap ang silid. Suriin ang ID at subukan muli.', room_name_err:'Mangyaring maglagay ng pangalan ng silid.' },
   }[l];
   if (STRINGS[l] && x) Object.assign(STRINGS[l], x);
 });
 
 // report + back + devlog + dev_opinion
-['en','ko','zh','ja','es','fr','hi','ar'].forEach(l => {
+['en','ko','zh','ja','es','fr','hi','ar','id','vi','th','tl'].forEach(l => {
   const x = {
     en:{ report_btn:'Report', report_submit:'Submit Report', back:'Back', devlog_btn:'Dev Log →', devlog_title:'Dev Log', devlog_sub:'Village Chat Development Log', dev_opinion:'Feedback', dev_opinion_placeholder:"Have ideas or suggestions for improving Village Chat? We'd love to hear them.", dev_opinion_submitted:'Thank you! Your feedback has been received.', contact_label:'Contact', submit:'Submit', privacy:'Privacy Policy', terms:'Terms of Service' },
     ko:{ report_btn:'신고하기', report_submit:'신고 제출', back:'뒤로', devlog_btn:'개발 로그 →', devlog_title:'개발 로그', devlog_sub:'Village Chat Development Log', dev_opinion:'개발 의견', dev_opinion_placeholder:'Village Chat을 더 좋게 만들 아이디어나 의견이 있다면 자유롭게 적어주세요.', dev_opinion_submitted:'의견이 접수됐습니다. 감사합니다.', contact_label:'Contact', submit:'제출', privacy:'개인정보처리방침', terms:'이용약관' },
@@ -1425,12 +1547,16 @@ const STRINGS = {
     fr:{ report_btn:'Signaler', report_submit:'Envoyer le signalement', back:'Retour', devlog_btn:'Journal →', devlog_title:'Journal de développement', devlog_sub:'Village Chat Development Log', dev_opinion:'Suggestions', dev_opinion_placeholder:"Des idées pour améliorer Village Chat ? N'hésitez pas à nous les partager.", dev_opinion_submitted:'Merci pour votre retour !', contact_label:'Contact', submit:'Envoyer', privacy:'Politique de confidentialité', terms:'Conditions d\'utilisation' },
     hi:{ report_btn:'रिपोर्ट करें', report_submit:'रिपोर्ट सबमिट करें', back:'वापस', devlog_btn:'देव लॉग →', devlog_title:'विकास लॉग', devlog_sub:'Village Chat Development Log', dev_opinion:'सुझाव', dev_opinion_placeholder:'Village Chat को बेहतर बनाने के लिए आपके कोई विचार या सुझाव हैं? बताएं।', dev_opinion_submitted:'आपका सुझाव मिल गया। धन्यवाद!', contact_label:'संपर्क', submit:'भेजें', privacy:'गोपनीयता नीति', terms:'सेवा की शर्तें' },
     ar:{ report_btn:'إبلاغ', report_submit:'إرسال البلاغ', back:'رجوع', devlog_btn:'سجل التطوير →', devlog_title:'سجل التطوير', devlog_sub:'Village Chat Development Log', dev_opinion:'اقتراحات', dev_opinion_placeholder:'هل لديك أفكار أو اقتراحات لتحسين Village Chat؟ نسعد بسماعها.', dev_opinion_submitted:'شكراً على ملاحظاتك!', contact_label:'تواصل', submit:'إرسال', privacy:'سياسة الخصوصية', terms:'شروط الخدمة' },
+    id:{ report_btn:'Laporkan', report_submit:'Kirim Laporan', back:'Kembali', devlog_btn:'Log Dev →', devlog_title:'Log Pengembangan', devlog_sub:'Village Chat Development Log', dev_opinion:'Saran', dev_opinion_placeholder:'Punya ide atau saran untuk meningkatkan Village Chat? Kami ingin mendengarnya.', dev_opinion_submitted:'Terima kasih! Saran Anda telah diterima.', contact_label:'Kontak', submit:'Kirim', privacy:'Kebijakan Privasi', terms:'Ketentuan Layanan' },
+    vi:{ report_btn:'Báo cáo', report_submit:'Gửi Báo cáo', back:'Quay lại', devlog_btn:'Nhật ký →', devlog_title:'Nhật ký Phát triển', devlog_sub:'Village Chat Development Log', dev_opinion:'Góp ý', dev_opinion_placeholder:'Bạn có ý tưởng hoặc gợi ý để cải thiện Village Chat không?', dev_opinion_submitted:'Cảm ơn! Phản hồi của bạn đã được nhận.', contact_label:'Liên hệ', submit:'Gửi', privacy:'Chính sách Bảo mật', terms:'Điều khoản Dịch vụ' },
+    th:{ report_btn:'รายงาน', report_submit:'ส่งรายงาน', back:'กลับ', devlog_btn:'บันทึกนักพัฒนา →', devlog_title:'บันทึกการพัฒนา', devlog_sub:'Village Chat Development Log', dev_opinion:'ความคิดเห็น', dev_opinion_placeholder:'มีไอเดียหรือข้อเสนอแนะเพื่อปรับปรุง Village Chat ไหม?', dev_opinion_submitted:'ขอบคุณ! ได้รับความคิดเห็นของคุณแล้ว', contact_label:'ติดต่อ', submit:'ส่ง', privacy:'นโยบายความเป็นส่วนตัว', terms:'ข้อกำหนดการให้บริการ' },
+    tl:{ report_btn:'I-report', report_submit:'Isumite ang Report', back:'Bumalik', devlog_btn:'Dev Log →', devlog_title:'Development Log', devlog_sub:'Village Chat Development Log', dev_opinion:'Mungkahi', dev_opinion_placeholder:'May mga ideya o mungkahi para mapabuti ang Village Chat?', dev_opinion_submitted:'Salamat! Natanggap na ang iyong feedback.', contact_label:'Makipag-ugnayan', submit:'Isumite', privacy:'Patakaran sa Privacy', terms:'Mga Tuntunin ng Serbisyo' },
   }[l];
   if (STRINGS[l] && x) Object.assign(STRINGS[l], x);
 });
 
 // intro_learn + bio_placeholder
-['en','ko','zh','ja','es','fr','hi','ar'].forEach(l => {
+['en','ko','zh','ja','es','fr','hi','ar','id','vi','th','tl'].forEach(l => {
   const x = {
     en:{ intro_learn:'About Village Chat →', bio_placeholder:'Write a short intro about yourself (max 80 chars)', bio_save:'Done' },
     ko:{ intro_learn:'서비스 소개 →',         bio_placeholder:'자기소개를 입력하세요 (최대 80자)',                 bio_save:'완료' },
@@ -1440,6 +1566,10 @@ const STRINGS = {
     fr:{ intro_learn:'En savoir plus →',       bio_placeholder:'Écris une courte présentation de toi (max 80 caractères)',     bio_save:'Terminé' },
     hi:{ intro_learn:'और जानें →',             bio_placeholder:'अपने बारे में एक छोटा परिचय लिखें (अधिकतम 80 अक्षर)',        bio_save:'हो गया' },
     ar:{ intro_learn:'تعرف على المزيد →',      bio_placeholder:'اكتب مقدمة قصيرة عن نفسك (بحد أقصى 80 حرفاً)',               bio_save:'تم' },
+    id:{ intro_learn:'Tentang Village Chat →', bio_placeholder:'Tulis perkenalan singkat tentang dirimu (maks. 80 karakter)', bio_save:'Selesai' },
+    vi:{ intro_learn:'Về Village Chat →',      bio_placeholder:'Viết giới thiệu ngắn về bản thân (tối đa 80 ký tự)',          bio_save:'Xong' },
+    th:{ intro_learn:'เกี่ยวกับ Village Chat →', bio_placeholder:'เขียนแนะนำตัวสั้นๆ (สูงสุด 80 ตัวอักษร)',                  bio_save:'เสร็จ' },
+    tl:{ intro_learn:'Tungkol sa Village Chat →', bio_placeholder:'Sumulat ng maikling pagpapakilala (max 80 karakter)',      bio_save:'Tapos' },
   }[l];
   if (STRINGS[l] && x) Object.assign(STRINGS[l], x);
 });
@@ -2241,9 +2371,17 @@ function setLang(code) {
   if (msgInput) msgInput.placeholder = s.msg_placeholder || '';
   // 국적 피커 재빌드 (국가명 언어 반영)
   buildNationalitySelect(code);
-  // 언어 버튼 활성 표시
-  document.querySelectorAll('.intro-lang-item').forEach(b => {
-    b.classList.toggle('active', b.dataset.lang === code);
+  // 인트로 국가명 업데이트
+  updateIntroCountries(code);
+  // 드롭다운 트리거 업데이트
+  const trigFlag = document.getElementById('langTriggerFlag');
+  const trigName = document.getElementById('langTriggerName');
+  if (trigFlag) trigFlag.src = `https://flagcdn.com/${LANG_CDN[code] || 'un'}.svg`;
+  if (trigName) trigName.textContent = LANG_NATIVE[code] || code;
+  document.getElementById('langDropdown')?.classList.remove('open');
+  document.getElementById('langMenu')?.querySelectorAll('button').forEach(b => {
+    const bc = b.getAttribute('onclick')?.match(/setLang\('(\w+)'\)/)?.[1];
+    b.classList.toggle('active', bc === code);
   });
   // 메뉴 방 제목 갱신
   if (currentLocation) {
@@ -2455,12 +2593,10 @@ async function goLocation() {
     // Firestore: profileId 공개 + 이전 inbox 정리
     if (window._firebaseReady) {
       window._setDoc(window._doc(window._db, 'users', nick), { profileId, lastSeen: new Date() }).catch(() => {});
-      cleanupInactiveUsers();
       deleteMyInbox(nick);
     } else {
       document.addEventListener('firebaseReady', () => {
         window._setDoc(window._doc(window._db, 'users', nick), { profileId, lastSeen: new Date() }).catch(() => {});
-      cleanupInactiveUsers();
         deleteMyInbox(nick);
       }, { once: true });
     }
@@ -2497,7 +2633,33 @@ const LANG_ACCEPT_CHAIN = {
   fr: 'fr,en;q=0.8,ko;q=0.5',
   hi: 'hi,en;q=0.8,ko;q=0.5',
   ar: 'ar,en;q=0.8,ko;q=0.5',
+  id: 'id,en;q=0.8',
+  vi: 'vi,en;q=0.8',
+  th: 'th,en;q=0.8',
+  tl: 'tl,en;q=0.8',
 };
+
+const SUPPORTED_COUNTRIES = ['kr','jp','us','in','id','vn','th','ph'];
+
+function parseAddrByCountry(addr) {
+  const cc = (addr.country_code || '').toLowerCase();
+  if (cc === 'kr') {
+    const isGun = !!addr.county && !addr.city_district;
+    const si = !isGun && addr.city_district
+      ? (addr.city || addr.state || addr.state_district || addr.municipality || '') : '';
+    const gu = addr.city_district || addr.borough || addr.county || addr.city || addr.municipality || addr.state_district || '';
+    const dong = isGun
+      ? (addr.town || addr.suburb || addr.village || '')
+      : (addr.neighbourhood || addr.quarter || addr.suburb || addr.village || addr.town || addr.hamlet || '');
+    return (gu && dong) ? { si, gu, dong, country: 'kr' } : null;
+  }
+  if (!SUPPORTED_COUNTRIES.includes(cc)) return null;
+  const si = addr.state || addr.state_district || '';
+  const gu = addr.city || addr.city_district || addr.borough || addr.county || addr.municipality || addr.town || '';
+  const dong = addr.neighbourhood || addr.quarter || addr.suburb || addr.village || addr.hamlet || '';
+  if (!gu) return null;
+  return { si, gu, dong, country: cc };
+}
 
 async function nominatimFetch(lat, lng, langChain, zoom) {
   const res = await fetch(
@@ -2505,20 +2667,7 @@ async function nominatimFetch(lat, lng, langChain, zoom) {
   );
   if (!res.ok) return null;
   const data = await res.json();
-  const addr = data.address || {};
-
-  // 군 지역 판별: county가 있고 city_district가 없으면 군-읍/면 체계
-  const isGun = !!addr.county && !addr.city_district;
-  // 시 단위: 구가 있는 도시는 city 또는 state가 시
-  const si   = !isGun && addr.city_district
-    ? (addr.city || addr.state || addr.state_district || addr.municipality || '')
-    : '';
-  const gu   = addr.city_district || addr.borough || addr.county || addr.city || addr.municipality || addr.state_district || '';
-  // 군 지역은 읍(town)/면(suburb·village)만 사용 — 리(neighbourhood·hamlet) 제외
-  const dong = isGun
-    ? (addr.town || addr.suburb || addr.village || '')
-    : (addr.neighbourhood || addr.quarter || addr.suburb || addr.village || addr.town || addr.hamlet || '');
-  return (gu && dong) ? { si, gu, dong } : null;
+  return parseAddrByCountry(data.address || {});
 }
 
 async function onLocSuccess(pos) {
@@ -2527,58 +2676,70 @@ async function onLocSuccess(pos) {
 
   for (const zoom of [16, 14, 12]) {
     try {
-      // 방 ID는 항상 한국어 기준 (언어 달라도 같은 방에 모이도록)
-      const ko = await nominatimFetch(lat, lng, 'ko', zoom);
-      if (!ko) continue;
+      // 먼저 영어로 조회해서 국가 감지
+      const base = await nominatimFetch(lat, lng, 'en', zoom);
+      if (!base) continue;
+      const cc = base.country;
+      const isKorea = cc === 'kr';
 
-      // 표시 이름: 선택 언어 우선, 없으면 영어, 없으면 한국어 순으로 fallback
-      let display = ko;
-      if (currentLang !== 'ko') {
+      // 방 ID: 한국은 한국어, 나머지는 영어 기준
+      const idLoc = isKorea ? await nominatimFetch(lat, lng, 'ko', zoom) : base;
+      if (!idLoc) continue;
+
+      // 표시 이름: 선택 언어 우선, fallback은 idLoc
+      const displayLang = isKorea ? 'ko' : 'en';
+      let display = idLoc;
+      if (currentLang !== displayLang) {
         try {
-          const chain = LANG_ACCEPT_CHAIN[currentLang] || `${currentLang},en;q=0.8,ko;q=0.5`;
+          const chain = LANG_ACCEPT_CHAIN[currentLang] || `${currentLang},en;q=0.8`;
           const loc = await nominatimFetch(lat, lng, chain, zoom);
           if (loc) display = loc;
         } catch(e) {}
       }
 
       // 시 레벨: 구가 있는데 si가 비어있으면 zoom=10으로 별도 조회
-      let siKo = ko.si;
-      let siDisplay = display.si || ko.si;
-      if (ko.gu && !siKo) {
+      let siId = idLoc.si;
+      let siDisplay = display.si || idLoc.si;
+      if (idLoc.gu && !siId) {
         try {
           const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=ko&zoom=10&addressdetails=1`
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=${isKorea ? 'ko' : 'en'}&zoom=10&addressdetails=1`
           );
           if (res.ok) {
             const d = await res.json();
             const a = d.address || {};
-            siKo = a.city || a.state || a.county || a.municipality || '';
+            siId = isKorea
+              ? (a.city || a.state || a.county || a.municipality || '')
+              : (a.state || a.state_district || a.city || '');
           }
         } catch(e) {}
-        if (siKo && currentLang !== 'ko') {
+        if (siId && currentLang !== displayLang) {
           try {
-            const chain = LANG_ACCEPT_CHAIN[currentLang] || `${currentLang},en;q=0.8,ko;q=0.5`;
+            const chain = LANG_ACCEPT_CHAIN[currentLang] || `${currentLang},en;q=0.8`;
             const res2 = await fetch(
               `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=${encodeURIComponent(chain)}&zoom=10&addressdetails=1`
             );
             if (res2.ok) {
               const d2 = await res2.json();
               const a2 = d2.address || {};
-              siDisplay = a2.city || a2.state || a2.county || a2.municipality || siKo;
+              siDisplay = isKorea
+                ? (a2.city || a2.state || a2.county || a2.municipality || siId)
+                : (a2.state || a2.state_district || a2.city || siId);
             }
           } catch(e) {}
         } else {
-          siDisplay = siKo;
+          siDisplay = siId;
         }
       }
 
       currentLocation = {
-        si:          siKo,
-        gu:          ko.gu,
-        dong:        ko.dong,
-        siDisplay:   siDisplay || siKo,
-        guDisplay:   display.gu,
-        dongDisplay: display.dong,
+        si:          siId,
+        gu:          idLoc.gu,
+        dong:        idLoc.dong,
+        siDisplay:   siDisplay || siId,
+        guDisplay:   display.gu || idLoc.gu,
+        dongDisplay: display.dong || idLoc.dong,
+        country:     cc,
       };
       showMenu();
       return;
@@ -2607,8 +2768,8 @@ function showLocError(msg) {
 
 // ── 메인 메뉴 ────────────────────────────────────────────
 function showMenu() {
-  const { si, siDisplay: sd, guDisplay: gd, dongDisplay: dd } = currentLocation;
-  document.getElementById('menuLocation').textContent = gd + ' · ' + dd;
+  const { si, dong, siDisplay: sd, guDisplay: gd, dongDisplay: dd } = currentLocation;
+  document.getElementById('menuLocation').textContent = dong ? gd + ' · ' + dd : gd;
   const siItem = document.getElementById('siMenuItem');
   if (si) {
     siItem.style.display = '';
@@ -2617,8 +2778,14 @@ function showMenu() {
   } else {
     siItem.style.display = 'none';
   }
+  const dongItem = document.getElementById('dongMenuItem');
+  if (dong) {
+    dongItem.style.display = '';
+    document.getElementById('dongMenuTitle').textContent = dd + t('room_suffix');
+  } else {
+    dongItem.style.display = 'none';
+  }
   document.getElementById('guMenuTitle').textContent = gd + t('room_suffix');
-  document.getElementById('dongMenuTitle').textContent = dd + t('room_suffix');
   renderLangMenuItems();
   renderMyAvatarBtn();
   loadBanStatus();
@@ -2626,12 +2793,10 @@ function showMenu() {
   if (window._firebaseReady) {
     subscribeInbox(); subscribeDmRooms(); subscribeCustomRooms();
     window._setDoc(window._doc(window._db, 'users', profile.nickname), { profileId: profile.profileId, lastSeen: new Date() }, { merge: true }).catch(() => {});
-    cleanupInactiveUsers();
   } else {
     document.addEventListener('firebaseReady', () => {
       subscribeInbox(); subscribeDmRooms(); subscribeCustomRooms();
       window._setDoc(window._doc(window._db, 'users', profile.nickname), { profileId: profile.profileId, lastSeen: new Date() }, { merge: true }).catch(() => {});
-      cleanupInactiveUsers();
     }, { once: true });
   }
 }
@@ -2895,22 +3060,23 @@ function renderLangMenuItems() {
 }
 
 function enterGroupChat(type) {
-  const { si, gu, dong, siDisplay: sd, guDisplay: gd, dongDisplay: dd } = currentLocation;
+  const { si, gu, dong, siDisplay: sd, guDisplay: gd, dongDisplay: dd, country } = currentLocation;
+  const pfx = (country && country !== 'kr') ? country + '_' : '';
   const cdnCode = LANG_CDN[currentLang] || 'un';
   const langName = LANG_NATIVE[currentLang] || currentLang.toUpperCase();
   const flagHtml = `<img src="https://flagcdn.com/${cdnCode}.svg" alt="" style="width:20px;height:15px;object-fit:cover;border-radius:2px;vertical-align:middle;margin-right:4px">`;
   if (type === 'si')
-    enterChat('si_' + si, sd + t('room_suffix'), '', sd, 'menuScreen');
+    enterChat(pfx + 'si_' + si, sd + t('room_suffix'), '', sd, 'menuScreen');
   else if (type === 'gu')
-    enterChat('gu_' + gu, gd + t('room_suffix'), si ? sd : '', gd, 'menuScreen');
+    enterChat(pfx + 'gu_' + gu, gd + t('room_suffix'), si ? sd : '', gd, 'menuScreen');
   else if (type === 'dong')
-    enterChat('dong_' + gu + '_' + dong, dd + t('room_suffix'), gd, gd + ' · ' + dd, 'menuScreen');
+    enterChat(pfx + 'dong_' + gu + '_' + dong, dd + t('room_suffix'), gd, gd + ' · ' + dd, 'menuScreen');
   else if (type === 'si_lang')
-    enterChat('si_' + si + '_lang_' + currentLang, flagHtml + langName + ' · ' + sd + t('room_suffix'), '', sd, 'menuScreen');
+    enterChat(pfx + 'si_' + si + '_lang_' + currentLang, flagHtml + langName + ' · ' + sd + t('room_suffix'), '', sd, 'menuScreen');
   else if (type === 'gu_lang')
-    enterChat('gu_' + gu + '_lang_' + currentLang, flagHtml + langName + ' · ' + gd + t('room_suffix'), '', gd, 'menuScreen');
+    enterChat(pfx + 'gu_' + gu + '_lang_' + currentLang, flagHtml + langName + ' · ' + gd + t('room_suffix'), '', gd, 'menuScreen');
   else if (type === 'dong_lang')
-    enterChat('dong_' + gu + '_' + dong + '_lang_' + currentLang, flagHtml + langName + ' · ' + dd + t('room_suffix'), gd, gd + ' · ' + dd, 'menuScreen');
+    enterChat(pfx + 'dong_' + gu + '_' + dong + '_lang_' + currentLang, flagHtml + langName + ' · ' + dd + t('room_suffix'), gd, gd + ' · ' + dd, 'menuScreen');
 }
 
 // ── 1:1 채팅 입장 ────────────────────────────────────────
