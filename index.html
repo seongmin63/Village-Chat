@@ -2631,18 +2631,18 @@ function hidePinBanner() {
 // ── 관광객 모드 ─────────────────────────────────────────
 const TOURIST_BADGE = { travel: '✈️', study: '📚', nomad: '🌏' };
 const TOURIST_TEMPLATES = {
-  en: ['🍜 Can you recommend a good restaurant nearby?','🚇 Where is the nearest subway/train station?','🏪 Is there a convenience store around here?','📸 What\'s a good spot to visit here?','🌐 Does anyone speak English here?','👋 Hello! I\'m a traveler here. Nice to meet you!'],
-  ko: ['🍜 근처 맛집 추천해주세요!','🚇 가장 가까운 지하철역이 어디인가요?','🏪 근처에 편의점 있나요?','📸 여기서 꼭 가봐야 할 곳이 어디예요?','🌐 한국어 할 줄 아는 분 계세요?','👋 안녕하세요! 여행 중인 여행자입니다. 반가워요!'],
-  ja: ['🍜 近くのおすすめレストランを教えてください！','🚇 最寄りの駅はどこですか？','🏪 近くにコンビニはありますか？','📸 ここで必ず行くべき場所はどこですか？','🌐 日本語話せる方いますか？','👋 こんにちは！旅行者です。よろしくお願いします！'],
-  zh: ['🍜 附近有推荐的餐厅吗？','🚇 最近的地铁站在哪里？','🏪 附近有便利店吗？','📸 这里必去的地方是哪里？','🌐 有人会说中文吗？','👋 大家好！我是一名旅行者，很高兴认识你们！'],
-  es: ['🍜 ¿Puedes recomendar un buen restaurante cerca?','🚇 ¿Dónde está la estación de metro más cercana?','🏪 ¿Hay alguna tienda de conveniencia por aquí?','📸 ¿Cuál es un buen lugar para visitar aquí?','🌐 ¿Alguien habla español aquí?','👋 ¡Hola! Soy un viajero aquí. ¡Encantado de conoceros!'],
-  fr: ['🍜 Pouvez-vous recommander un bon restaurant près d\'ici ?','🚇 Où est la station de métro la plus proche ?','🏪 Y a-t-il un magasin de proximité par ici ?','📸 Quel est un bon endroit à visiter ici ?','🌐 Est-ce que quelqu\'un parle français ici ?','👋 Bonjour ! Je suis un voyageur ici. Ravi de vous rencontrer !'],
-  hi: ['🍜 क्या आप पास में कोई अच्छा रेस्तरां सुझा सकते हैं?','🚇 निकटतम मेट्रो स्टेशन कहाँ है?','🏪 क्या पास में कोई सुविधा स्टोर है?','📸 यहाँ घूमने की अच्छी जगह कौन सी है?','🌐 क्या यहाँ कोई हिंदी बोलता है?','👋 नमस्ते! मैं यहाँ एक यात्री हूँ। आपसे मिलकर खुशी हुई!'],
-  ar: ['🍜 هل يمكنك التوصية بمطعم جيد بالقرب من هنا؟','🚇 أين أقرب محطة مترو؟','🏪 هل يوجد متجر قريب من هنا؟','📸 ما هو المكان الجيد للزيارة هنا؟','🌐 هل يتحدث أحد العربية هنا؟','👋 مرحباً! أنا مسافر هنا. سعيد بلقائكم!'],
-  id: ['🍜 Bisa rekomendasikan restoran bagus di sekitar sini?','🚇 Di mana stasiun terdekat?','🏪 Ada minimarket di sekitar sini?','📸 Tempat apa yang wajib dikunjungi di sini?','🌐 Ada yang bisa berbahasa Inggris di sini?','👋 Halo! Saya wisatawan di sini. Senang bertemu kalian!'],
-  vi: ['🍜 Bạn có thể gợi ý nhà hàng ngon gần đây không?','🚇 Ga tàu/metro gần nhất ở đâu?','🏪 Có cửa hàng tiện lợi gần đây không?','📸 Nơi nào đáng đến tham quan ở đây?','🌐 Có ai nói tiếng Anh ở đây không?','👋 Xin chào! Tôi là du khách. Rất vui được gặp mọi người!'],
-  th: ['🍜 แนะนำร้านอาหารอร่อยใกล้ๆ ได้ไหม?','🚇 สถานีรถไฟฟ้าที่ใกล้ที่สุดอยู่ที่ไหน?','🏪 มีร้านสะดวกซื้อแถวนี้ไหม?','📸 มีที่ไหนที่น่าไปเที่ยวที่นี่บ้าง?','🌐 มีใครพูดภาษาอังกฤษได้บ้าง?','👋 สวัสดี! ฉันเป็นนักท่องเที่ยวที่นี่ ยินดีที่ได้รู้จัก!'],
-  tl: ['🍜 Makakarekumenda ka ba ng magandang restaurant malapit dito?','🚇 Saan ang pinakamalapit na istasyon ng subway/tren?','🏪 May convenience store ba sa paligid dito?','📸 Ano ang magandang lugar na bibisitahin dito?','🌐 May nagsasalita ba ng English dito?','👋 Kamusta! Turista ako dito. Masaya akong makilala kayo!'],
+  en: ['🍜 Can you recommend a good restaurant nearby?','📸 Any fun places to hang out around here?','🌐 Does anyone speak English here?','👋 Hello! I\'m a traveler here. Nice to meet you!'],
+  ko: ['🍜 근처 맛집 추천해주세요!','📸 주변에 놀러 갈만한 곳이 있나요?','🌐 한국어 할 줄 아는 분 계세요?','👋 안녕하세요! 여행 중인 여행자입니다. 반가워요!'],
+  ja: ['🍜 近くのおすすめレストランを教えてください！','📸 近くで遊べるスポットはありますか？','🌐 日本語話せる方いますか？','👋 こんにちは！旅行者です。よろしくお願いします！'],
+  zh: ['🍜 附近有推荐的餐厅吗？','📸 附近有什么好玩的地方吗？','🌐 有人会说中文吗？','👋 大家好！我是一名旅行者，很高兴认识你们！'],
+  es: ['🍜 ¿Puedes recomendar un buen restaurante cerca?','📸 ¿Hay lugares divertidos para salir por aquí?','🌐 ¿Alguien habla español aquí?','👋 ¡Hola! Soy un viajero aquí. ¡Encantado de conoceros!'],
+  fr: ['🍜 Pouvez-vous recommander un bon restaurant près d\'ici ?','📸 Y a-t-il des endroits sympas à explorer ici ?','🌐 Est-ce que quelqu\'un parle français ici ?','👋 Bonjour ! Je suis un voyageur ici. Ravi de vous rencontrer !'],
+  hi: ['🍜 क्या आप पास में कोई अच्छा रेस्तरां सुझा सकते हैं?','📸 आसपास घूमने-फिरने की कोई अच्छी जगह है?','🌐 क्या यहाँ कोई हिंदी बोलता है?','👋 नमस्ते! मैं यहाँ एक यात्री हूँ। आपसे मिलकर खुशी हुई!'],
+  ar: ['🍜 هل يمكنك التوصية بمطعم جيد بالقرب من هنا؟','📸 هل هناك أماكن ممتعة للتجول بالقرب من هنا؟','🌐 هل يتحدث أحد العربية هنا؟','👋 مرحباً! أنا مسافر هنا. سعيد بلقائكم!'],
+  id: ['🍜 Bisa rekomendasikan restoran bagus di sekitar sini?','📸 Ada tempat seru untuk jalan-jalan di sekitar sini?','🌐 Ada yang bisa berbahasa Inggris di sini?','👋 Halo! Saya wisatawan di sini. Senang bertemu kalian!'],
+  vi: ['🍜 Bạn có thể gợi ý nhà hàng ngon gần đây không?','📸 Có nơi nào vui vẻ để chơi quanh đây không?','🌐 Có ai nói tiếng Anh ở đây không?','👋 Xin chào! Tôi là du khách. Rất vui được gặp mọi người!'],
+  th: ['🍜 แนะนำร้านอาหารอร่อยใกล้ๆ ได้ไหม?','📸 แถวนี้มีที่เที่ยวเล่นสนุกๆ ไหม?','🌐 มีใครพูดภาษาอังกฤษได้บ้าง?','👋 สวัสดี! ฉันเป็นนักท่องเที่ยวที่นี่ ยินดีที่ได้รู้จัก!'],
+  tl: ['🍜 Makakarekumenda ka ba ng magandang restaurant malapit dito?','📸 May masasayang lugar ba para maglibang sa paligid dito?','🌐 May nagsasalita ba ng English dito?','👋 Kamusta! Turista ako dito. Masaya akong makilala kayo!'],
 };
 let profileTouristStatus = '';
 function selectProfileTourist(status) {
@@ -3560,17 +3560,17 @@ function enterGroupChat(type) {
   const langName = LANG_NATIVE[currentLang] || currentLang.toUpperCase();
   const flagHtml = `<img src="https://flagcdn.com/${cdnCode}.svg" alt="" style="width:20px;height:15px;object-fit:cover;border-radius:2px;vertical-align:middle;margin-right:4px">`;
   if (type === 'si')
-    enterChat(pfx + 'si_' + si, sd + t('room_suffix'), '', sd, 'menuScreen');
+    enterChat(pfx + 'si_' + si, sd + t('room_suffix'), '', '', 'menuScreen');
   else if (type === 'gu')
-    enterChat(pfx + 'gu_' + gu, gd + t('room_suffix'), si ? sd : '', gd, 'menuScreen');
+    enterChat(pfx + 'gu_' + gu, gd + t('room_suffix'), si ? sd : '', '', 'menuScreen');
   else if (type === 'dong')
-    enterChat(pfx + 'dong_' + gu + '_' + dong, dd + t('room_suffix'), gd, gd + ' · ' + dd, 'menuScreen');
+    enterChat(pfx + 'dong_' + gu + '_' + dong, dd + t('room_suffix'), gd, '', 'menuScreen');
   else if (type === 'si_lang')
-    enterChat(pfx + 'si_' + si + '_lang_' + currentLang, flagHtml + langName + ' · ' + sd + t('room_suffix'), '', sd, 'menuScreen');
+    enterChat(pfx + 'si_' + si + '_lang_' + currentLang, flagHtml + langName + ' · ' + sd + t('room_suffix'), '', '', 'menuScreen');
   else if (type === 'gu_lang')
-    enterChat(pfx + 'gu_' + gu + '_lang_' + currentLang, flagHtml + langName + ' · ' + gd + t('room_suffix'), '', gd, 'menuScreen');
+    enterChat(pfx + 'gu_' + gu + '_lang_' + currentLang, flagHtml + langName + ' · ' + gd + t('room_suffix'), '', '', 'menuScreen');
   else if (type === 'dong_lang')
-    enterChat(pfx + 'dong_' + gu + '_' + dong + '_lang_' + currentLang, flagHtml + langName + ' · ' + dd + t('room_suffix'), gd, gd + ' · ' + dd, 'menuScreen');
+    enterChat(pfx + 'dong_' + gu + '_' + dong + '_lang_' + currentLang, flagHtml + langName + ' · ' + dd + t('room_suffix'), gd, '', 'menuScreen');
 }
 
 // ── 1:1 채팅 입장 ────────────────────────────────────────
