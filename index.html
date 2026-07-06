@@ -195,7 +195,7 @@ body {
   padding: 0 1rem; gap: 10px; flex-shrink: 0;
 }
 .top-bar .logo { font-size: 18px; font-weight: 700; color: #fff; letter-spacing: -0.5px; }
-.top-bar .room-title { font-size: 15px; font-weight: 600; color: #fff; }
+.top-bar .room-title { font-size: 15px; font-weight: 600; color: #fff; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .top-bar .room-sub { font-size: 11px; color: rgba(255,255,255,0.7); }
 .back-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: rgba(255,255,255,0.9); padding: 4px 8px 4px 0; line-height: 1; }
 #onlineCount { color: rgba(255,255,255,0.8) !important; }
@@ -754,12 +754,12 @@ body {
       <input type="hidden" id="nationalityInput" value="🇰🇷">
     </div>
     <div class="field" id="touristFieldWrap" style="display:none">
-      <label data-i18n="tourist_status_label">현재 상태 (선택)</label>
+      <label data-i18n="tourist_status_label" id="touristStatusLabelProfile">현재 상태 (선택)</label>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">
-        <button type="button" class="tourist-btn" id="pTouristNone" data-status="" onclick="selectProfileTourist('')">🏠 현지인</button>
-        <button type="button" class="tourist-btn" id="pTouristTravel" data-status="travel" onclick="selectProfileTourist('travel')">✈️ 여행 중</button>
-        <button type="button" class="tourist-btn" id="pTouristStudy" data-status="study" onclick="selectProfileTourist('study')">📚 어학연수</button>
-        <button type="button" class="tourist-btn" id="pTouristNomad" data-status="nomad" onclick="selectProfileTourist('nomad')">🌏 디지털노마드</button>
+        <button type="button" class="tourist-btn" id="pTouristNone" data-status="" data-i18n="tourist_local" onclick="selectProfileTourist('')">🏠 현지인</button>
+        <button type="button" class="tourist-btn" id="pTouristTravel" data-status="travel" data-i18n="tourist_travel" onclick="selectProfileTourist('travel')">✈️ 여행 중</button>
+        <button type="button" class="tourist-btn" id="pTouristStudy" data-status="study" data-i18n="tourist_study" onclick="selectProfileTourist('study')">📚 어학연수</button>
+        <button type="button" class="tourist-btn" id="pTouristNomad" data-status="nomad" data-i18n="tourist_nomad" onclick="selectProfileTourist('nomad')">🌏 디지털노마드</button>
       </div>
     </div>
     <button class="btn-primary" id="startBtn" data-i18n="profile_btn" onclick="goLocation()" disabled>내 위치로 동네 찾기 →</button>
@@ -1063,10 +1063,10 @@ body {
       <div id="touristStatusWrap" style="width:100%;display:none">
         <div style="font-size:11px;color:var(--c-muted);margin-bottom:6px;text-align:left" id="touristStatusLabel">여행 상태</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <button class="tourist-btn" data-status="travel" onclick="setTouristStatus('travel')">✈️ 여행 중</button>
-          <button class="tourist-btn" data-status="study" onclick="setTouristStatus('study')">📚 어학연수</button>
-          <button class="tourist-btn" data-status="nomad" onclick="setTouristStatus('nomad')">🌏 디지털노마드</button>
-          <button class="tourist-btn" data-status="" onclick="setTouristStatus('')">🏠 현지인</button>
+          <button class="tourist-btn" data-status="travel" data-i18n="tourist_travel" onclick="setTouristStatus('travel')">✈️ 여행 중</button>
+          <button class="tourist-btn" data-status="study" data-i18n="tourist_study" onclick="setTouristStatus('study')">📚 어학연수</button>
+          <button class="tourist-btn" data-status="nomad" data-i18n="tourist_nomad" onclick="setTouristStatus('nomad')">🌏 디지털노마드</button>
+          <button class="tourist-btn" data-status="" data-i18n="tourist_local" onclick="setTouristStatus('')">🏠 현지인</button>
         </div>
       </div>
       <button class="btn-modal" onclick="confirmDeleteProfile()" style="background:#e74c3c" data-i18n="delete_profile">프로필 삭제</button>
@@ -1100,7 +1100,7 @@ body {
     <div class="modal-name" id="partnerName"></div>
     <div class="partner-bio" id="partnerBio"></div>
     <div id="partnerTouristBadge" style="display:none;font-size:13px;color:var(--c-muted);background:var(--c-input);border:1px solid var(--c-border);border-radius:20px;padding:4px 12px;margin-top:-4px"></div>
-    <button class="btn-modal" id="partnerDmBtn" onclick="startDM()">1:1 채팅</button>
+    <button class="btn-modal" id="partnerDmBtn" data-i18n="dm_chat_btn" onclick="startDM()">1:1 채팅</button>
     <button onclick="toggleReportForm()" style="background:none;border:none;color:var(--c-muted);font-size:12px;cursor:pointer;padding:2px 0;font-family:inherit;text-decoration:underline" data-i18n="report_btn">신고하기</button>
     <div id="reportForm" style="display:none;width:100%;margin-top:4px">
       <textarea id="reportReason" maxlength="200" placeholder="신고 사유를 입력해주세요" style="width:100%;padding:10px 12px;border:1px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;resize:none;height:80px;background:var(--c-input);color:var(--c-text)"></textarea>
@@ -1394,6 +1394,9 @@ const STRINGS = {
     mute_on:'Mute', mute_off:'Unmute', leave_chat:'Leave chat',
     data_note:'Inactive accounts are automatically deleted after 1 month.',
     delete_confirm:'Deleting your profile will erase all chat history and return you to the start.\nAre you sure?',
+    tourist_status_label:'Current Status (optional)', tourist_local:'🏠 Local', tourist_travel:'✈️ Traveling', tourist_study:'📚 Study Abroad', tourist_nomad:'🌏 Digital Nomad',
+    welcome_msg_1:'Welcome to', welcome_msg_2:'Chat freely with your neighbors 😊',
+    deleted_profile:'This profile has been deleted.', dm_chat_btn:'1:1 Chat',
   },
   ko: {
     app_name:'Village Chat',
@@ -1412,6 +1415,9 @@ const STRINGS = {
     mute_on:'알림 끄기', mute_off:'알림 켜기', leave_chat:'채팅방 나가기',
     data_note:'한 달간 활동이 없는 계정의 데이터는 자동으로 삭제됩니다.',
     delete_confirm:'프로필을 삭제하면 모든 채팅 기록이 사라지고 초기 화면으로 돌아갑니다.\n정말 삭제하시겠어요?',
+    tourist_status_label:'현재 상태 (선택)', tourist_local:'🏠 현지인', tourist_travel:'✈️ 여행 중', tourist_study:'📚 어학연수', tourist_nomad:'🌏 디지털노마드',
+    welcome_msg_1:'에 오신 걸 환영해요!', welcome_msg_2:'이웃들과 자유롭게 대화해보세요 😊',
+    deleted_profile:'삭제된 프로필입니다.', dm_chat_btn:'1:1 채팅',
   },
   zh: {
     app_name:'Village Chat',
@@ -1430,6 +1436,9 @@ const STRINGS = {
     mute_on:'静音', mute_off:'取消静音', leave_chat:'退出聊天',
     data_note:'一个月内没有活动的账户数据将自动删除。',
     delete_confirm:'删除资料将清除所有聊天记录并返回初始界面。\n确定删除吗？',
+    tourist_status_label:'当前状态（可选）', tourist_local:'🏠 本地人', tourist_travel:'✈️ 旅行中', tourist_study:'📚 留学中', tourist_nomad:'🌏 数字游民',
+    welcome_msg_1:'欢迎来到', welcome_msg_2:'和邻居们自由交流吧 😊',
+    deleted_profile:'该用户已删除。', dm_chat_btn:'私聊',
   },
   ja: {
     app_name:'Village Chat',
@@ -1448,6 +1457,9 @@ const STRINGS = {
     mute_on:'通知オフ', mute_off:'通知オン', leave_chat:'チャットを退出',
     data_note:'1ヶ月間活動がないアカウントのデータは自動的に削除されます。',
     delete_confirm:'プロフィールを削除するとすべてのチャット履歴が消え、最初の画面に戻ります。\n本当に削除しますか？',
+    tourist_status_label:'現在のステータス（任意）', tourist_local:'🏠 地元民', tourist_travel:'✈️ 旅行中', tourist_study:'📚 留学中', tourist_nomad:'🌏 デジタルノマド',
+    welcome_msg_1:'へようこそ！', welcome_msg_2:'近所の方と自由に話しましょう 😊',
+    deleted_profile:'このプロフィールは削除されました。', dm_chat_btn:'1:1チャット',
   },
   es: {
     app_name:'Village Chat',
@@ -1466,6 +1478,9 @@ const STRINGS = {
     mute_on:'Silenciar', mute_off:'Activar', leave_chat:'Salir del chat',
     data_note:'Los datos de cuentas inactivas durante un mes se eliminarán automáticamente.',
     delete_confirm:'Eliminar tu perfil borrará todo el historial de chat y te llevará al inicio.\n¿Estás seguro?',
+    tourist_status_label:'Estado actual (opcional)', tourist_local:'🏠 Local', tourist_travel:'✈️ Viajando', tourist_study:'📚 Intercambio', tourist_nomad:'🌏 Nómada digital',
+    welcome_msg_1:'¡Bienvenido/a a', welcome_msg_2:'Chatea libremente con tus vecinos 😊',
+    deleted_profile:'Este perfil ha sido eliminado.', dm_chat_btn:'Chat 1:1',
   },
   fr: {
     app_name:'Village Chat',
@@ -1484,6 +1499,9 @@ const STRINGS = {
     mute_on:'Muet', mute_off:'Activer', leave_chat:'Quitter le chat',
     data_note:'Les données des comptes inactifs pendant un mois seront automatiquement supprimées.',
     delete_confirm:'Supprimer votre profil effacera tout l\'historique de chat et vous ramènera au début.\nÊtes-vous sûr ?',
+    tourist_status_label:'Statut actuel (optionnel)', tourist_local:'🏠 Local', tourist_travel:'✈️ En voyage', tourist_study:'📚 Séjour linguistique', tourist_nomad:'🌏 Nomade digital',
+    welcome_msg_1:'Bienvenue à', welcome_msg_2:'Échangez librement avec vos voisins 😊',
+    deleted_profile:'Ce profil a été supprimé.', dm_chat_btn:'Chat 1:1',
   },
   hi: {
     app_name:'Village Chat',
@@ -1502,6 +1520,9 @@ const STRINGS = {
     mute_on:'म्यूट', mute_off:'अनम्यूट', leave_chat:'चैट छोड़ें',
     data_note:'एक महीने से निष्क्रिय खातों का डेटा स्वचालित रूप से हटा दिया जाएगा।',
     delete_confirm:'प्रोफ़ाइल हटाने से सभी चैट इतिहास मिट जाएगा और शुरू में वापस आ जाएगा।\nक्या आप सुनिश्चित हैं?',
+    tourist_status_label:'वर्तमान स्थिति (वैकल्पिक)', tourist_local:'🏠 स्थानीय', tourist_travel:'✈️ यात्रा में', tourist_study:'📚 विदेश अध्ययन', tourist_nomad:'🌏 डिजिटल नोमैड',
+    welcome_msg_1:'में आपका स्वागत है!', welcome_msg_2:'अपने पड़ोसियों से खुलकर बात करें 😊',
+    deleted_profile:'यह प्रोफ़ाइल हटा दी गई है।', dm_chat_btn:'1:1 चैट',
   },
   ar: {
     app_name:'Village Chat',
@@ -1520,6 +1541,9 @@ const STRINGS = {
     mute_on:'كتم', mute_off:'إلغاء الكتم', leave_chat:'مغادرة المحادثة',
     data_note:'سيتم حذف بيانات الحسابات غير النشطة لمدة شهر تلقائياً.',
     delete_confirm:'سيؤدي حذف ملفك الشخصي إلى مسح جميع سجلات الدردشة والعودة إلى البداية.\nهل أنت متأكد؟',
+    tourist_status_label:'الحالة الحالية (اختياري)', tourist_local:'🏠 محلي', tourist_travel:'✈️ مسافر', tourist_study:'📚 طالب في الخارج', tourist_nomad:'🌏 رحّالة رقمي',
+    welcome_msg_1:'مرحباً بك في', welcome_msg_2:'تحدث بحرية مع جيرانك 😊',
+    deleted_profile:'تم حذف هذا الملف الشخصي.', dm_chat_btn:'محادثة 1:1',
   },
   id: {
     app_name:'Village Chat',
@@ -1538,6 +1562,9 @@ const STRINGS = {
     mute_on:'Bisukan', mute_off:'Aktifkan', leave_chat:'Tinggalkan obrolan',
     data_note:'Data akun yang tidak aktif selama satu bulan akan dihapus secara otomatis.',
     delete_confirm:'Menghapus profilmu akan menghapus semua riwayat obrolan dan mengembalikanmu ke awal.\nApakah kamu yakin?',
+    tourist_status_label:'Status saat ini (opsional)', tourist_local:'🏠 Warga lokal', tourist_travel:'✈️ Wisatawan', tourist_study:'📚 Belajar di luar negeri', tourist_nomad:'🌏 Nomad digital',
+    welcome_msg_1:'Selamat datang di', welcome_msg_2:'Mengobrol bebas dengan tetangga 😊',
+    deleted_profile:'Profil ini telah dihapus.', dm_chat_btn:'Chat 1:1',
   },
   vi: {
     app_name:'Village Chat',
@@ -1556,6 +1583,9 @@ const STRINGS = {
     mute_on:'Tắt tiếng', mute_off:'Bật tiếng', leave_chat:'Rời chat',
     data_note:'Dữ liệu tài khoản không hoạt động trong một tháng sẽ tự động bị xóa.',
     delete_confirm:'Xóa hồ sơ sẽ xóa tất cả lịch sử trò chuyện và đưa bạn trở về màn hình ban đầu.\nBạn có chắc không?',
+    tourist_status_label:'Trạng thái hiện tại (tùy chọn)', tourist_local:'🏠 Người địa phương', tourist_travel:'✈️ Đang du lịch', tourist_study:'📚 Du học', tourist_nomad:'🌏 Nomad số',
+    welcome_msg_1:'Chào mừng đến với', welcome_msg_2:'Trò chuyện thoải mái với hàng xóm 😊',
+    deleted_profile:'Hồ sơ này đã bị xóa.', dm_chat_btn:'Chat 1:1',
   },
   th: {
     app_name:'Village Chat',
@@ -1574,6 +1604,9 @@ const STRINGS = {
     mute_on:'ปิดเสียง', mute_off:'เปิดเสียง', leave_chat:'ออกจากแชท',
     data_note:'ข้อมูลบัญชีที่ไม่มีกิจกรรมเป็นเวลาหนึ่งเดือนจะถูกลบโดยอัตโนมัติ',
     delete_confirm:'การลบโปรไฟล์จะลบประวัติแชททั้งหมดและนำคุณกลับไปยังหน้าเริ่มต้น\nคุณแน่ใจหรือไม่?',
+    tourist_status_label:'สถานะปัจจุบัน (ไม่บังคับ)', tourist_local:'🏠 คนท้องถิ่น', tourist_travel:'✈️ กำลังเดินทาง', tourist_study:'📚 เรียนต่างประเทศ', tourist_nomad:'🌏 ดิจิทัลโนแมด',
+    welcome_msg_1:'ยินดีต้อนรับสู่', welcome_msg_2:'พูดคุยอย่างอิสระกับเพื่อนบ้าน 😊',
+    deleted_profile:'โปรไฟล์นี้ถูกลบแล้ว', dm_chat_btn:'แชท 1:1',
   },
   tl: {
     app_name:'Village Chat',
@@ -1592,6 +1625,9 @@ const STRINGS = {
     mute_on:'I-mute', mute_off:'I-unmute', leave_chat:'Umalis sa chat',
     data_note:'Ang data ng mga account na hindi aktibo sa loob ng isang buwan ay awtomatikong mabubura.',
     delete_confirm:'Ang pag-delete ng iyong profile ay magbubura ng lahat ng history ng chat at ibabalik ka sa simula.\nSigurado ka ba?',
+    tourist_status_label:'Kasalukuyang Status (opsyonal)', tourist_local:'🏠 Lokal', tourist_travel:'✈️ Naglalakbay', tourist_study:'📚 Nag-aaral sa ibang bansa', tourist_nomad:'🌏 Digital Nomad',
+    welcome_msg_1:'Maligayang pagdating sa', welcome_msg_2:'Makipag-usap nang malaya sa mga kapitbahay 😊',
+    deleted_profile:'Ang profile na ito ay nabura na.', dm_chat_btn:'Chat 1:1',
   },
 };
 
@@ -2594,14 +2630,20 @@ function hidePinBanner() {
 
 // ── 관광객 모드 ─────────────────────────────────────────
 const TOURIST_BADGE = { travel: '✈️', study: '📚', nomad: '🌏' };
-const TOURIST_TEMPLATES = [
-  '🍜 Can you recommend a good restaurant nearby?',
-  '🚇 Where is the nearest subway/train station?',
-  '🏪 Is there a convenience store around here?',
-  '📸 What\'s a good spot to visit here?',
-  '🌐 Does anyone speak English here?',
-  '👋 Hello! I\'m a traveler here. Nice to meet you!',
-];
+const TOURIST_TEMPLATES = {
+  en: ['🍜 Can you recommend a good restaurant nearby?','🚇 Where is the nearest subway/train station?','🏪 Is there a convenience store around here?','📸 What\'s a good spot to visit here?','🌐 Does anyone speak English here?','👋 Hello! I\'m a traveler here. Nice to meet you!'],
+  ko: ['🍜 근처 맛집 추천해주세요!','🚇 가장 가까운 지하철역이 어디인가요?','🏪 근처에 편의점 있나요?','📸 여기서 꼭 가봐야 할 곳이 어디예요?','🌐 한국어 할 줄 아는 분 계세요?','👋 안녕하세요! 여행 중인 여행자입니다. 반가워요!'],
+  ja: ['🍜 近くのおすすめレストランを教えてください！','🚇 最寄りの駅はどこですか？','🏪 近くにコンビニはありますか？','📸 ここで必ず行くべき場所はどこですか？','🌐 日本語話せる方いますか？','👋 こんにちは！旅行者です。よろしくお願いします！'],
+  zh: ['🍜 附近有推荐的餐厅吗？','🚇 最近的地铁站在哪里？','🏪 附近有便利店吗？','📸 这里必去的地方是哪里？','🌐 有人会说中文吗？','👋 大家好！我是一名旅行者，很高兴认识你们！'],
+  es: ['🍜 ¿Puedes recomendar un buen restaurante cerca?','🚇 ¿Dónde está la estación de metro más cercana?','🏪 ¿Hay alguna tienda de conveniencia por aquí?','📸 ¿Cuál es un buen lugar para visitar aquí?','🌐 ¿Alguien habla español aquí?','👋 ¡Hola! Soy un viajero aquí. ¡Encantado de conoceros!'],
+  fr: ['🍜 Pouvez-vous recommander un bon restaurant près d\'ici ?','🚇 Où est la station de métro la plus proche ?','🏪 Y a-t-il un magasin de proximité par ici ?','📸 Quel est un bon endroit à visiter ici ?','🌐 Est-ce que quelqu\'un parle français ici ?','👋 Bonjour ! Je suis un voyageur ici. Ravi de vous rencontrer !'],
+  hi: ['🍜 क्या आप पास में कोई अच्छा रेस्तरां सुझा सकते हैं?','🚇 निकटतम मेट्रो स्टेशन कहाँ है?','🏪 क्या पास में कोई सुविधा स्टोर है?','📸 यहाँ घूमने की अच्छी जगह कौन सी है?','🌐 क्या यहाँ कोई हिंदी बोलता है?','👋 नमस्ते! मैं यहाँ एक यात्री हूँ। आपसे मिलकर खुशी हुई!'],
+  ar: ['🍜 هل يمكنك التوصية بمطعم جيد بالقرب من هنا؟','🚇 أين أقرب محطة مترو؟','🏪 هل يوجد متجر قريب من هنا؟','📸 ما هو المكان الجيد للزيارة هنا؟','🌐 هل يتحدث أحد العربية هنا؟','👋 مرحباً! أنا مسافر هنا. سعيد بلقائكم!'],
+  id: ['🍜 Bisa rekomendasikan restoran bagus di sekitar sini?','🚇 Di mana stasiun terdekat?','🏪 Ada minimarket di sekitar sini?','📸 Tempat apa yang wajib dikunjungi di sini?','🌐 Ada yang bisa berbahasa Inggris di sini?','👋 Halo! Saya wisatawan di sini. Senang bertemu kalian!'],
+  vi: ['🍜 Bạn có thể gợi ý nhà hàng ngon gần đây không?','🚇 Ga tàu/metro gần nhất ở đâu?','🏪 Có cửa hàng tiện lợi gần đây không?','📸 Nơi nào đáng đến tham quan ở đây?','🌐 Có ai nói tiếng Anh ở đây không?','👋 Xin chào! Tôi là du khách. Rất vui được gặp mọi người!'],
+  th: ['🍜 แนะนำร้านอาหารอร่อยใกล้ๆ ได้ไหม?','🚇 สถานีรถไฟฟ้าที่ใกล้ที่สุดอยู่ที่ไหน?','🏪 มีร้านสะดวกซื้อแถวนี้ไหม?','📸 มีที่ไหนที่น่าไปเที่ยวที่นี่บ้าง?','🌐 มีใครพูดภาษาอังกฤษได้บ้าง?','👋 สวัสดี! ฉันเป็นนักท่องเที่ยวที่นี่ ยินดีที่ได้รู้จัก!'],
+  tl: ['🍜 Makakarekumenda ka ba ng magandang restaurant malapit dito?','🚇 Saan ang pinakamalapit na istasyon ng subway/tren?','🏪 May convenience store ba sa paligid dito?','📸 Ano ang magandang lugar na bibisitahin dito?','🌐 May nagsasalita ba ng English dito?','👋 Kamusta! Turista ako dito. Masaya akong makilala kayo!'],
+};
 let profileTouristStatus = '';
 function selectProfileTourist(status) {
   profileTouristStatus = status;
@@ -2636,13 +2678,17 @@ function updateTouristUI() {
 function populateTouristTemplates() {
   const el = document.getElementById('touristTemplates');
   if (!el) return;
-  el.innerHTML = TOURIST_TEMPLATES.map(tmpl =>
+  const templates = TOURIST_TEMPLATES[currentLang] || TOURIST_TEMPLATES.en;
+  el.innerHTML = templates.map(tmpl =>
     `<button onclick="insertTemplate(${JSON.stringify(tmpl)})">${tmpl}</button>`
   ).join('');
 }
 function insertTemplate(text) {
   const input = document.getElementById('msgInput');
-  if (input) { input.value = text; autoResize(input); input.focus(); }
+  if (!input) return;
+  input.value = text;
+  autoResize(input);
+  sendMsg();
 }
 function detectTouristStatus() {
   if (!profile || !currentLocation) return;
@@ -3854,7 +3900,7 @@ function enterChat(roomId, title, sub, badge, backTarget, isDM = false, isCustom
       if (!localStorage.getItem(wKey)) {
         localStorage.setItem(wKey, '1');
         const roomName = document.getElementById('roomTitle')?.textContent || '';
-        wb.innerHTML = `🏘️ <b>${roomName}</b>에 오신 걸 환영해요!<br><span style="font-size:11px">이웃들과 자유롭게 대화해보세요 😊</span>`;
+        wb.innerHTML = `🏘️ <b>${roomName}</b> ${t('welcome_msg_1')}<br><span style="font-size:11px">${t('welcome_msg_2')}</span>`;
         wb.style.display = '';
         setTimeout(() => { wb.style.display = 'none'; }, 5000);
       } else { wb.style.display = 'none'; }
@@ -4445,8 +4491,18 @@ async function openPartnerModal(sender, gender, avatar, avatarHtml, nationality 
       window._getDoc(window._doc(window._db, 'votes', getDeviceId() + '__' + sender)),
     ]);
 
+    // 삭제된 프로필 체크
+    if (!userSnap.exists()) {
+      bioEl.textContent = t('deleted_profile');
+      if (dmBtn) dmBtn.style.display = 'none';
+      document.getElementById('partnerTouristBadge').style.display = 'none';
+      document.getElementById('boomUpBtn').disabled = true;
+      document.getElementById('boomDownBtn').disabled = true;
+      return;
+    }
+
     // bio
-    if (userSnap.exists() && userSnap.data().bio) {
+    if (userSnap.data().bio) {
       bioEl.textContent = userSnap.data().bio;
     }
 
@@ -4454,7 +4510,7 @@ async function openPartnerModal(sender, gender, avatar, avatarHtml, nationality 
     const tbEl = document.getElementById('partnerTouristBadge');
     if (tbEl) {
       const ts = userSnap.exists() ? userSnap.data().touristStatus : null;
-      const TOURIST_LABEL = { travel: '✈️ 여행 중', study: '📚 어학연수', nomad: '🌏 디지털노마드' };
+      const TOURIST_LABEL = { travel: t('tourist_travel'), study: t('tourist_study'), nomad: t('tourist_nomad') };
       if (ts && TOURIST_LABEL[ts]) {
         tbEl.textContent = TOURIST_LABEL[ts];
         tbEl.style.display = '';
