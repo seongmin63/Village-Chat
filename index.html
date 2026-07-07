@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
@@ -3932,13 +3932,7 @@ function enterChat(roomId, title, sub, badge, backTarget, isDM = false, isCustom
       if (!initialSnapDone) {
         initialSnapDone = true;
         el.innerHTML = ''; lastDate = '';
-        if (isDM && !snap.empty) {
-          const enteredKey = 'dnTalk_entered_' + roomId;
-          if (!localStorage.getItem(enteredKey)) {
-            window._addDoc(colRef, { type:'system', text: profile.nickname + '님이 입장했습니다', ts: new Date() });
-          }
-          localStorage.setItem(enteredKey, '1');
-        }
+
         // 위치기반 공개방은 desc 쿼리이므로 초기 로드 시 역순 렌더링
         if (!isDM && !isCustom) {
           const docs = snap.docs.slice().reverse();
