@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.villagechat.app",
+      "sha256_cert_fingerprints": [
+        "ED:29:D6:B5:95:13:BD:C8:95:00:02:43:1F:6E:90:09:D2:C0:28:B7:79:6B:F4:61:CE:60:6B:AF:84:76:00:B0"
+      ]
+    }
+  }
+]
